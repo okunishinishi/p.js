@@ -64,7 +64,11 @@
         var left = s.getLeft(),
             top = s.getTop(),
             speed = s.speed;
-        ctx.drawImage(s.image, left - x * speed, top - y);
+        var dx = s.dx * (1 - speed),
+            dy = s.dy * (1 - speed);
+        ctx.drawImage(s.image,
+                left - x * speed - dx,
+                top - y * speed - dy);
     };
 
 

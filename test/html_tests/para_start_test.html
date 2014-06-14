@@ -21,37 +21,64 @@
 </head>
 <body>
 <div id="para-src">
-    <section>
-        <h1 data-pr-object
-            data-pr-speed="0.5"
-                >First Header</h1>
 
-        <p data-pr-object>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+
+    <section data-pr-object
+             data-pr-speed="0.2"
+             style="background: url('../mock/images/168.png');
+             width:800px;
+             height:800px;
+             position:absolute;
+             left:10px;
+             "
+            >
+    </section>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <section data-pr-object
+             data-pr-speed="0.5">
+        <h1>First Header</h1>
+
+
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
             dolor.</p>
     </section>
-    <section>
-        <h1 data-pr-object
-            data-pr-speed="0.5"
-                >Second Header</h1>
+    <section data-pr-object
+             data-pr-speed="1"
+            >
+        <h1>Second Header</h1>
 
-        <p data-pr-object>Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
+        <p>Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
             mus. Donec
             quam felis, ultricies nec, pellentesque eu, pretium quis, sem. </p>
     </section>
-    <section>
-        <h1 data-pr-object
-            data-pr-speed="0.5"
-                >Third Header</h1>
+    <section
+            data-pr-object
+            data-pr-speed="0.75"
+            >
+        <h1>Third Header</h1>
 
-        <p data-pr-object>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget,
+        <p>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget,
             arcu. In enim
             justo, rhoncus ut, imperdiet a, venenatis vitae, justo. </p>
     </section>
+    <br style="clear:both;"/>
+    <p>
+        Sometimes you'll want to see what styles the default document view has. For instance, you gave a paragraph an width of 50%, but how do you see how many pixels that is in your users' browser?
+
+        In addition, sometimes you want to read out the styles applied to an element by embedded or linked style sheets. The style property only reflects the inline styles of an element, so if you want to read out other styles you have to resort to other means.
+    </p>
 </div>
 <script>
     para.start('para-src', {
         width: 2000,
-        height: 300
+        height: 600
     });
 </script>
 </body>

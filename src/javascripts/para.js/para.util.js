@@ -138,6 +138,19 @@
             } else {
                 parent.insertBefore(newElement, targetElement.nextSibling);
             }
+        },
+        /**
+         * Center point for a element.
+         * @param {HTMLElement} elm
+         * @returns {{x: *, y: *}}
+         */
+        centerPoint: function (elm) {
+            var w = elm.offsetWidth,
+                h = elm.offsetHeight;
+            return {
+                x: elm.offsetLeft + (w / 2),
+                y: elm.offsetTop + (h / 2)
+            };
         }
     };
 

@@ -57,6 +57,9 @@
             return;
         }
         object.load(function (object) {
+            var center = u.centerPoint(s.canvas);
+            object.dx = object.x - center.x;
+            object.dy = object.y - center.y;
             s.objects.push(object);
             s.loadObjects(queue, callback);
         });

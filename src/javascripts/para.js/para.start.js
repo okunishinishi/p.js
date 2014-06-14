@@ -27,18 +27,18 @@
         return  new para.Screen(canvas);
     }
 
+
     function createObject(elm, style) {
         var w = elm.offsetWidth,
-            h = elm.offsetHeight;
-        var x = elm.offsetLeft + (w / 2),
-            y = elm.offsetTop + (h / 2);
+            h = elm.offsetHeight,
+            point = u.centerPoint(elm);
         var data = elm.dataset;
         var elmStyle = u.getStyleString(elm);
         return new para.Object({
             width: w,
             height: h,
-            x: x,
-            y: y,
+            x: point.x,
+            y: point.y,
             speed: Number(data.prSpeed || 1),
             html: [
                     '<div class="pr-object" style="' + elmStyle + '">',
