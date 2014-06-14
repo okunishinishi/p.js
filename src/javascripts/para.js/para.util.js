@@ -43,6 +43,7 @@
             canvas.height = h * ratio;
             ctx.scale(ratio, ratio);
         },
+
         /**
          * Convert an html to a image.
          * @param {string} html -  Html string.
@@ -78,6 +79,16 @@
                 for (var j = 0; j < rules.length; j++) {
                     result += rules[j].cssText + ' ';
                 }
+            }
+            return result;
+        },
+        getStyleString: function (elm) {
+            var style = window.getComputedStyle(elm, ''),
+                result = '';
+            for (var i = 0, len = style.length; i < len; i++) {
+                var key = style[i],
+                    val = style.getPropertyValue(key);
+                result += [key, val].join(':') + ';';
             }
             return result;
         },

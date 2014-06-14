@@ -32,13 +32,14 @@
             h = elm.offsetHeight;
         var x = elm.offsetLeft + (w / 2),
             y = elm.offsetTop + (h / 2);
+        var elmStyle = u.getStyleString(elm);
         return new para.Object({
             width: w,
             height: h,
             x: x,
             y: y,
             html: [
-                '<div class="pr-object" >',
+                    '<div class="pr-object" style="' + elmStyle + '">',
                     '<style type="text/css">' + style + '</style>',
                 elm.innerHTML,
                 '</div>'
@@ -69,7 +70,8 @@
 
         screen.insertAfter(src);
         screen.loadObjects(objects, redraw);
-        body.onscroll = redraw;
+
+        window.addEventListener('scroll', redraw, false);
 
     };
 })(window.para = window.para || {}, document);

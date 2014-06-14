@@ -65,12 +65,16 @@
     /**
      * Draw screen.
      */
-    para.Screen.prototype.draw = function (x, y) {
+    para.Screen.prototype.draw = function (scrollX, scrollY) {
         var s = this,
             ctx = s.getContext();
         ctx.clearRect(0, 0, s.canvas.width, s.canvas.height);
+
         for (var i = 0, len = s.objects.length; i < len; i++) {
-            s.objects[i].draw(ctx, x, y);
+            var object = s.objects[i],
+                baseX = object.getLeft() - scrollX,
+                baseY = object.getTop() -scrollY;
+            object.draw(ctx, baseX, baseY);
         }
     };
 

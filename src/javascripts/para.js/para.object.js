@@ -61,8 +61,7 @@
      */
     para.Object.prototype.draw = function (ctx, x, y) {
         var s = this;
-        console.log(x, y);
-        ctx.drawImage(s.image, s.getLeft() - x, s.getTop() - y);
+        ctx.drawImage(s.image, x, y);
     };
 
 
