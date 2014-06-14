@@ -233,8 +233,8 @@
 	        var left = s.getLeft(),
 	            top = s.getTop(),
 	            speed = s.speed;
-	        var dx = s.dx * (1 - speed),
-	            dy = s.dy * (1 - speed);
+	        var dx = s.hLock ? 0 : s.dx * (1 - speed),
+	            dy = s.vLock ? 0 : s.dy * (1 - speed);
 	        ctx.drawImage(s.image,
 	                left - x * speed - dx,
 	                top - y * speed - dy);
@@ -324,7 +324,12 @@
 	        }
 	    };
 	
-	
+	    para.Screen.prototype.resize = function (w, h) {
+	        var s = this;
+	        s.canvas.width = w;
+	        s.canvas.height = h;
+	        u.optimizeCanvasRatio(s.canvas, s.getContext());
+	    };
 	})(window.para = window.para || {});
 	
 	
@@ -339,23 +344,21 @@
 	    var u = para.util;
 	
 	
-	    function createSrc(root, w, h) {
+	    function createSrc(root) {
 	        var src = u.ensureElement(root);
-	        if(!src){
-	            throw new Error('Root not found: "'+ root + '"');
+	        if (!src) {
+	            throw new Error('Root not found: "' + root + '"');
 	        }
 	        src.classList.add('pr-src');
-	        src.style.width = w + 'px';
-	        src.style.height = h + 'height';
 	        src.findPrObjects = function () {
 	            return u.toArray(src.querySelectorAll('[data-pr-object]'));
 	        };
 	        return src;
 	    }
 	
-	    function createScreen(w, h) {
+	    function createScreen() {
 	        var id = ['pr', 'screen', new Date().getTime()].join('-');
-	        var canvas = u.newCanvas(id, w, h);
+	        var canvas = u.newCanvas(id, 300, 300);
 	        canvas.classList.add('pr-screen');
 	        return  new para.Screen(canvas);
 	    }
@@ -372,6 +375,7 @@
 	            height: h,
 	            x: point.x,
 	            y: point.y,
+	            z: Number(data.prZ || 1),
 	            speed: Number(data.prSpeed || 1),
 	            html: [
 	                    '<div class="pr-object" style="' + elmStyle + '">',
@@ -385,17 +389,21 @@
 	
 	    para.start = function (root, options) {
 	
-	        var w = options.width || window.innerWidth,
-	            h = options.height || window.innerHeight;
-	
 	        var style = u.getDocumentStyleString();
 	
 	        var body = document.body,
-	            src = createSrc(root, w, h),
-	            screen = createScreen(w, h),
-	            objects = src.findPrObjects().map(function (src) {
-	                return createObject(src, style);
-	            });
+	            src = createSrc(root),
+	            screen = createScreen(),
+	            objects = src.findPrObjects()
+	                .map(function (src) {
+	                    var object = createObject(src, style);
+	                    object.vLock = options.vLock;
+	                    object.hLock = options.hLock;
+	                    return  object;
+	                })
+	                .sort(function (a, b) {
+	                    return a.z - b.z;
+	                });
 	
 	        function redraw() {
 	            var x = body.scrollLeft,
@@ -403,10 +411,18 @@
 	            screen.draw(x, y);
 	        }
 	
+	        function resize() {
+	            screen.resize(window.innerWidth, window.innerHeight);
+	        }
+	
 	        screen.insertAfter(src);
-	        screen.loadObjects(objects, redraw);
+	        screen.loadObjects(objects, function () {
+	            resize();
+	            redraw();
+	        });
 	
 	        window.addEventListener('scroll', redraw, false);
+	        window.addEventListener('resize', resize, false);
 	
 	    };
 	})(window.para = window.para || {}, document);
