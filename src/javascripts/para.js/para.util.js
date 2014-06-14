@@ -54,7 +54,7 @@
             var svgString = [
                         '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">',
                     '<foreignObject width="100%" height="100%">',
-                        '<div xmlns="http://www.w3.org/1999/xhtml">' + html + '</div>',
+                        '<div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%">' + html + '</div>',
                     '</foreignObject>' ,
                     '</svg>'
                 ].join(''),
@@ -94,6 +94,39 @@
             canvas.height = height;
             canvas.id = id;
             return canvas;
+        },
+        /**
+         * Make sure that element is a HTML element.
+         * @param {HTMLElement|string} elm - Html element or element id.
+         * @returns {HTMLElement}
+         */
+        ensureElement: function (elm) {
+            if (typeof(elm) === 'string') {
+                return document.getElementById(elm);
+            }
+            return elm;
+        },
+        /**
+         * Convert an iteratable object to array.
+         * @param iteratable
+         * @returns {Array}
+         */
+        toArray: function (iteratable) {
+            return Array.prototype.slice.call(iteratable, 0);
+        },
+        /**
+         * Insert element
+         * @param {HTMLElement} newElement
+         * @param {HTMLElement} targetElement
+         */
+        insertAfter: function (newElement, targetElement) {
+            var parent = targetElement.parentNode;
+            var isLast = parent.lastchild == targetElement;
+            if (isLast) {
+                parent.appendChild(newElement);
+            } else {
+                parent.insertBefore(newElement, targetElement.nextSibling);
+            }
         }
     };
 

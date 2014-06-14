@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Para start</title>
+    <link rel="stylesheet" href="../../src/stylesheets/para.css"/>
+    <style>
+        #para-src {
+            overflow-x: scroll;
+        }
+
+        #para-src section {
+            float: left;
+            width:400px;
+        }
+    </style>
+    <script src="../../src/javascripts/para.js/para.util.js"></script>
+    <script src="../../src/javascripts/para.js/para.object.js"></script>
+    <script src="../../src/javascripts/para.js/para.screen.js"></script>
+    <script src="../../src/javascripts/para.js/para.start.js"></script>
+</head>
+<body>
+<div id="para-src">
+    <section data-pr-object>
+        <h1>First Header</h1>
+
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.</p>
+    </section>
+    <section data-pr-object>
+        <h1>Second Header</h1>
+
+        <p>Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec
+            quam felis, ultricies nec, pellentesque eu, pretium quis, sem. </p>
+    </section>
+    <section data-pr-object>
+        <h1>Third Header</h1>
+
+        <p>Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim
+            justo, rhoncus ut, imperdiet a, venenatis vitae, justo. </p>
+    </section>
+</div>
+<script>
+    para.start('para-src', {
+        width: 2000,
+        height: 300
+    });
+</script>
+</body>
+</html>

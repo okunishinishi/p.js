@@ -32,7 +32,19 @@ describe('para.util', function () {
         util.optimizeCanvasRatio(canvas, ctx);
     });
 
-    it('Get URL', function () {
+    it('Get URL.', function () {
         expect(util.URL).toBeDefined();
     });
+
+    it('Ensure element.', function () {
+        expect(util.ensureElement('__id_not_exists'));
+    });
+
+    it('Convert to array', function () {
+        (function () {
+            var args = util.toArray(arguments);
+            expect(Array.isArray(args)).toBe(true);
+        })('foo', 'bar');
+    });
+
 });

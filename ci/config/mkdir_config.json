@@ -6,6 +6,7 @@
     "ci/tasks",
     "src",
     "src/javascripts",
+    "src/stylesheets",
     "src/templates",
     "dist",
     "test",
