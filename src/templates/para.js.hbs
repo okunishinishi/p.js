@@ -4,11 +4,9 @@
  * @author Taka Okunishi
  */
 
-window.para = (function(para){
+(function(para){
 
 {{#each scripts}}{{{this}}}
 {{/each}}
 
-    return para;
-
-})({});
+})(window.para = window.para || {});

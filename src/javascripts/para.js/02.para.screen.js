@@ -78,5 +78,11 @@
         }
     };
 
-
+    para.Screen.prototype.resize = function (w, h) {
+        var s = this;
+        s.canvas.width = w;
+        s.canvas.height = h;
+        u.optimizeCanvasRatio(s.canvas, s.getContext());
+    };
 })(window.para = window.para || {});
+

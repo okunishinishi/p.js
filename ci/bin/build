@@ -6,7 +6,10 @@
 process.chdir(__dirname);
 process.chdir('../../');
 
-var async = require('async');
+
+var async = require('async'),
+    childProcess = require('child_process'),
+    glob = require('glob');
 
 function doTask(taskName, configName, callback) {
     var task = require('../tasks/' + taskName),
@@ -28,15 +31,45 @@ function doTask(taskName, configName, callback) {
     ], callback);
 }
 
-async.series(
-    [
-        {task: 'mkdir_task', config: 'mkdir_config'}
-    ]
-        .map(function (data) {
+
+function runTasks(data, callback) {
+    async.series(
+        data.map(function (data) {
             return function (callback) {
                 doTask(data.task, data.config, callback);
             }
-        })
-    , function () {
+        }), callback);
+}
 
+async.series(
+    [
+        function (callback) {
+            runTasks([
+                {task: 'mkdir_task', config: 'mkdir_config'}
+            ], callback);
+        },
+        function (callback) {
+            async.waterfall([
+                function (callback) {
+                    glob('**/.build', callback);
+                },
+                function (filenames, callback) {
+                    async.eachSeries(filenames, function (filename, callback) {
+                        console.log('Run "%s"...', filename);
+                        var start = new Date;
+                        var forked = childProcess.fork(filename);
+                        forked.on('close', function (code) {
+                            var err = code === 0 ? null : new Error('Task filed with file:' + filename);
+                            var took = new Date - start;
+                            console.log('...done!(%dms)', took);
+                            callback(err);
+                        });
+                    }, callback);
+                }
+            ], callback);
+        }
+    ], function (err) {
+        if (err) {
+            console.error(err);
+        }
     });

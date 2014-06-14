@@ -11,9 +11,12 @@
 
     function createSrc(root, w, h) {
         var src = u.ensureElement(root);
+        if (!src) {
+            throw new Error('Root not found: "' + root + '"');
+        }
         src.classList.add('pr-src');
         src.style.width = w + 'px';
-        src.style.height = h + 'height';
+        src.style.height = h + 'px';
         src.findPrObjects = function () {
             return u.toArray(src.querySelectorAll('[data-pr-object]'));
         };
@@ -70,10 +73,19 @@
             screen.draw(x, y);
         }
 
+        function resize() {
+            screen.resize(window.innerWidth, window.innerHeight);
+        }
+
         screen.insertAfter(src);
-        screen.loadObjects(objects, redraw);
+        screen.loadObjects(objects, function () {
+            resize();
+            redraw();
+        });
 
         window.addEventListener('scroll', redraw, false);
+        window.addEventListener('resize', resize, false);
 
     };
 })(window.para = window.para || {}, document);
+
