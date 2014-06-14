@@ -32,12 +32,14 @@
             h = elm.offsetHeight;
         var x = elm.offsetLeft + (w / 2),
             y = elm.offsetTop + (h / 2);
+        var data = elm.dataset;
         var elmStyle = u.getStyleString(elm);
         return new para.Object({
             width: w,
             height: h,
             x: x,
             y: y,
+            speed: Number(data.prSpeed || 1),
             html: [
                     '<div class="pr-object" style="' + elmStyle + '">',
                     '<style type="text/css">' + style + '</style>',

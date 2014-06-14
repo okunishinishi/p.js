@@ -71,10 +71,7 @@
         ctx.clearRect(0, 0, s.canvas.width, s.canvas.height);
 
         for (var i = 0, len = s.objects.length; i < len; i++) {
-            var object = s.objects[i],
-                baseX = object.getLeft() - scrollX,
-                baseY = object.getTop() -scrollY;
-            object.draw(ctx, baseX, baseY);
+            s.objects[i].draw(ctx, scrollX, scrollY);
         }
     };
 

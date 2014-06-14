@@ -61,7 +61,10 @@
      */
     para.Object.prototype.draw = function (ctx, x, y) {
         var s = this;
-        ctx.drawImage(s.image, x, y);
+        var left = s.getLeft(),
+            top = s.getTop(),
+            speed = s.speed;
+        ctx.drawImage(s.image, left - x * speed, top - y);
     };
 
 
