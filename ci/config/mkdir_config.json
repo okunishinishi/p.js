@@ -1,0 +1,15 @@
+[
+    "assets",
+    "ci",
+    "ci/bin",
+    "ci/config",
+    "ci/tasks",
+    "src",
+    "src/javascripts",
+    "src/templates",
+    "dist",
+    "test",
+    "test/.work",
+    "test/mock",
+    "test/unit_tests"
+]

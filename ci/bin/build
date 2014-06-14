@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+
+"use strict";
+
+process.chdir(__dirname);
+process.chdir('../../');
+
+var async = require('async');
+
+function doTask(taskName, configName, callback) {
+    var task = require('../tasks/' + taskName),
+        config = require('../config/' + configName);
+    var start = new Date;
+    async.series([
+        function (callback) {
+            console.log('"%s" start...', taskName);
+            callback();
+        },
+        function (callback) {
+            task(config, callback);
+        },
+        function (callback) {
+            var took = new Date - start;
+            console.log('...done! (%dms)', took);
+            callback();
+        }
+    ], callback);
+}
+
+async.series(
+    [
+        {task: 'mkdir_task', config: 'mkdir_config'}
+    ]
+        .map(function (data) {
+            return function (callback) {
+                doTask(data.task, data.config, callback);
+            }
+        })
+    , function () {
+
+    });

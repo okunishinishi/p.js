@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="../../src/javascripts/para.js/para.util.js"></script>
+    <title>para util test</title>
+    <style>
+        body {
+            color: #555;
+            background-color: #FAFAFA;
+            padding: 50px;
+        }
+    </style>
+
+</head>
+<body>
+<section>
+    <h1>Row html</h1>
+
+    <div id="html-content">
+        <div style="font-size:16px;width:100px;word-wrap: break-word;">
+            <span><em>I</em> like</span>
+
+            <span style="color:white; text-shadow:0 0 2px blue;">cheese</span>
+
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+                Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis,
+                ultricies nec, pellentesque eu, pretium quis, sem.</p>
+        </div>
+    </div>
+</section>
+<section>
+    <h1>Rendered in canvas</h1>
+    <canvas id="render-canvas" style="border:2px solid black;" width="500" height="500"></canvas>
+    <script>
+        (function (para) {
+            var htmlContentDiv = document.getElementById('html-content');
+            var canvas = document.getElementById('render-canvas'),
+                    ctx = canvas.getContext('2d'),
+                    html = htmlContentDiv.innerHTML;
+
+            para.util.optimizeCanvasRatio(canvas, ctx);
+            para.util.htmlToImage(html, 200, 200, function (image) {
+                ctx.drawImage(image, 0, 0);
+                para.util.revokeObjectURL(image.src);
+            });
+            console.log(para.util.getDocumentStyleString());
+        })(para);
+
+    </script>
+</section>
+</body>
