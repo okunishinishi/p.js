@@ -2,7 +2,7 @@
  * Utility functions for para.
  * @namespace util
  */
-(function (para) {
+(function (para, document) {
     "use strict";
 
     var u = {
@@ -27,7 +27,7 @@
         devicePixelRatio: window.devicePixelRatio,
         /**
          * Optimize canvas pixel rate.
-         * @param canvas
+         * @param {HTMLElement} canvas
          * @param ctx
          */
         optimizeCanvasRatio: function (canvas, ctx) {
@@ -80,9 +80,23 @@
                 }
             }
             return result;
+        },
+        /**
+         * Create a new canvas.
+         * @param {string} id - Canvas element id.
+         * @param {number} width - Canvas width.
+         * @param {number} height - Canvas height.
+         * @returns {HTMLElement}
+         */
+        newCanvas: function (id, width, height) {
+            var canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.id = id;
+            return canvas;
         }
     };
 
     para.util = u;
 
-})(window.para = window.para || {});
+})(window.para = window.para || {}, document);
