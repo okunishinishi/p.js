@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- '0.11'
+before_install: 
+install:
+- npm install
+script:
+- "./ci/bin/build"
+- "./ci/bin/test"
+- "./ci/bin/coverage"
+# - "npm run send-coverage"

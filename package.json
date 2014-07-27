@@ -1,5 +1,5 @@
 {
-  "name": "prari.js",
+  "name": "prari",
   "version": "0.0.0",
   "private": true,
   "description": "Generate parallax page from html.",
@@ -8,7 +8,9 @@
     "parari": "bin/parari"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./ci/bin/test",
+      "coverage": "istanbul cover nodeunit test/unit_tests/* --dir doc/coverage",
+      "send-coverage": "codeclimate < doc/coverage/lcov.info"
   },
   "repository": {
     "type": "git",
@@ -23,7 +25,8 @@
   "dependencies": {
     "apeman-util": "0.0.16",
     "commander": "^2.3.0",
-    "marked": "^0.3.2"
+    "marked": "^0.3.2",
+    "cheerio": "^0.17.0"
   },
   "devDependencies": {
     "apeman-tasks": "0.0.9",

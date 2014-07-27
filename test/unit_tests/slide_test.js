@@ -30,6 +30,12 @@ exports['Default fils.'] = function (test) {
     test.done();
 };
 
+exports['Sectionize html.'] = function (test) {
+    var sectionized = slide._sectionaize('<h1>foo</h1><p>bar</p><h2>baz</h2><ul><li>123</li></ul>')
+    test.ok(sectionized);
+    test.done();
+};
+
 exports['Data.'] = function (test) {
     slide._data(__filename, [
         h.resolveMockFile('mock_js.js')
