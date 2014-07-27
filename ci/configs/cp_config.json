@@ -4,10 +4,6 @@
         "dest": "assets/.third_party/one-color.js"
     },
     {
-        "src": "bower_components/marked/lib/marked.js",
-        "dest": "assets/.third_party/marked.js"
-    },
-    {
         "src": "bower_components/fabric/dist/fabric.js",
         "dest": "assets/.third_party/fabric.js"
     },

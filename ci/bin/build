@@ -39,6 +39,12 @@ async.eachSeries([
     {
         config: configs.budConfig,
         task: tasks.BudTask
+    },
+    {
+        config: {
+            command: 'doc/demo/do_demo.sh'
+        },
+        task: tasks.SpawnTask
     }
 ], function (data, callback) {
     new (data.task)(data.config).run(callback);

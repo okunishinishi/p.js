@@ -22,7 +22,7 @@ module.exports = {
     data: {
         overview: pkg.description,
         name: 'parari',
-        requires: ['fabric.js', 'marked.js', 'one-color.js'],
+        requires: ['fabric.js', 'one-color.js'],
         version: pkg.version,
         files: fs.readdirSync(__dirname)
             .filter(filtering.patternAcceptFilter(/\.js$/))

@@ -2,27 +2,37 @@
 
 "use strict";
 
-var UglifyJS = require("uglify-js"),
-    CleanCSS = require('clean-css'),
-    u = require('apeman-util'),
+var u = require('apeman-util'),
     async = u.ext.async,
     glob = u.ext.glob,
     path = u.core.path,
     fs = u.core.fs,
+    minify = u.minify,
     config = require('../configs').minifyConfig,
     h = require('../_helper');
 
 process.chdir(h.basedir);
 
 function minifyJs(src, dest, callback) {
-    var minified = UglifyJS.minify(src),
-        content = minified.code;
-    h.generateFile(dest, content, callback);
+    async.waterfaill([
+        function (callback) {
+            minify.minifyJsString(src, callback);
+        },
+        function (content, callback) {
+            h.generateFile(dest, content, callback);
+        }
+    ], callback);
 };
 
 function minifyCss(src, dest, callback) {
-    var minified = new CleanCSS().minify(fs.readFileSync(src).toString());
-    h.generateFile(dest, minified, callback);
+    async.waterfaill([
+        function (callback) {
+            minify.minifyCssString(src, callback);
+        },
+        function (content, callback) {
+            h.generateFile(dest, content, callback);
+        }
+    ], callback);
 };
 
 async.eachSeries(config, function (config, callback) {

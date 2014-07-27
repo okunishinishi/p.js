@@ -7,7 +7,7 @@
 
 "use strict";
 
-var color = require('cli-color'),
+var u = require('apeman-util'),
     program = require('commander'),
     util = require('util'),
     pkg = require('../package.json'),
@@ -19,6 +19,9 @@ program
 program
     .command('slide <src> [dest]')
     .description('Generate a slide show.')
+    .option('-c, --css', 'CSS file name to include.')
+    .option('-j, --js', 'Javascript file name to include.')
+    .option('-t, --title', 'Title of the slide.')
     .action(commands.slide.bind(commands));
 
 program.parse(process.argv);

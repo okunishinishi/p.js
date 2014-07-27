@@ -3,7 +3,6 @@
  * @namespace parari
  * @version 0.0.0
  * @require fabric.js 
- * @require marked.js 
  * @require one-color.js 
  */
 window.parari = (function (parari) {
