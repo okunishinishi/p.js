@@ -65,21 +65,21 @@ This software is released under the [MIT License][my_license_url].
 <!-- Links start -->
 
 [nodejs_url]: http://nodejs.org/
-[my_license_url]: http://raw.github.com/tick-tack/parari/master/LICENSE
-[my_travis_url]: http://travis-ci.org/tick-tack/parari
-[my_travis_badge_url]: http://img.shields.io/travis/tick-tack/parari.svg?style=flat
-[my_codeclimate_url]: http://codeclimate.com/github/tick-tack/parari
-[my_codeclimate_badge_url]: http://img.shields.io/codeclimate/github/tick-tack/parari.svg?style=flat
-[my_codeclimate_coverage_badge_url]: http://img.shields.io/codeclimate/coverage/github/tick-tack/parari.svg?style=flat
-[my_apiguide_url]: http://tick-tack.github.io/parari/apiguide/
-[my_coverage_report_url]: http://tick-tack.github.io/parari/coverage/lcov-report/
+[my_license_url]: http://raw.github.com/okunishinishi/parari/master/LICENSE
+[my_travis_url]: http://travis-ci.org/okunishinishi/parari
+[my_travis_badge_url]: http://img.shields.io/travis/okunishinishi/parari.svg?style=flat
+[my_codeclimate_url]: http://codeclimate.com/github/okunishinishi/parari
+[my_codeclimate_badge_url]: http://img.shields.io/codeclimate/github/okunishinishi/parari.svg?style=flat
+[my_codeclimate_coverage_badge_url]: http://img.shields.io/codeclimate/coverage/github/okunishinishi/parari.svg?style=flat
+[my_apiguide_url]: http://okunishinishi.github.io/parari/apiguide/
+[my_coverage_report_url]: http://okunishinishi.github.io/parari/coverage/lcov-report/
 [my_gittip_url]: http://www.gittip.com/okunishinishi/
 [my_gittip_budge_url]: http://img.shields.io/gittip/okunishinishi.svg?style=flat
 [my_npm_url]: http://www.npmjs.org/package/parari
 [my_npm_budge_url]: http://img.shields.io/npm/v/parari.svg?style=flat
-[my_tag_url]: http://github.com/tick-tack/parari/releases/tag/v1.0.6
-[my_tag_badge_url]: http://img.shields.io/github/tag/tick-tack/parari.svg?style=flat
-[my_gemnasium_url]: http://gemnasium.com/tick-tack/parari
-[my_gemnasium_badge_url]: http://img.shields.io/gemnasium/tick-tack/parari.svg?style=flat
+[my_tag_url]: http://github.com/okunishinishi/parari/releases/tag/v1.0.6
+[my_tag_badge_url]: http://img.shields.io/github/tag/okunishinishi/parari.svg?style=flat
+[my_gemnasium_url]: http://gemnasium.com/okunishinishi/parari
+[my_gemnasium_badge_url]: http://img.shields.io/gemnasium/okunishinishi/parari.svg?style=flat
 
 <!-- Links end-->
