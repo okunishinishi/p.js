@@ -1,0 +1,78 @@
+/**
+ * Bud file for rainbow theme.
+ */
+
+"use strict";
+
+var ColorScheme = require('color-scheme'),
+    onecolor = require('onecolor'),
+    util = require('util');
+
+
+function hues(angle, count) {
+    var result = [angle];
+    while (result.length < count) {
+        result.push(result[result.length - 1] + angle);
+    }
+    return result;
+};
+
+module.exports = {
+    force: true,
+    mode: '444',
+    get data() {
+        var variation = 'light';
+        var hueCount = 9,
+            scheme = new ColorScheme;
+
+
+        var themeName = 'rainbow';
+        return {
+            themeName: themeName,
+            pageStyles: hues(80, hueCount).map(function (hue, i, hues) {
+                var colors = scheme.from_hue(hue)
+                    .scheme('contrast')
+                    .variation(variation)
+                    .colors()
+                    .map(function (hex) {
+                        return '#' + hex;
+                    });
+
+                var selector = [
+                    ['.pr-theme', themeName].join('-'),
+                    ['.pr-page', util.format('nth-child(%dn+%d)', hueCount, i)].join(':')
+                ].join(' ');
+                var white = '#FFF';
+
+                var headTextColor = 'rgba(255,255,255,0.5)',
+                    textColor = white,
+                    backgroundColor = colors[1];
+
+
+                return [
+                    {
+                        selector: selector,
+                        values: {
+                            'background-color': backgroundColor,
+                            'color': textColor
+                        }
+                    },
+                    {
+                        selector: ['h1', 'h2', 'h3'].map(function (h) {
+                            return [selector, h].join(' ');
+                        }).join(', '),
+                        values: {
+                            'color': headTextColor
+                        }
+                    },
+                    {
+                        selector: [selector, 'a'].join(' '),
+                        values: {
+                            'color': textColor
+                        }
+                    }
+                ];
+            })
+        }
+    }
+};

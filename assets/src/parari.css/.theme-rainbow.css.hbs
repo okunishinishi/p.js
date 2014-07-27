@@ -1,0 +1,7 @@
+
+{{#each pageStyles}}{{#each this}}
+{{selector}}{
+    {{#each values}}{{@key}}: {{this}};
+    {{/each}}
+}
+{{/each}}{{/each}}

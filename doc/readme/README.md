@@ -1,4 +1,4 @@
-prari.js
+prari
 ======
 <!-- Badge start -->
 

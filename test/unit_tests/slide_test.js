@@ -9,7 +9,8 @@ var slide = require('./../../lib/commands/slide.js'),
     h = require('../_helper');
 
 exports.setUp = function (done) {
-    // h.injector.inject(console, 'log', h.doNothing);
+    h.injector.inject(console, 'log', h.doNothing);
+    h.injector.inject(console, 'error', h.doNothing);
     done();
 };
 
@@ -47,8 +48,19 @@ exports['Data.'] = function (test) {
         test.ok(data.js);
         test.ok(data.css);
         test.ok(data.now);
-        test.done();
+
+        slide._data._fileData(null, h.doNothing, function (err) {
+            test.ifError(err);
+            test.done();
+        });
     });
+};
+
+exports['_done.'] = function (test) {
+    slide._done(function () {
+        slide._done()(new Error('foo'));
+        test.done();
+    })(null);
 };
 
 exports['Slide.'] = function (test) {

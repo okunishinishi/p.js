@@ -8,4 +8,7 @@ script:
 - "./ci/bin/build"
 - "./ci/bin/test"
 - "./ci/bin/coverage"
-# - "npm run send-coverage"
+- "npm run send-coverage"
+env:
+  global:
+    secure: DRc5dBp79W3Rpf7D6f8+iSmJJvyBDW5ULkSYcDG4H2jvFXNKQxFGOo+MFzn4oA1cPS9+s5Rj8E+Klbe/keRyOJ+BhUA81v4SCMnT2rninLgIXp+AV7EcSkxkJY5IlvP7XEtfYz4Mn3zFprpxuQkc76QKXf9Z8qn8sYbkxOjrew0=
