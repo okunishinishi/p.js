@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+"use strict";
+
+var UglifyJS = require("uglify-js"),
+    CleanCSS = require('clean-css'),
+    u = require('apeman-util'),
+    async = u.ext.async,
+    glob = u.ext.glob,
+    path = u.core.path,
+    fs = u.core.fs,
+    config = require('../configs').minifyConfig,
+    h = require('../_helper');
+
+process.chdir(h.basedir);
+
+function minifyJs(src, dest, callback) {
+    var minified = UglifyJS.minify(src),
+        content = minified.code;
+    h.generateFile(dest, content, callback);
+};
+
+function minifyCss(src, dest, callback) {
+    var minified = new CleanCSS().minify(fs.readFileSync(src).toString());
+    h.generateFile(dest, minified, callback);
+};
+
+async.eachSeries(config, function (config, callback) {
+    async.waterfall([
+        function (callback) {
+            var src = path.resolve(config.src);
+            glob(src, callback);
+        },
+        function (src, callback) {
+            switch (config.type) {
+                case 'js':
+                    src = src.filter(u.filtering.patternRejectFilter(/\.min\.js$/));
+                    async.each(src, function (src, callback) {
+                        var dest = path.resolve(config.destDir, path.basename(src, '.js')) + '.min.js';
+                        minifyJs(src, dest, callback);
+                    }, callback);
+                    break;
+                case 'css':
+                    src = src.filter(u.filtering.patternRejectFilter(/\.min\.css$/));
+                    async.each(src, function (src, callback) {
+                        var dest = path.resolve(config.destDir, path.basename(src, '.css')) + '.min.css';
+                        minifyCss(src, dest, callback);
+                    }, callback);
+                    break;
+                default :
+                    callback(null);
+                    break;
+            }
+
+        }
+    ], callback);
+}, h.done('Minify done!'));

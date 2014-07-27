@@ -1,0 +1,17 @@
+/**
+ * {{name}} style.
+ * @version {{version}}{{#each requires}}
+ * @require {{this}} {{/each}}
+ */
+{{#each files}}
+{{{this}}}
+{{/each}}
+
+
+{{#each libraries}}
+/***************************************
+ * Borrows {{name}}
+ ***************************************/
+
+{{{contents}}}
+{{/each}}

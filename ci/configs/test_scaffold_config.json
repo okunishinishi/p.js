@@ -1,0 +1,6 @@
+[
+    {
+        "srcPattern": "lib/**/*.js",
+        "destDir": "test/unit_tests"
+    }
+]

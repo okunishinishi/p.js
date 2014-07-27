@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+/**
+ * @file Generate apiguide documents.
+ */
+
+"use strict";
+
+var h = require('../_helper'),
+    async = h.async,
+    tasks = h.tasks,
+    configs = require('../configs');
+
+process.chdir(h.basedir);
+
+async.eachSeries([
+    {
+        config: configs.jsdocConfig,
+        task: tasks.JsdocTask
+    }
+], function (data, callback) {
+    new (data.task)(data.config).run(callback);
+}, h.done('Doc done!'));

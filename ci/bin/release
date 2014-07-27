@@ -1,0 +1,51 @@
+#! /usr/bin/env node
+
+/**
+ * @overview Release new version.
+ */
+
+var h = require('../_helper'),
+    tasks = h.tasks,
+    configs = require('../configs'),
+    yesno = h.yesno,
+    async = h.async;
+
+yesno.ask('Are you sure to release new version? [y/n]', null, function (ok) {
+    if (!ok) {
+        console.log("Exit now.");
+        process.exit();
+        return;
+    }
+    async.series([
+        function (callback) {
+            new tasks.ForkTask({
+                files: [
+                    'ci/bin/build',
+                    'ci/bin/test',
+                    'ci/bin/doc'
+                ]
+            }).run(callback);
+        },
+        function (callback) {
+            new tasks.SpawnTask({
+                command: 'ci/bin/coverage'
+            }).run(callback);
+        },
+        function (callback) {
+            new tasks.VersionupTask({}).run(callback);
+        },
+        function (callback) {
+            new tasks.GhPagesTask(configs.ghPagesConfig).run(callback);
+        },
+        function (callback) {
+            new tasks.TagTask({}).run(callback);
+        },
+        function (callback) {
+            new tasks.SpawnTask({
+                command: 'npm',
+                args: ['publish']
+            }).run(callback);
+        }
+    ], h.done('Release done!', true));
+});
+

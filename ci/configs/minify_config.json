@@ -1,0 +1,12 @@
+[
+    {
+        "src": "dist/.third_party/*.js",
+        "destDir": "dist/.third_party",
+        "type": "js"
+    },
+    {
+        "src": "dist/.third_party/*.css",
+        "destDir": "dist/.third_party",
+        "type": "css"
+    }
+]

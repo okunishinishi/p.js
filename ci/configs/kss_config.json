@@ -1,0 +1,8 @@
+{
+    "srcDir": "assets/stylesheets/apeman",
+    "destDir": "doc/styleguide",
+    "css": [
+        "assets/stylesheets/.styleguide.css",
+        "assets/stylesheets/apeman.css"
+    ]
+}

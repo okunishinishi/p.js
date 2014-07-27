@@ -1,0 +1,43 @@
+/**
+ * @file Dried file for apeman.js
+ */
+
+"use strict";
+
+var u = require('apeman-util'),
+    core = u.core,
+    os = core.os,
+    pkg = require('../../../package'),
+    filtering = u.filtering,
+    mapping = u.mapping,
+    fs = core.fs,
+    path = core.path;
+
+var thirdPartyDir = path.resolve('assets/.third_party');
+
+module.exports = {
+    mode: '444',
+    force: true,
+    path: 'assets/parari.css',
+    data: {
+        overview: pkg.description,
+        name: 'parari',
+        requires: ['normalize.css'],
+        version: pkg.version,
+        files: fs.readdirSync(__dirname)
+            .filter(filtering.patternAcceptFilter(/\.css$/))
+            .map(mapping.pathResolveMap(__dirname))
+            .map(function (filename) {
+                return fs.readFileSync(filename).toString();
+            }),
+        libraries: fs.readdirSync(thirdPartyDir)
+            .filter(filtering.patternAcceptFilter(/\.min\.css$/))
+            .map(mapping.pathResolveMap(thirdPartyDir))
+            .map(function (filename) {
+                return {
+                    name: path.basename(filename),
+                    contents: fs.readFileSync(filename).toString()
+                };
+            })
+    }
+};

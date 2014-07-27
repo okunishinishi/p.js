@@ -1,75 +1,45 @@
 #!/usr/bin/env node
 
-
 "use strict";
 
-process.chdir(__dirname);
-process.chdir('../../');
+/**
+ * Build project.
+ * @type {exports}
+ */
+
+var h = require('../_helper'),
+    async = h.async,
+    tasks = h.tasks,
+    configs = require('../configs');
+
+process.chdir(h.basedir);
 
 
-var async = require('async'),
-    childProcess = require('child_process'),
-    glob = require('glob');
-
-function doTask(taskName, configName, callback) {
-    var task = require('../tasks/' + taskName),
-        config = require('../config/' + configName);
-    var start = new Date;
-    async.series([
-        function (callback) {
-            console.log('"%s" start...', taskName);
-            callback();
-        },
-        function (callback) {
-            task(config, callback);
-        },
-        function (callback) {
-            var took = new Date - start;
-            console.log('...done! (%dms)', took);
-            callback();
-        }
-    ], callback);
-}
-
-
-function runTasks(data, callback) {
-    async.series(
-        data.map(function (data) {
-            return function (callback) {
-                doTask(data.task, data.config, callback);
-            }
-        }), callback);
-}
-
-async.series(
-    [
-        function (callback) {
-            runTasks([
-                {task: 'mkdir_task', config: 'mkdir_config'}
-            ], callback);
-        },
-        function (callback) {
-            async.waterfall([
-                function (callback) {
-                    glob('**/.build', callback);
-                },
-                function (filenames, callback) {
-                    async.eachSeries(filenames, function (filename, callback) {
-                        console.log('Run "%s"...', filename);
-                        var start = new Date;
-                        var forked = childProcess.fork(filename);
-                        forked.on('close', function (code) {
-                            var err = code === 0 ? null : new Error('Task filed with file:' + filename);
-                            var took = new Date - start;
-                            console.log('...done!(%dms)', took);
-                            callback(err);
-                        });
-                    }, callback);
-                }
-            ], callback);
-        }
-    ], function (err) {
-        if (err) {
-            console.error(err);
-        }
-    });
+async.eachSeries([
+    {
+        config: configs.mkdirConfig,
+        task: tasks.MkdirTask
+    },
+    {
+        config: configs.indexConfig,
+        task: tasks.IndexTask
+    },
+    {
+        config: configs.chmodConfig,
+        task: tasks.ChmodTask
+    },
+    {
+        config: configs.testScaffoldConfig,
+        task: tasks.TestScaffoldTask
+    },
+    {
+        config: configs.cpConfig,
+        task: tasks.CpTask
+    },
+    {
+        config: configs.budConfig,
+        task: tasks.BudTask
+    }
+], function (data, callback) {
+    new (data.task)(data.config).run(callback);
+}, h.done('Build done!'));

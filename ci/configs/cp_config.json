@@ -1,0 +1,28 @@
+[
+    {
+        "src": "bower_components/color/one-color.js",
+        "dest": "assets/.third_party/one-color.js"
+    },
+    {
+        "src": "bower_components/marked/lib/marked.js",
+        "dest": "assets/.third_party/marked.js"
+    },
+    {
+        "src": "bower_components/fabric/dist/fabric.js",
+        "dest": "assets/.third_party/fabric.js"
+    },
+    {
+        "src": "bower_components/normalize.css/normalize.css",
+        "dest": "assets/.third_party/normalize.css"
+    },
+    {
+        "src": "doc/readme/README.md",
+        "dest": "README.md"
+    },
+    {
+        "src": "README.md",
+        "dest": "doc/demo/parari-readme/parari-README.md"
+    }
+
+
+]

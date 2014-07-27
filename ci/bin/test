@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+/**
+ * @file Generate documents.
+ */
+
+"use strict";
+
+var h = require('../_helper'),
+    async = h.async,
+    tasks = h.tasks,
+    configs = require('../configs');
+
+process.chdir(h.basedir);
+
+new tasks.ForkTask({
+    files: [
+        'ci/bin/test_unit_tests',
+//        'ci/bin/test_scenario_tests'
+    ]
+}).run(h.done('Doc done!'));

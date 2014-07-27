@@ -1,0 +1,3 @@
+{
+    "pattern": "+(assets|ci|doc|lib|test|src)/**/.*.bud"
+}

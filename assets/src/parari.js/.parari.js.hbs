@@ -1,0 +1,24 @@
+/**
+ * @file {{overview}}
+ * @namespace {{name}}
+ * @version {{version}}{{#each requires}}
+ * @require {{this}} {{/each}}
+ */
+window.{{name}} = (function ({{name}}) {
+    "use strict";
+    {{#each files}}
+    {{{this}}}
+    {{/each}}
+
+    return {{name}};
+})(window.{{name}} = window.{{name}} || {});
+
+
+{{#each libraries}}
+//=========================================
+// Borrows {{name}}
+//=========================================
+
+{{{contents}}}
+
+{{/each}}

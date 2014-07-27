@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+/**
+ * @file Parari bin script.
+ * @author Taka Okunishi
+ */
+
+"use strict";
+
+var color = require('cli-color'),
+    program = require('commander'),
+    util = require('util'),
+    pkg = require('../package.json'),
+    commands = require('../lib/commands');
+
+program
+    .version(pkg.version)
+
+program
+    .command('slide <src> [dest]')
+    .description('Generate a slide show.')
+    .action(commands.slide.bind(commands));
+
+program.parse(process.argv);
+
+
+
+
+
+

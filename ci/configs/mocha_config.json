@@ -1,0 +1,6 @@
+{
+    "pattern": [
+        "test/scneaio_tests/storage_scenario/*"
+    ],
+    "timeout": 4000
+}

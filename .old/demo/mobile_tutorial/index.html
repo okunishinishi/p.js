@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Mobile tutorial</title>
+    <style>
+
+        .mobile-device {
+            padding: 20px 10px 40px;
+            background: #AAA;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .mobile-device-screen {
+            width: 320px;
+            height: 524px;
+            background: #FFF;
+            display: inline-block;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .full-width {
+            width: 100%;
+        }
+
+        #wide-iframe{
+            height:500px;
+        }
+    </style>
+</head>
+<body>
+<div class="mobile-device">
+    <iframe class="mobile-device-screen" src="content.html" frameborder="0">
+
+    </iframe>
+</div>
+
+<div>
+    <iframe src="content.html" frameborder="0" class="full-width" id="wide-iframe">
+
+    </iframe>
+</div>
+</body>
+</html>

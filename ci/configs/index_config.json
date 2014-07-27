@@ -1,0 +1,24 @@
+[
+    {
+        "dirname": "ci/configs",
+        "doc": {
+            "file": "CI configuration.",
+            "module": "parari.js/ci/configs"
+        }
+    },
+    {
+        "dirname": "lib",
+        "doc": {
+            "file": "parari",
+            "module": "parari/lib"
+        },
+        "descProperties": true
+    },
+    {
+        "dirname": "lib/commands",
+        "doc": {
+            "file": "parari",
+            "module": "parari/lib/commands"
+        }
+    }
+]

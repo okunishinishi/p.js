@@ -1,0 +1,27 @@
+{
+    "dirnames": [
+        "assets",
+        "assets/src",
+        "assets/.third_party",
+        "bin",
+        "ci",
+        "ci/bin",
+        "ci/configs",
+        "doc",
+        "doc/apiguide",
+        "doc/demo",
+        "doc/demo/parari-readme",
+        "doc/coverage",
+        "doc/readme",
+        "lib",
+        "lib/commands",
+        "test",
+        "test/.work",
+        "test/mocks",
+        "test/scneaio_tests",
+        "test/unit_tests",
+        "test/browser_unit_tests",
+        "tmpl",
+        "tmpl/hbs"
+    ]
+}

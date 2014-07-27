@@ -1,0 +1,44 @@
+/**
+ * @file Dried file for apeman.js
+ */
+
+"use strict";
+
+var u = require('apeman-util'),
+    core = u.core,
+    os = core.os,
+    pkg = require('../../../package'),
+    filtering = u.filtering,
+    mapping = u.mapping,
+    fs = core.fs,
+    path = core.path;
+
+var thirdPartyDir = path.resolve('assets/.third_party');
+
+module.exports = {
+    mode: '444',
+    force: true,
+    path: 'assets/parari.js',
+    data: {
+        overview: pkg.description,
+        name: 'parari',
+        requires: ['fabric.js', 'marked.js', 'one-color.js'],
+        version: pkg.version,
+        files: fs.readdirSync(__dirname)
+            .filter(filtering.patternAcceptFilter(/\.js$/))
+            .map(mapping.pathResolveMap(__dirname))
+            .map(function (filename) {
+                return fs.readFileSync(filename).toString()
+                    .split(os.EOL).join(os.EOL + '\t');
+            }),
+        libraries: fs.readdirSync(thirdPartyDir)
+            .filter(filtering.patternAcceptFilter(/\.min\.js$/))
+            .map(mapping.pathResolveMap(thirdPartyDir))
+            .map(function (filename) {
+                return {
+                    name: path.basename(filename),
+                    contents: fs.readFileSync(filename).toString()
+                };
+            })
+    }
+};

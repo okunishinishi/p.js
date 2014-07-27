@@ -1,0 +1,9 @@
+{
+    "src": [
+        "README.md",
+        "index.js",
+        "lib/**/*.js"
+    ],
+    "conf": "doc/.apiguide.json",
+    "dest": "doc/apiguide"
+}
