@@ -1,0 +1,36 @@
+{{!
+    Template for README.md
+}}{{pkg.name}}
+======
+<!-- Badge start -->
+
+{{#each badges}}[![{{alt}}][{{img}}]][{{link}}]
+{{/each}}
+<!-- Badge end -->
+
+{{pkg.description}}
+
+
+<!-- Banner start -->
+
+{{#each banners}}<a href="{{link}}"><img style="height:40px;" src="{{img}}" height="40"></a>&nbsp;
+{{/each}}
+<!-- Banner end -->
+
+Table of Contents
+-----
+{{#each sections}}- [{{{title}}}](#{{name}})
+{{/each}}
+
+
+{{#each sections}}
+<a name="{{name}}"></a>
+{{{content}}}
+{{/each}}
+
+
+<!-- Links start -->
+
+{{#each links}}[{{@key}}]: {{this}}
+{{/each}}
+<!-- Links end-->

@@ -1,0 +1,31 @@
+/**
+ * Seed file for readme.
+ */
+
+"use strict";
+
+var path = require('path'),
+    fs = require('fs');
+
+module.exports = {
+    mode: '444',
+    force: true,
+    data: {
+        pkg: require('../../package'),
+        badges: require('./.badges'),
+        banners: require('./.banners'),
+        links: require('./.links'),
+        get sections() {
+            var dirname = path.resolve(__dirname, 'sections');
+            return fs.readdirSync(dirname).map(function (filename) {
+                return {
+                    name: path.basename(filename, path.extname(filename)),
+                    content: fs.readFileSync(path.resolve(dirname, filename)).toString(),
+                    get title() {
+                        return this.content.split('\n').shift().trim();
+                    }
+                }
+            });
+        }
+    }
+};
