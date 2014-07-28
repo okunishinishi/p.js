@@ -8,9 +8,15 @@
 
     var u = pr.utilities;
 
-    pr.start = function (elm) {
-        elm = u.ensureElement(elm);
-        console.log(this, elm);
+
+    /**
+     * @lends start
+     * @param {HTMLElement|string} root - Root element.
+     * @param {object} options - Parari options.
+     */
+    pr.start = function (root, options) {
+        root = pr.root(root);
+        console.log(root);
     };
 
 })(window.parari = window.parari || {}, document);

@@ -92,6 +92,31 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {}, document);
     
     /**
+	 * Utilitis for parari.
+	 * @function parari.root
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities;
+	
+	    function root(root) {
+	        var src = u.ensureElement(root);
+	        if (!src) {
+	            throw new Error('Root not found: "' + root + '"');
+	        }
+	        src.classList.add('pr-src');
+	        src.findPrObjects = function () {
+	            return u.toArray(src.querySelectorAll('[data-pr-object]'));
+	        };
+	        return src;
+	    }
+	
+	    pr.root = root;
+	
+	})(window.parari = window.parari || {}, document);
+    
+    /**
 	 * Start para.
 	 * @function start
 	 */
@@ -101,9 +126,15 @@ window.parari = (function (parari) {
 	
 	    var u = pr.utilities;
 	
-	    pr.start = function (elm) {
-	        elm = u.ensureElement(elm);
-	        console.log(this, elm);
+	
+	    /**
+	     * @lends start
+	     * @param {HTMLElement|string} root - Root element.
+	     * @param {object} options - Parari options.
+	     */
+	    pr.start = function (root, options) {
+	        root = pr.root(root);
+	        console.log(root);
 	    };
 	
 	})(window.parari = window.parari || {}, document);
