@@ -22,14 +22,35 @@ module.exports = {
     mode: '444',
     get data() {
         var variation = 'light';
-        var hueCount = 9,
+        var hueCount = 14,
             scheme = new ColorScheme;
 
 
         var themeName = 'rainbow';
+
+        function themeSelector(selector) {
+            return [
+                ['.pr-theme', themeName].join('-'),
+                selector
+            ].join(' ');
+        }
+
+
         return {
             themeName: themeName,
-            pageStyles: hues(80, hueCount).map(function (hue, i, hues) {
+            componentStyles: [
+                {
+                    selector: themeSelector('img'),
+                    get values() {
+                        return {
+                            opacity: 0.9,
+                            'box-shadow': ['0px 0px 40px', 'rgba(255, 255, 255, 0.3)'].join(' '),
+                            'background-color': 'rgba(255, 255, 255, 0.1)',
+                        }
+                    }
+                }
+            ],
+            pageStyles: hues(38, hueCount).map(function (hue, i, hues) {
                 var colors = scheme.from_hue(hue)
                     .scheme('contrast')
                     .variation(variation)
@@ -38,13 +59,12 @@ module.exports = {
                         return '#' + hex;
                     });
 
-                var selector = [
-                    ['.pr-theme', themeName].join('-'),
+                var selector = themeSelector(
                     ['.pr-page', util.format('nth-child(%dn+%d)', hueCount, i)].join(':')
-                ].join(' ');
+                );
                 var white = '#FFF';
 
-                var headTextColor = 'rgba(255,255,255,0.5)',
+                var headTextColor = 'rgba(255,255,255,0.33)',
                     textColor = white,
                     backgroundColor = colors[1];
 

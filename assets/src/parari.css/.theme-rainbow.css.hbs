@@ -1,3 +1,9 @@
+{{#each componentStyles}}
+{{selector}}{
+    {{#each values}}{{@key}}: {{this}};
+    {{/each}}
+}
+{{/each}}
 
 {{#each pageStyles}}{{#each this}}
 {{selector}}{
