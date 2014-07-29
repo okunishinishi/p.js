@@ -8,15 +8,19 @@
 
 html {
     background-color: #333;
+    height: 100%;
 }
 
 body {
+    height: 100%;
     max-width: 960px;
+    padding: 0;
     margin: 0 auto;
     font-size: 2.2em;
     color: #555;
     font-family: sans-serif;
     font-weight: 100 !important;
+    position: relative;
 }
 
 a {
@@ -45,6 +49,32 @@ li {
     text-align: left;
     min-width: 120px;
 }
+
+
+
+
+
+.pr-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    box-sizing: border-box;
+
+    opacity: .5; //FIXME
+}
+
+.pr-object {
+    font-size: 16px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 
 .pr-page {
     padding: 40px;

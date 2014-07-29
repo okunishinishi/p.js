@@ -65,6 +65,9 @@
             image.onload = function () {
                 callback(image);
             };
+            image.onerror = function(){
+                conosle.log('oneerror', arguments)
+            };
             image.src = src;
         },
         /**

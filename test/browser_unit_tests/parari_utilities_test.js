@@ -1,5 +1,5 @@
 /**
- * @file Test for para util.
+ * @file Test for parari utility.
  * Runs with kara.
  */
 
@@ -7,32 +7,34 @@
 
 
 describe('pr.utilities', function () {
-    var util = pr.utilities;
-    it('Create a new canvas', function () {
-        var canvas = util.newCanvas('foo', 200, 300);
-        expect(canvas).toBeDefined();
-        expect(canvas.width).toEqual(200);
-        expect(canvas.height).toEqual(300);
-        expect(canvas.id).toEqual('foo');
-    });
+
+    var pr = window.parari,
+        u = pr.utilities;
 
     it('Optimize canvas ratio', function () {
-        var canvas = util.newCanvas('foo', 200, 300),
+        var canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
-        util.optimizeCanvasRatio(canvas, ctx);
+        u.optimizeCanvasRatio(canvas, ctx);
     });
 
     it('Get URL.', function () {
-        expect(util.URL).toBeDefined();
+        expect(u.URL).toBeDefined();
     });
 
     it('Ensure element.', function () {
-        expect(util.ensureElement('__id_not_exists'));
+        expect(u.ensureElement('__id_not_exists'));
+    });
+
+    it('Copy object.', function () {
+        var from = {foo: 'bar'},
+            to = {baz: 'quz'};
+        u.copy(from, to);
+        expect(to.foo).toEqual('bar');
     });
 
     it('Convert to array', function () {
         (function () {
-            var args = util.toArray(arguments);
+            var args = u.toArray(arguments);
             expect(Array.isArray(args)).toBe(true);
         })('foo', 'bar');
     });

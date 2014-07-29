@@ -9,7 +9,7 @@ var slide = require('./../../lib/commands/slide.js'),
     h = require('../_helper');
 
 exports.setUp = function (done) {
-    h.injector.inject(console, 'log', h.doNothing);
+//    h.injector.inject(console, 'log', h.doNothing);
     h.injector.inject(console, 'error', h.doNothing);
     done();
 };
@@ -17,6 +17,14 @@ exports.setUp = function (done) {
 exports.tearDown = function (done) {
     h.injector.restoreAllInjected();
     done();
+};
+
+exports['Is header.'] = function (test) {
+    test.ok(slide._html._isHeader({name: 'h1'}));
+    test.ok(slide._html._isHeader({name: 'h2'}));
+    test.ok(slide._html._isHeader({name: 'h3'}));
+    test.ok(!slide._html._isHeader({name: 'span'}));
+    test.done();
 };
 
 exports['Default dest.'] = function (test) {
@@ -31,8 +39,8 @@ exports['Default fils.'] = function (test) {
     test.done();
 };
 
-exports['Sectionize html.'] = function (test) {
-    var sectionized = slide._sectionaize('<h1>foo</h1><p>bar</p><h2>baz</h2><ul><li>123</li></ul>')
+exports['Format html.'] = function (test) {
+    var sectionized = slide._html('<h1>foo</h1><p>bar</p><h2>baz</h2><ul><li>123</li></ul>')
     test.ok(sectionized);
     test.done();
 };
