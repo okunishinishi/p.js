@@ -48,4 +48,8 @@ describe('pr.utilities', function () {
         expect(u.min(100, 10, 3, 500)).toEqual(3);
 
     });
+
+    it('Rate.', function () {
+        expect(u.rate(10, 40, 25)).toEqual(0.5);
+    });
 });

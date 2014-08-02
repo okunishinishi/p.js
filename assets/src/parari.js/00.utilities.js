@@ -24,7 +24,7 @@
         /**
          * Device pixel ratio.
          */
-        devicePixelRatio: window.devicePixelRatio,
+        devicePixelRatio: window.devicePixelRatio || 1,
         /**
          * Insert element
          * @param {HTMLElement} newElement
@@ -109,17 +109,36 @@
             }
             return result;
         },
-        getStyleString: function (elm) {
+        /**
+         * Get style object.
+         * @param {HTMLElement} elm - The element.
+         * @returns {object} - Element styles.
+         */
+        getStyles: function (elm) {
             var style = window.getComputedStyle(elm, ''),
-                result = '';
+                result = {};
             for (var i = 0, len = style.length; i < len; i++) {
                 var key = style[i],
                     val = style.getPropertyValue(key);
                 if (val) {
-                    result += [key, val].join(':') + ';';
+                    result[key] = val;
                 }
             }
             return result;
+        },
+        /**
+         * Get style string for a element.
+         * @param {HTMLElement} elm - The element.
+         * @returns {string} - Element style string.
+         */
+        getStyleString: function (elm) {
+            var styles = u.getStyles(elm);
+            return Object.keys(styles)
+                .map(function (key) {
+                    var val = styles[key];
+                    return [key, val].join(':');
+                })
+                .join(';');
         },
         /**
          * Get offset from window.
@@ -134,6 +153,17 @@
                 elm = elm.offsetParent;
             }
             return {top: top, left: left};
+        },
+        /**
+         * Get rating value.
+         * @param {number} min - Minimum value.
+         * @param {number} max - Maxmium value.
+         * @param {number} value - Value to rate.
+         * @returns {number} - Rate value (betewee 0 and 1).
+         */
+        rate: function (min, max, value) {
+            var range = max - min;
+            return (value - min ) / range;
         },
         /**
          * Visible elm in window.
@@ -215,6 +245,7 @@
             };
             image.onerror = function (err) {
                 console.error(err.stack || err);
+                console.log('Failed to create image from html:', html);
                 callback(null);
             };
             image.src = src;

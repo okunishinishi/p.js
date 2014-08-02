@@ -116,7 +116,6 @@
                 s.objects[i].draw(ctx, scrollX, scrollY);
             }
         },
-
         /**
          * Set screen size.
          * @param {number} w - Screen width.
@@ -127,6 +126,9 @@
             s.canvas.width = w;
             s.canvas.height = h;
             u.optimizeCanvasRatio(s.canvas, s.getContext());
+            for (var i = 0; i < s.objects.length; i++) {
+                s.objects[i].setBounds(0, 0, w, h);
+            }
             s.redraw();
         },
         /**

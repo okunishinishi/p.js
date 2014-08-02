@@ -34,7 +34,7 @@ window.parari = (function (parari) {
 	        /**
 	         * Device pixel ratio.
 	         */
-	        devicePixelRatio: window.devicePixelRatio,
+	        devicePixelRatio: window.devicePixelRatio || 1,
 	        /**
 	         * Insert element
 	         * @param {HTMLElement} newElement
@@ -119,17 +119,36 @@ window.parari = (function (parari) {
 	            }
 	            return result;
 	        },
-	        getStyleString: function (elm) {
+	        /**
+	         * Get style object.
+	         * @param {HTMLElement} elm - The element.
+	         * @returns {object} - Element styles.
+	         */
+	        getStyles: function (elm) {
 	            var style = window.getComputedStyle(elm, ''),
-	                result = '';
+	                result = {};
 	            for (var i = 0, len = style.length; i < len; i++) {
 	                var key = style[i],
 	                    val = style.getPropertyValue(key);
 	                if (val) {
-	                    result += [key, val].join(':') + ';';
+	                    result[key] = val;
 	                }
 	            }
 	            return result;
+	        },
+	        /**
+	         * Get style string for a element.
+	         * @param {HTMLElement} elm - The element.
+	         * @returns {string} - Element style string.
+	         */
+	        getStyleString: function (elm) {
+	            var styles = u.getStyles(elm);
+	            return Object.keys(styles)
+	                .map(function (key) {
+	                    var val = styles[key];
+	                    return [key, val].join(':');
+	                })
+	                .join(';');
 	        },
 	        /**
 	         * Get offset from window.
@@ -144,6 +163,17 @@ window.parari = (function (parari) {
 	                elm = elm.offsetParent;
 	            }
 	            return {top: top, left: left};
+	        },
+	        /**
+	         * Get rating value.
+	         * @param {number} min - Minimum value.
+	         * @param {number} max - Maxmium value.
+	         * @param {number} value - Value to rate.
+	         * @returns {number} - Rate value (betewee 0 and 1).
+	         */
+	        rate: function (min, max, value) {
+	            var range = max - min;
+	            return (value - min ) / range;
 	        },
 	        /**
 	         * Visible elm in window.
@@ -225,6 +255,7 @@ window.parari = (function (parari) {
 	            };
 	            image.onerror = function (err) {
 	                console.error(err.stack || err);
+	                console.log('Failed to create image from html:', html);
 	                callback(null);
 	            };
 	            image.src = src;
@@ -355,10 +386,10 @@ window.parari = (function (parari) {
 	        /**
 	         * Draw object.
 	         * @param {CanvasRenderingContext2D} ctx
-	         * @param {number} x
-	         * @param {number} y
+	         * @param {number} scrollX
+	         * @param {number} scrollY
 	         */
-	        draw: function (ctx, x, y) {
+	        draw: function (ctx, scrollX, scrollY) {
 	            var s = this;
 	            if (!s.image) {
 	                return;
@@ -366,11 +397,56 @@ window.parari = (function (parari) {
 	            var left = s.getLeft(),
 	                top = s.getTop(),
 	                speed = s.speed;
+	
 	            var dx = s.hLock ? 0 : s.dx * (1 - speed),
 	                dy = s.vLock ? 0 : s.dy * (1 - speed);
-	            ctx.drawImage(s.image,
-	                    left - x * speed - dx,
-	                    top - y * speed - dy);
+	
+	            var x = left - scrollX * speed - dx,
+	                y = top - scrollY * speed - dy,
+	                w = s.width,
+	                h = s.height;
+	
+	            var valid = w > 0 && h > 0;
+	            if (!valid) {
+	                return;
+	            }
+	            var factor = s.factor(x, y);
+	
+	            if (isNaN(factor)) {
+	                factor = 0;
+	            }
+	
+	            ctx.drawImage(s.image, x, y, w, h);
+	        },
+	        /**
+	         * Transform factor value.
+	         * @param {number} x - X position.
+	         * @param {number} y - Y position.
+	         * @returns {number} - Factor value. -1 ~ +1.
+	         */
+	        factor: function (x, y) {
+	            var s = this;
+	            if (s.hLock) {
+	                return u.rate(s.minX, s.maxX, x) * 2 - 1;
+	            }
+	            if (s.vLock) {
+	                return u.rate(s.minY, s.maxY, y) * 2 - 1;
+	            }
+	            return 0;
+	        },
+	        /**
+	         * Set object bounds.
+	         * @param {number} minX - Minimum x vlaue.
+	         * @param {number} minY - Minimum y value.
+	         * @param {number} maxX - Maximum x value.
+	         * @param {number} maxY - Maximum y value.
+	         */
+	        setBounds: function (minX, minY, maxX, maxY) {
+	            var s = this;
+	            s.minX = minX;
+	            s.minY = minY;
+	            s.maxX = maxX;
+	            s.maxY = maxY;
 	        },
 	        /**
 	         * Invalidate object rendering.
@@ -402,6 +478,42 @@ window.parari = (function (parari) {
 	        }
 	    };
 	
+	    PrObject.elmStyleString = function (elm) {
+	        var styles = u.getStyles(elm);
+	        return Object.keys(styles)
+	            .filter(PrObject.elmStyleString._keyFilter)
+	            .map(function (key) {
+	                var val = styles[key];
+	                return [key, val].join(':');
+	            })
+	            .join(';');
+	    };
+	
+	    PrObject.elmStyleString._keyFilter = function (key) {
+	        var _keys = PrObject.elmStyleString._keys;
+	        for (var i = 0; i < _keys.length; i++) {
+	            var valid = key.match(_keys[i]);
+	            if (valid) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
+	
+	    PrObject.elmStyleString._keys = [
+	        'height',
+	        'width',
+	        'left',
+	        'top',
+	        'color',
+	        /^padding\-/,
+	        /^margin\-/,
+	        /^background\-/,
+	        /^font\-/,
+	        /^text\-/,
+	    ];
+	
+	
 	    /**
 	     * Create html from elm.
 	     * @param {HTMLElement} elm - Element to create form.
@@ -409,7 +521,7 @@ window.parari = (function (parari) {
 	     * @returns {string}
 	     */
 	    PrObject.elmToHtml = function (elm, style) {
-	        var elmStyle = u.getStyleString(elm) || '';
+	        var elmStyle = PrObject.elmStyleString(elm) || '';
 	        style = style || '';
 	        return  [
 	                '<div class="pr-object" style="' + elmStyle + '">',
@@ -444,7 +556,6 @@ window.parari = (function (parari) {
 	
 	        u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
 	            img.onload = function () {
-	                console.log('loaded', arguments);
 	                imgLoad(img);
 	            }
 	        });
@@ -454,7 +565,8 @@ window.parari = (function (parari) {
 	
 	    pr.Object = PrObject;
 	
-	})(window.parari = window.parari || {}, document);
+	})
+	(window.parari = window.parari || {}, document);
     
     /**
 	 * Create src element, which holds src markuped elements.
@@ -626,7 +738,6 @@ window.parari = (function (parari) {
 	                s.objects[i].draw(ctx, scrollX, scrollY);
 	            }
 	        },
-	
 	        /**
 	         * Set screen size.
 	         * @param {number} w - Screen width.
@@ -637,6 +748,9 @@ window.parari = (function (parari) {
 	            s.canvas.width = w;
 	            s.canvas.height = h;
 	            u.optimizeCanvasRatio(s.canvas, s.getContext());
+	            for (var i = 0; i < s.objects.length; i++) {
+	                s.objects[i].setBounds(0, 0, w, h);
+	            }
 	            s.redraw();
 	        },
 	        /**

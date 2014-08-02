@@ -29,4 +29,10 @@ describe('pr.object', function () {
         expect(object.getBottom()).toEqual(300);
     });
 
+    it('_keyFilter', function () {
+        var keyFilter = pr.Object.elmStyleString._keyFilter;
+        expect(keyFilter('background-image')).toBe(true);
+        expect(keyFilter('vector-effect')).toBe(false);
+    });
+
 });

@@ -65,10 +65,10 @@
         /**
          * Draw object.
          * @param {CanvasRenderingContext2D} ctx
-         * @param {number} x
-         * @param {number} y
+         * @param {number} scrollX
+         * @param {number} scrollY
          */
-        draw: function (ctx, x, y) {
+        draw: function (ctx, scrollX, scrollY) {
             var s = this;
             if (!s.image) {
                 return;
@@ -76,11 +76,56 @@
             var left = s.getLeft(),
                 top = s.getTop(),
                 speed = s.speed;
+
             var dx = s.hLock ? 0 : s.dx * (1 - speed),
                 dy = s.vLock ? 0 : s.dy * (1 - speed);
-            ctx.drawImage(s.image,
-                    left - x * speed - dx,
-                    top - y * speed - dy);
+
+            var x = left - scrollX * speed - dx,
+                y = top - scrollY * speed - dy,
+                w = s.width,
+                h = s.height;
+
+            var valid = w > 0 && h > 0;
+            if (!valid) {
+                return;
+            }
+            var factor = s.factor(x, y);
+
+            if (isNaN(factor)) {
+                factor = 0;
+            }
+
+            ctx.drawImage(s.image, x, y, w, h);
+        },
+        /**
+         * Transform factor value.
+         * @param {number} x - X position.
+         * @param {number} y - Y position.
+         * @returns {number} - Factor value. -1 ~ +1.
+         */
+        factor: function (x, y) {
+            var s = this;
+            if (s.hLock) {
+                return u.rate(s.minX, s.maxX, x) * 2 - 1;
+            }
+            if (s.vLock) {
+                return u.rate(s.minY, s.maxY, y) * 2 - 1;
+            }
+            return 0;
+        },
+        /**
+         * Set object bounds.
+         * @param {number} minX - Minimum x vlaue.
+         * @param {number} minY - Minimum y value.
+         * @param {number} maxX - Maximum x value.
+         * @param {number} maxY - Maximum y value.
+         */
+        setBounds: function (minX, minY, maxX, maxY) {
+            var s = this;
+            s.minX = minX;
+            s.minY = minY;
+            s.maxX = maxX;
+            s.maxY = maxY;
         },
         /**
          * Invalidate object rendering.
@@ -112,6 +157,42 @@
         }
     };
 
+    PrObject.elmStyleString = function (elm) {
+        var styles = u.getStyles(elm);
+        return Object.keys(styles)
+            .filter(PrObject.elmStyleString._keyFilter)
+            .map(function (key) {
+                var val = styles[key];
+                return [key, val].join(':');
+            })
+            .join(';');
+    };
+
+    PrObject.elmStyleString._keyFilter = function (key) {
+        var _keys = PrObject.elmStyleString._keys;
+        for (var i = 0; i < _keys.length; i++) {
+            var valid = key.match(_keys[i]);
+            if (valid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    PrObject.elmStyleString._keys = [
+        'height',
+        'width',
+        'left',
+        'top',
+        'color',
+        /^padding\-/,
+        /^margin\-/,
+        /^background\-/,
+        /^font\-/,
+        /^text\-/,
+    ];
+
+
     /**
      * Create html from elm.
      * @param {HTMLElement} elm - Element to create form.
@@ -119,7 +200,7 @@
      * @returns {string}
      */
     PrObject.elmToHtml = function (elm, style) {
-        var elmStyle = u.getStyleString(elm) || '';
+        var elmStyle = PrObject.elmStyleString(elm) || '';
         style = style || '';
         return  [
                 '<div class="pr-object" style="' + elmStyle + '">',
@@ -163,4 +244,5 @@
 
     pr.Object = PrObject;
 
-})(window.parari = window.parari || {}, document);
+})
+(window.parari = window.parari || {}, document);
