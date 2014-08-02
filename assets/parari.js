@@ -65,11 +65,11 @@ window.parari = (function (parari) {
 	            }
 	            var w = canvas.width,
 	                h = canvas.height;
-	            canvas.style.width = w + 'px';
-	            canvas.style.height = h + 'px';
 	            canvas.width = w * ratio;
 	            canvas.height = h * ratio;
 	            ctx.scale(ratio, ratio);
+	            canvas.style.width = w + 'px';
+	            canvas.style.height = h + 'px';
 	        },
 	        /**
 	         * Make sure that element is a HTML element.
@@ -132,6 +132,45 @@ window.parari = (function (parari) {
 	            return result;
 	        },
 	        /**
+	         * Get offset from window.
+	         * @param {HTMLElement} elm
+	         * @returns {{top: number, left: number}}
+	         */
+	        offsetSum: function (elm) {
+	            var top = 0, left = 0;
+	            while (elm) {
+	                top = top + parseInt(elm.offsetTop);
+	                left = left + parseInt(elm.offsetLeft);
+	                elm = elm.offsetParent;
+	            }
+	            return {top: top, left: left};
+	        },
+	        /**
+	         * Visible elm in window.
+	         * @param {HTMLElement} elm
+	         */
+	        visibleRect: function (elm) {
+	            var offset = u.offsetSum(elm),
+	                w = elm.offsetWidth,
+	                h = elm.offsetHeight;
+	            var left = offset.left,
+	                right = left + w,
+	                top = offset.top,
+	                bottom = top + h;
+	            if (window.innerWidth < right) {
+	                w = window.innerWidth - left;
+	            }
+	            if (window.innerHeight < bottom) {
+	                h = window.innerHeight - top;
+	            }
+	            return {
+	                left: left,
+	                top: top,
+	                width: w,
+	                height: h
+	            }
+	        },
+	        /**
 	         * Center point for a element.
 	         * @param {HTMLElement} elm
 	         * @returns {{x: *, y: *}}
@@ -139,9 +178,10 @@ window.parari = (function (parari) {
 	        centerPoint: function (elm) {
 	            var w = elm.offsetWidth,
 	                h = elm.offsetHeight;
+	            var offset = u.offsetSum(elm);
 	            return {
-	                x: elm.offsetLeft + (w / 2),
-	                y: elm.offsetTop + (h / 2)
+	                x: offset.left + (w / 2),
+	                y: offset.top + (h / 2)
 	            };
 	        },
 	        /**
@@ -184,11 +224,20 @@ window.parari = (function (parari) {
 	                callback(image);
 	            };
 	            image.onerror = function (err) {
-	                console.log(html);
 	                console.error(err.stack || err);
 	                callback(null);
 	            };
 	            image.src = src;
+	        },
+	        /**
+	         * Get min value.
+	         * @param {number...} values - Values to compare.
+	         */
+	        min: function () {
+	            return u.toArray(arguments)
+	                .sort(function (a, b) {
+	                    return a - b;
+	                })[0];
 	        }
 	    };
 	
@@ -254,6 +303,7 @@ window.parari = (function (parari) {
 	    function PrObject(data) {
 	        var s = this;
 	        u.copy(data || {}, s);
+	        s.invalidate();
 	
 	    };
 	
@@ -266,7 +316,8 @@ window.parari = (function (parari) {
 	            var s = this;
 	            u.htmlToImage(s.html, s.width, s.height, function (image) {
 	                s.image = image;
-	                callback(s);
+	                s.invalidate();
+	                callback && callback(s);
 	            });
 	        },
 	        /**
@@ -320,6 +371,34 @@ window.parari = (function (parari) {
 	            ctx.drawImage(s.image,
 	                    left - x * speed - dx,
 	                    top - y * speed - dy);
+	        },
+	        /**
+	         * Invalidate object rendering.
+	         */
+	        invalidate: function () {
+	            var s = this,
+	                elm = s.elm;
+	            if (!elm) {
+	                return;
+	            }
+	            var data = elm.dataset,
+	                point = u.centerPoint(elm),
+	                w = elm.offsetWidth,
+	                h = elm.offsetHeight;
+	            s.x = point.x;
+	            s.y = point.y;
+	            s.z = Number(data.prZ || 1);
+	            s.speed = Number(data.prSpeed || 1);
+	            s.width = w;
+	            s.height = h;
+	        },
+	        /**
+	         * Reload element.
+	         */
+	        reload: function (callback) {
+	            var s = this;
+	            s.html = PrObject.elmToHtml(s.elm, s.style);
+	            s.load(callback);
 	        }
 	    };
 	
@@ -347,39 +426,27 @@ window.parari = (function (parari) {
 	     * @returns {PrObject}
 	     */
 	    PrObject.fromElement = function (elm, style) {
-	        var w = elm.offsetWidth,
-	            h = elm.offsetHeight,
-	            point = u.centerPoint(elm);
-	        var data = elm.dataset,
-	            elmStyle = u.getStyleString(elm);
-	        return new PrObject({
-	            width: w,
-	            height: h,
-	            x: point.x,
-	            y: point.y,
-	            z: Number(data.prZ || 1),
-	            speed: Number(data.prSpeed || 1),
-	            html: [
-	                    '<div class="pr-object" style="' + elmStyle + '">',
-	                    '<style type="text/css">' + style + '</style>',
-	                elm.innerHTML,
-	                '</div>'
-	            ].join('')
+	
+	        var elmStyle = u.getStyleString(elm);
+	        var obj = new PrObject({
+	            elm: elm,
+	            style: style,
+	            html: PrObject.elmToHtml(elm, style)
 	        });
 	
-	        function reload() {
-	
-	        }
+	        var reload = function () {
+	            clearTimeout(reload._timer);
+	            reload._timer = setTimeout(function () {
+	                obj.reload(function () {
+	                    obj.invalidate();
+	                    obj.onPrImageLoad && obj.onPrImageLoad();
+	                });
+	            }, 50);
+	        };
+	        reload._timer = null;
 	
 	        u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
-	            img.onload = function () {
-	                //TODO replace image html.
-	                setTimeout(function () {
-	                    obj.html = PrObject.elmToHtml(elm, style);
-	                    obj.load();
-	                }, 5);
-	
-	            };
+	            img.onload = reload
 	        });
 	
 	        return  obj;
@@ -482,7 +549,6 @@ window.parari = (function (parari) {
 	                ctx = s._ctx;
 	            if (!ctx) {
 	                ctx = s._ctx = s.canvas.getContext('2d');
-	                u.optimizeCanvasRatio(s.canvas, ctx);
 	            }
 	            return ctx;
 	        },
@@ -507,6 +573,7 @@ window.parari = (function (parari) {
 	                s.objects.push(object);
 	                s.loadObjects(queue, callback);
 	            });
+	            object.onPrImageLoad = s.redraw.bind(s);
 	        },
 	
 	        /**
@@ -532,6 +599,7 @@ window.parari = (function (parari) {
 	            s.canvas.width = w;
 	            s.canvas.height = h;
 	            u.optimizeCanvasRatio(s.canvas, s.getContext());
+	            s.redraw();
 	        },
 	        /**
 	         * Element to tell the scroll position.
@@ -550,14 +618,24 @@ window.parari = (function (parari) {
 	                y = s.scroller.scrollTop;
 	            s.draw(x, y);
 	        },
+	        invalidate: function () {
+	            var s = this;
+	            for (var i = 0; i < s.objects.length; i++) {
+	                var object = s.objects[i];
+	                object && object.invalidate();
+	            }
+	        },
 	        /**
 	         * Resize screen with sizer size.
 	         */
 	        resize: function () {
 	            var s = this,
-	                w = s.sizer.innerWidth,
-	                h = s.sizer.innerHeight;
+	                rect = u.visibleRect(s.sizer),
+	                w = rect.width,
+	                h = rect.height;
 	            s.size(w, h);
+	            s.invalidate();
+	            s.redraw();
 	        }
 	    };
 	
@@ -594,16 +672,19 @@ window.parari = (function (parari) {
 	        var canvas = document.createElement('canvas');
 	        u.insertAfter(canvas, root);
 	
+	        var vLock = options.vLock,
+	            hLock = options.hLock;
+	
 	        var style = u.getDocumentStyleString(),
 	            src = new pr.Src(root, style),
 	            objects = src.getObjects({
-	                vLock: !!options.vLock,
-	                hLock: !!options.hLock
+	                vLock: !!vLock,
+	                hLock: !!hLock
 	            }),
 	            screen = new pr.Screen(canvas);
 	
 	        screen.scroller = options.scroller || document.body;
-	        screen.sizer = options.sizer || window;
+	        screen.sizer = src.elm;
 	
 	
 	        var redraw = screen.redraw.bind(screen),
@@ -616,7 +697,17 @@ window.parari = (function (parari) {
 	        screen.loadObjects(objects, function () {
 	            resize();
 	            redraw();
+	            canvas.classList.add(pr.prefixed('canvas-ready'))
 	        });
+	
+	
+	        var onload = window.onload && window.onload.bind(window);
+	        window.onload = function () {
+	            resize();
+	            screen.invalidate();
+	            screen.redraw();
+	            onload && onload();
+	        }
 	
 	
 	        resize();
@@ -629,6 +720,13 @@ window.parari = (function (parari) {
     return parari;
 })(window.parari = window.parari || {});
 
+
+
+//=========================================
+// Borrows console.image.min.js
+//=========================================
+
+!function(i){"use strict";function o(i,o){return{string:"+",style:"font-size: 1px; padding: "+Math.floor(o/2)+"px "+Math.floor(i/2)+"px; line-height: "+o+"px;"}}function r(i,o,r,m,u){if(r=r.toUpperCase(),r.length<24){var c=Math.max(0,r.length-12),t=70+-3*c;g(i,t,r,m/2,u)}else if(r.length<29)g(i,40,r,m/2,u);else{var n=e(r,27);n.forEach(function(r,e){g(i,40,r,m/2,"lower"==o?u-40*(n.length-1)+40*e:u+40*e)})}}function g(i,o,r,g,e){i.font="bold "+o+"px Impact",i.fillStyle="#fff",i.textAlign="center",i.textBaseline="middle",i.lineWidth=7,i.strokeStyle="#000",i.strokeText(r,g,e),i.fillText(r,g,e)}function e(i,o){for(var r=[],g=i.split(" "),e=[],m=0,u=g.length;u>m;m++)(e+g[m]).length<o?e.push(g[m]):(r.push(e.join(" ")),e.length=0,e.push(g[m]));return r.push(e.join(" ")),r}var m={"10 Guy":"//i.imgur.com/LaENqOV.jpg","3rd World Success Kid":"//i.imgur.com/WA5duA1.jpg","90's Problems":"//i.imgur.com/tL47qtp.jpg","Aaand It's Gone":"//i.imgur.com/yf12saq.jpg","Actual Advice Mallard":"//i.imgur.com/WymFmVy.jpg","Advice Dog":"//i.imgur.com/Qk0VO6D.jpg","Advice God":"//i.imgur.com/xH2fSFg.jpg","Almost Politically Correct Redneck":"//i.imgur.com/YqLgINf.jpg","Am I The Only One":"//i.imgur.com/gS9YL5U.jpg","Ancient Aliens":"//i.imgur.com/NfCknz0.jpg","Annoyed Picard":"//i.imgur.com/s9GmfSS.jpg","Annoying Childhood Friend":"//i.imgur.com/27VCyQw.jpg","Annoying Facebook Girl":"//i.imgur.com/ccczyGt.jpg","Anti-Joke Chicken (Rooster)":"//i.imgur.com/KOsW0jh.jpg","Awkward Penguin":"//i.imgur.com/ez1tQrq.jpg","Back In My Day Grandpa":"//i.imgur.com/zuJSZp8.jpg","Bad Advice Mallard":"//i.imgur.com/QEPvL2B.jpg","Bad Luck Brian":"//i.imgur.com/sRW8BiO.jpg","Bear Grylls":"//i.imgur.com/6Spqy1D.jpg","Brace Yourself":"//i.imgur.com/NhIq0LY.jpg","Captain Obvious":"//i.imgur.com/DmUcxBu.jpg","Chemistry Cat":"//i.imgur.com/8agP4Xe.jpg","College Freshman":"//i.imgur.com/2Ynyv9t.jpg","College Liberal":"//i.imgur.com/OWfvSFE.jpg","Condescending Wonka":"//i.imgur.com/D0e5fgL.jpg","Confession Bear":"//i.imgur.com/kH1SKhp.jpg","Confession Kid":"//i.imgur.com/jhOxR12.jpg","Confused Gandalf":"//i.imgur.com/iIb5SEo.jpg","Conspiracy Keanu":"//i.imgur.com/pFyk3J7.jpg","Courage Wolf":"//i.imgur.com/H5qoXFb.jpg","Dating Site Murderer":"//i.imgur.com/jffNNql.jpg","Depression Dog":"//i.imgur.com/wgad6P8.jpg","Drunk Baby":"//i.imgur.com/QvZdbRE.jpg","English Motherfucker":"//i.imgur.com/sJThEC0.jpg","Evil Plotting Raccoon":"//i.imgur.com/xMslWFf.jpg","First Day On The Internet Kid":"//i.imgur.com/TWfdmVu.jpg","First World Cat Problems":"//i.imgur.com/0vR5Slq.jpg","First World Problem":"//i.imgur.com/ATcIl08.jpg","Forever Alone":"//i.imgur.com/pcfXSUU.jpg","Forever Resentful Mother":"//i.imgur.com/pIrdwo2.jpg","Foul Bachelor Frog":"//i.imgur.com/JUFmusm.jpg","Foul Bachelorette Frog":"//i.imgur.com/dYf971U.jpg","Friendzone Fiona":"//i.imgur.com/Qu1eedL.jpg","Frustrated Farnsworth":"//i.imgur.com/U3SElKP.jpg","Fuck Me, Right?":"//i.imgur.com/J9gfxsx.jpg","Gangster Baby":"//i.imgur.com/C3XhI56.jpg","Good Girl Gina":"//i.imgur.com/qK6lYr2.jpg","Good Guy Greg":"//i.imgur.com/UXMPoKN.jpg","Grandma Finds The Internet":"//i.imgur.com/xPfGYqu.jpg","Grinds My Gears":"//i.imgur.com/t4JqU1j.jpg","Grumpy Cat (Tard)":"//i.imgur.com/dU5CDxN.jpg","High Expectations Asian Father":"//i.imgur.com/7QeB9LI.jpg","Hipster Barista":"//i.imgur.com/AbWxdy2.jpg","Horrifying House Guest":"//i.imgur.com/DxmoFp1.jpg","I Dare You Samuel Jackson":"//i.imgur.com/UQtpdqj.jpg","I Should Buy A Boat":"//i.imgur.com/XqlqPxn.jpg","I Too Like To Live Dangerously":"//i.imgur.com/qF70EL9.jpg","Idiot Nerd Girl":"//i.imgur.com/8hYPYwd.jpg","Insanity Wolf":"//i.imgur.com/GOOdg3k.jpg","Joker Mind Loss":"//i.imgur.com/qQIRaOD.jpg","Joseph Ducreux":"//i.imgur.com/QL7TyR9.jpg","Lame Joke Eel":"//i.imgur.com/oQXw3jF.jpg","Lame Pun Raccoon":"//i.imgur.com/nvALRK3.jpg","Lazy College Senior":"//i.imgur.com/PpkVfzz.jpg","Mad Karma":"//i.imgur.com/G0QMPum.jpg","Masturbating Spidey":"//i.imgur.com/dZ7AB4c.jpg","Matrix Morpheus":"//i.imgur.com/8Yrw6cZ.jpg","Mayonnaise Patrick":"//i.imgur.com/5jE0Y7f.jpg","Musically Oblivious 8th Grader":"//i.imgur.com/l5YHN5D.jpg","Not Sure Fry":"//i.imgur.com/7rFgBB1.jpg","Oblivious Suburban Mom":"//i.imgur.com/Y7o7UJs.jpg","One Does Not Simply":"//i.imgur.com/7LrwR1Y.jpg","Overly Attached Girlfriend":"//i.imgur.com/5blLJLR.jpg","Overly Manly Man":"//i.imgur.com/dOSn9Na.jpg","Paranoid Parrot":"//i.imgur.com/KooYHdg.jpg",Pedobear:"//i.imgur.com/c6JZKRW.jpg","Pepperidge Farm Remembers":"//i.imgur.com/uFde4v5.jpg",Philosoraptor:"//i.imgur.com/eERhI5h.jpg","Priority Peter":"//i.imgur.com/BBEFk0e.jpg","Rasta Science Teacher":"//i.imgur.com/Js6Ai5T.jpg","Redditor's Wife":"//i.imgur.com/d1XfJeD.jpg","Revenge Band Kid":"//i.imgur.com/dlvmaRI.jpg","Schrute Facts":"//i.imgur.com/UxcvPwT.jpg","Scumbag Brain":"//i.imgur.com/OZhhZdS.jpg","Scumbag Stacy":"//i.imgur.com/Qqz1axp.jpg","Scumbag Steve":"//i.imgur.com/Rfvoc0Y.jpg","Sexually Oblivious Rhino":"//i.imgur.com/RoaNuEC.jpg","Sheltering Suburban Mom":"//i.imgur.com/vMkSofv.jpg","Shut Up And Take My Money":"//i.imgur.com/uWe0rtQ.jpg","Skeptical Third World Kid":"//i.imgur.com/uwAusxV.jpg","Smug Spongebob":"//i.imgur.com/OTTRjrv.jpg","Socially Awesome Penguin":"//i.imgur.com/S6WgQW7.jpg","Success Kid":"//i.imgur.com/ZibijBz.jpg","Successful Black Man":"//i.imgur.com/ogIm0cy.jpg","Sudden Clarity Clarence":"//i.imgur.com/N3Xmfbe.jpg","Tech Impaired Duck":"//i.imgur.com/riz28ci.jpg","The Most Interesting Man In The World":"//i.imgur.com/MGv15MH.jpg","The Rent Is Too High":"//i.imgur.com/r5WLktQ.jpg","Tough Spongebob":"//i.imgur.com/2w0F1HX.jpg","Unhelpful Highschool Teacher":"//i.imgur.com/ohbGhuD.jpg","Vengeance Dad":"//i.imgur.com/0nUStsa.jpg","What Year Is It?":"//i.imgur.com/fj79hQS.jpg","X, X Everywhere":"//i.imgur.com/GGy94Gt.jpg","Yeah That'd Be Great":"//i.imgur.com/nz9M2pl.jpg","Yo Dawg Xzibit":"//i.imgur.com/XOyGqF2.jpg","You're Bad And You Should Feel Bad":"//i.imgur.com/YsabGnQ.jpg","You're Gonna Have A Bad Time":"//i.imgur.com/2tNR7P7.jpg"};i.meme=function(o,g,e,u,c){if(o||i.error("Yo, you forgot the text for the upper part of the meme. The bit at the top. Yeah, that bit."),g||i.error("You forgot the text for the bottom of the meme, stupid."),e||i.error("Dude, you forgot the meme type or url for the background image (CORS enabled, *hint* imgur *hint*). To see a list of supported memes, hit `console.meme()`"),!o&&!g&&!e)return i.log("> "+Object.keys(m).join("\n> "));var t=document.createElement("canvas"),n=t.getContext("2d"),u=u||500,c=u||500,a=500,p=500,l=new Image;if(l.setAttribute("crossOrigin","anonymous"),l.onload=function(){t.width=u,t.height=c;o.toUpperCase();n.scale(u/500,c/500),n.drawImage(this,0,0,a,p),r(n,"upper",o,a,50),r(n,"lower",g,a,p-50),i.image(t.toDataURL())},m[e])var s=m[e];else var s=e;l.src=s},i.image=function(r,g){g=g||1;var e=new Image;e.onload=function(){var e=o(this.width*g,this.height*g);i.log("%c"+e.string,e.style+"background: url("+r+"); background-size: "+this.width*g+"px "+this.height*g+"px; color: transparent;")},e.src=r}}(console);
 
 
 //=========================================

@@ -39,8 +39,13 @@ describe('pr.utilities', function () {
         })('foo', 'bar');
     });
 
-    it('Covert to svn embeddable html.', function(){
+    it('Covert to svn embeddable html.', function () {
         var html = u.toSVGEmbeddableHtml('<span><img src="foo"></span>');
         expect(html).toBeDefined();
+    });
+
+    it('Min.', function () {
+        expect(u.min(100, 10, 3, 500)).toEqual(3);
+
     });
 });

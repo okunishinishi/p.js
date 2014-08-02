@@ -55,11 +55,11 @@
             }
             var w = canvas.width,
                 h = canvas.height;
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
             canvas.width = w * ratio;
             canvas.height = h * ratio;
             ctx.scale(ratio, ratio);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
         },
         /**
          * Make sure that element is a HTML element.
@@ -122,6 +122,45 @@
             return result;
         },
         /**
+         * Get offset from window.
+         * @param {HTMLElement} elm
+         * @returns {{top: number, left: number}}
+         */
+        offsetSum: function (elm) {
+            var top = 0, left = 0;
+            while (elm) {
+                top = top + parseInt(elm.offsetTop);
+                left = left + parseInt(elm.offsetLeft);
+                elm = elm.offsetParent;
+            }
+            return {top: top, left: left};
+        },
+        /**
+         * Visible elm in window.
+         * @param {HTMLElement} elm
+         */
+        visibleRect: function (elm) {
+            var offset = u.offsetSum(elm),
+                w = elm.offsetWidth,
+                h = elm.offsetHeight;
+            var left = offset.left,
+                right = left + w,
+                top = offset.top,
+                bottom = top + h;
+            if (window.innerWidth < right) {
+                w = window.innerWidth - left;
+            }
+            if (window.innerHeight < bottom) {
+                h = window.innerHeight - top;
+            }
+            return {
+                left: left,
+                top: top,
+                width: w,
+                height: h
+            }
+        },
+        /**
          * Center point for a element.
          * @param {HTMLElement} elm
          * @returns {{x: *, y: *}}
@@ -129,9 +168,10 @@
         centerPoint: function (elm) {
             var w = elm.offsetWidth,
                 h = elm.offsetHeight;
+            var offset = u.offsetSum(elm);
             return {
-                x: elm.offsetLeft + (w / 2),
-                y: elm.offsetTop + (h / 2)
+                x: offset.left + (w / 2),
+                y: offset.top + (h / 2)
             };
         },
         /**
@@ -178,6 +218,16 @@
                 callback(null);
             };
             image.src = src;
+        },
+        /**
+         * Get min value.
+         * @param {number...} values - Values to compare.
+         */
+        min: function () {
+            return u.toArray(arguments)
+                .sort(function (a, b) {
+                    return a - b;
+                })[0];
         }
     };
 

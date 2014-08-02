@@ -13,6 +13,7 @@
     function PrObject(data) {
         var s = this;
         u.copy(data || {}, s);
+        s.invalidate();
 
     };
 
@@ -25,7 +26,8 @@
             var s = this;
             u.htmlToImage(s.html, s.width, s.height, function (image) {
                 s.image = image;
-                callback(s);
+                s.invalidate();
+                callback && callback(s);
             });
         },
         /**
@@ -79,6 +81,34 @@
             ctx.drawImage(s.image,
                     left - x * speed - dx,
                     top - y * speed - dy);
+        },
+        /**
+         * Invalidate object rendering.
+         */
+        invalidate: function () {
+            var s = this,
+                elm = s.elm;
+            if (!elm) {
+                return;
+            }
+            var data = elm.dataset,
+                point = u.centerPoint(elm),
+                w = elm.offsetWidth,
+                h = elm.offsetHeight;
+            s.x = point.x;
+            s.y = point.y;
+            s.z = Number(data.prZ || 1);
+            s.speed = Number(data.prSpeed || 1);
+            s.width = w;
+            s.height = h;
+        },
+        /**
+         * Reload element.
+         */
+        reload: function (callback) {
+            var s = this;
+            s.html = PrObject.elmToHtml(s.elm, s.style);
+            s.load(callback);
         }
     };
 
@@ -106,39 +136,27 @@
      * @returns {PrObject}
      */
     PrObject.fromElement = function (elm, style) {
-        var w = elm.offsetWidth,
-            h = elm.offsetHeight,
-            point = u.centerPoint(elm);
-        var data = elm.dataset,
-            elmStyle = u.getStyleString(elm);
-        return new PrObject({
-            width: w,
-            height: h,
-            x: point.x,
-            y: point.y,
-            z: Number(data.prZ || 1),
-            speed: Number(data.prSpeed || 1),
-            html: [
-                    '<div class="pr-object" style="' + elmStyle + '">',
-                    '<style type="text/css">' + style + '</style>',
-                elm.innerHTML,
-                '</div>'
-            ].join('')
+
+        var elmStyle = u.getStyleString(elm);
+        var obj = new PrObject({
+            elm: elm,
+            style: style,
+            html: PrObject.elmToHtml(elm, style)
         });
 
-        function reload() {
-
-        }
+        var reload = function () {
+            clearTimeout(reload._timer);
+            reload._timer = setTimeout(function () {
+                obj.reload(function () {
+                    obj.invalidate();
+                    obj.onPrImageLoad && obj.onPrImageLoad();
+                });
+            }, 50);
+        };
+        reload._timer = null;
 
         u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
-            img.onload = function () {
-                //TODO replace image html.
-                setTimeout(function () {
-                    obj.html = PrObject.elmToHtml(elm, style);
-                    obj.load();
-                }, 5);
-
-            };
+            img.onload = reload
         });
 
         return  obj;

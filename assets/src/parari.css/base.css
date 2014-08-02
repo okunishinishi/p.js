@@ -49,6 +49,19 @@ li {
     display: block;
 }
 
+.pr-screen canvas {
+    opacity: 0.1;
+    -webkit-transition: opacity 300ms ease;
+    -moz-transition: opacity 300ms ease;
+    -ms-transition: opacity 300ms ease;
+    -o-transition: opacity 300ms ease;
+    transition: opacity 300ms ease;
+}
+
+.pr-screen canvas.pr-canvas-ready {
+    opacity: 1;
+}
+
 .pr-screen {
     position: fixed;
     top: 0;
@@ -56,7 +69,7 @@ li {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgb(70, 70, 70);
 }
 
 .pr-object {
@@ -69,16 +82,17 @@ li {
 }
 
 .pr-page {
-    padding: 40px;
+    padding: 80px 40px;
     min-height: 480px;
+    position: relative;
 }
 
-.pr-pseudo-img {
-    display: block;
-    width: 100px;
-    height: 100px;
-    position: absolute;
+.pr-page-background {
     left: 0;
     top: 0;
-    background-color: #000000;
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
 }

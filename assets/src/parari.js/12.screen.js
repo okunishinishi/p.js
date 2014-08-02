@@ -39,7 +39,6 @@
                 ctx = s._ctx;
             if (!ctx) {
                 ctx = s._ctx = s.canvas.getContext('2d');
-                u.optimizeCanvasRatio(s.canvas, ctx);
             }
             return ctx;
         },
@@ -64,6 +63,7 @@
                 s.objects.push(object);
                 s.loadObjects(queue, callback);
             });
+            object.onPrImageLoad = s.redraw.bind(s);
         },
 
         /**
@@ -89,6 +89,7 @@
             s.canvas.width = w;
             s.canvas.height = h;
             u.optimizeCanvasRatio(s.canvas, s.getContext());
+            s.redraw();
         },
         /**
          * Element to tell the scroll position.
@@ -107,14 +108,24 @@
                 y = s.scroller.scrollTop;
             s.draw(x, y);
         },
+        invalidate: function () {
+            var s = this;
+            for (var i = 0; i < s.objects.length; i++) {
+                var object = s.objects[i];
+                object && object.invalidate();
+            }
+        },
         /**
          * Resize screen with sizer size.
          */
         resize: function () {
             var s = this,
-                w = s.sizer.innerWidth,
-                h = s.sizer.innerHeight;
+                rect = u.visibleRect(s.sizer),
+                w = rect.width,
+                h = rect.height;
             s.size(w, h);
+            s.invalidate();
+            s.redraw();
         }
     };
 

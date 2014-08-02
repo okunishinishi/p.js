@@ -1,0 +1,14 @@
+{
+  "name": "console.image",
+  "homepage": "https://github.com/dunxrion/console.image",
+  "_release": "0737ead9b4",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "0737ead9b4eadba6010ab49ab2def14ca6ed8584"
+  },
+  "_source": "git://github.com/dunxrion/console.image.git",
+  "_target": "*",
+  "_originalSource": "console.image",
+  "_direct": true
+}

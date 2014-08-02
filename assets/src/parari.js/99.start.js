@@ -25,16 +25,19 @@
         var canvas = document.createElement('canvas');
         u.insertAfter(canvas, root);
 
+        var vLock = options.vLock,
+            hLock = options.hLock;
+
         var style = u.getDocumentStyleString(),
             src = new pr.Src(root, style),
             objects = src.getObjects({
-                vLock: !!options.vLock,
-                hLock: !!options.hLock
+                vLock: !!vLock,
+                hLock: !!hLock
             }),
             screen = new pr.Screen(canvas);
 
         screen.scroller = options.scroller || document.body;
-        screen.sizer = options.sizer || window;
+        screen.sizer = src.elm;
 
 
         var redraw = screen.redraw.bind(screen),
@@ -47,7 +50,17 @@
         screen.loadObjects(objects, function () {
             resize();
             redraw();
+            canvas.classList.add(pr.prefixed('canvas-ready'))
         });
+
+
+        var onload = window.onload && window.onload.bind(window);
+        window.onload = function () {
+            resize();
+            screen.invalidate();
+            screen.redraw();
+            onload && onload();
+        }
 
 
         resize();

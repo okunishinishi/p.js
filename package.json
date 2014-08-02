@@ -28,7 +28,8 @@
     "marked": "^0.3.2",
     "cheerio": "^0.17.0",
     "onecolor": "^2.4.1",
-    "color-scheme": "0.0.5"
+    "color-scheme": "0.0.5",
+    "html-entities": "^1.0.10"
   },
   "devDependencies": {
     "apeman-tasks": "0.0.9",

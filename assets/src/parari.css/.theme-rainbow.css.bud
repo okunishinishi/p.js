@@ -73,8 +73,13 @@ module.exports = {
                     {
                         selector: selector,
                         values: {
-                            'background-color': backgroundColor,
                             'color': textColor
+                        }
+                    },
+                    {
+                        selector: [selector, '.pr-page-background'].join(' '),
+                        values: {
+                            'background-color': backgroundColor
                         }
                     },
                     {

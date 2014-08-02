@@ -57,6 +57,19 @@ li {
     display: block;
 }
 
+.pr-screen canvas {
+    opacity: 0.1;
+    -webkit-transition: opacity 300ms ease;
+    -moz-transition: opacity 300ms ease;
+    -ms-transition: opacity 300ms ease;
+    -o-transition: opacity 300ms ease;
+    transition: opacity 300ms ease;
+}
+
+.pr-screen canvas.pr-canvas-ready {
+    opacity: 1;
+}
+
 .pr-screen {
     position: fixed;
     top: 0;
@@ -64,7 +77,7 @@ li {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgb(70, 70, 70);
 }
 
 .pr-object {
@@ -77,19 +90,21 @@ li {
 }
 
 .pr-page {
-    padding: 40px;
+    padding: 80px 40px;
     min-height: 480px;
+    position: relative;
 }
 
-.pr-pseudo-img {
-    display: block;
-    width: 100px;
-    height: 100px;
-    position: absolute;
+.pr-page-background {
     left: 0;
     top: 0;
-    background-color: #000000;
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
 }
+
 
 
 .pr-theme-rainbow img{
@@ -102,8 +117,12 @@ li {
 
 
 .pr-theme-rainbow .pr-page:nth-child(14n+0){
-    background-color: #bf8b60;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+0) .pr-page-background{
+    background-color: #bf8b60;
     
 }
 
@@ -118,8 +137,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+1){
-    background-color: #bfa360;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+1) .pr-page-background{
+    background-color: #bfa360;
     
 }
 
@@ -134,8 +157,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+2){
-    background-color: #bfbc60;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+2) .pr-page-background{
+    background-color: #bfbc60;
     
 }
 
@@ -150,8 +177,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+3){
-    background-color: #94bf60;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+3) .pr-page-background{
+    background-color: #94bf60;
     
 }
 
@@ -166,8 +197,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+4){
-    background-color: #60bf82;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+4) .pr-page-background{
+    background-color: #60bf82;
     
 }
 
@@ -182,8 +217,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+5){
-    background-color: #6090bf;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+5) .pr-page-background{
+    background-color: #6090bf;
     
 }
 
@@ -198,8 +237,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+6){
-    background-color: #7a64bf;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+6) .pr-page-background{
+    background-color: #7a64bf;
     
 }
 
@@ -214,8 +257,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+7){
-    background-color: #a860bf;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+7) .pr-page-background{
+    background-color: #a860bf;
     
 }
 
@@ -230,8 +277,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+8){
-    background-color: #bf608f;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+8) .pr-page-background{
+    background-color: #bf608f;
     
 }
 
@@ -246,8 +297,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+9){
-    background-color: #bf7960;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+9) .pr-page-background{
+    background-color: #bf7960;
     
 }
 
@@ -262,8 +317,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+10){
-    background-color: #bf9860;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+10) .pr-page-background{
+    background-color: #bf9860;
     
 }
 
@@ -278,8 +337,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+11){
-    background-color: #bfb060;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+11) .pr-page-background{
+    background-color: #bfb060;
     
 }
 
@@ -294,8 +357,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+12){
-    background-color: #adbf60;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+12) .pr-page-background{
+    background-color: #adbf60;
     
 }
 
@@ -310,8 +377,12 @@ li {
 }
 
 .pr-theme-rainbow .pr-page:nth-child(14n+13){
-    background-color: #6bbf60;
     color: #FFF;
+    
+}
+
+.pr-theme-rainbow .pr-page:nth-child(14n+13) .pr-page-background{
+    background-color: #6bbf60;
     
 }
 
