@@ -31,6 +31,7 @@ a {
 h1, h2, h3 {
     clear: both;
     padding: 40px 0;
+    display: block;
     float: right;
     font-size: 3em;
     margin: 60px 0;
@@ -43,6 +44,8 @@ h1, h2, h3 {
 
 p, ul {
     max-width: 600px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 li {
@@ -65,7 +68,7 @@ li {
     height: 100%;
     box-sizing: border-box;
     background-color: rgb(70, 70, 70);
-    /*opacity: 0.9;*/
+    opacity: 0.9;
 }
 
 .pr-screen canvas {

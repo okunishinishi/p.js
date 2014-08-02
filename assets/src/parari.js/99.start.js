@@ -36,7 +36,19 @@
             }),
             screen = new pr.Screen(canvas);
 
-        screen.scroller = options.scroller || document.body;
+        screen.scroller = options.scroller || {
+            _scrollValueForKey: function (key) {
+                return document.documentElement[key] || document.body[key];
+            },
+            get scrollLeft() {
+                var s = this;
+                return s._scrollValueForKey('scrollLeft');
+            },
+            get scrollTop() {
+                var s = this;
+                return s._scrollValueForKey('scrollTop');
+            }
+        };
         screen.sizer = src.elm;
 
 

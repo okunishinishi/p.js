@@ -36,7 +36,7 @@
         getObjects: function (options) {
             var s = this;
             return s._findElements().map(function (elm) {
-                var object = pr.Object.fromElement(elm, s.style);
+                var object = pr.Object.fromElement(elm);
                 u.copy(options || {}, object);
                 return object;
             });

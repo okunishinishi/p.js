@@ -1,17 +1,5 @@
 [
     {
-        "src": "bower_components/color/one-color.js",
-        "dest": "assets/.third_party/one-color.js"
-    },
-    {
-        "src": "bower_components/fabric/dist/fabric.js",
-        "dest": "assets/.third_party/fabric.js"
-    },
-    {
-        "src": "bower_components/html2canvas/build/html2canvas.js",
-        "dest": "assets/.third_party/html2canvas.js"
-    },
-    {
         "src": "bower_components/normalize.css/normalize.css",
         "dest": "assets/.third_party/normalize.css"
     },

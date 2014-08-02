@@ -68,6 +68,10 @@
                 s.addImgElement(img);
             };
         },
+        /**
+         * Add a image elemnt.
+         * @param img
+         */
         addImgElement: function (img) {
             var s = this,
                 obj = new pr.Object(img);
@@ -84,24 +88,26 @@
                 s.offset = u.offsetSum(img);
             };
             obj.invalidate();
-            obj.draw = function (ctx, x, y) {
+            obj.draw = function (ctx, scrollX, scrollY) {
                 var s = this;
                 if (!s.image) {
                     return;
                 }
 
-                var w = s.width,
-                    h = s.height;
+                var w = s.width || s.image.width,
+                    h = s.height || s.image.height;
                 var left = s.offset.left,
                     top = s.offset.top;
-                ctx.drawImage(s.image, left - x, top - y, w, h);
+                var x = left - scrollX,
+                    y = top - scrollY;
+                ctx.drawImage(s.image, x, y, w, h);
             }
 
             obj.load(function () {
                 setTimeout(function () {
                     s.invalidate();
                     s.redraw();
-                }, 1000);
+                }, 100);
             });
         },
         /**

@@ -94,7 +94,6 @@
             if (isNaN(factor)) {
                 factor = 0;
             }
-
             ctx.drawImage(s.image, x, y, w, h);
         },
         /**
@@ -185,26 +184,37 @@
         'left',
         'top',
         'color',
+        'position',
+        'opacity',
+        'float',
+        'justify-content',
+        'display',
+        'letter-spacing',
+        'font-size',
+        'font-style',
+        'vertical-align',
+        'line-height',
         /^padding\-/,
         /^margin\-/,
         /^background\-/,
-        /^font\-/,
         /^text\-/,
+        /^list\-/,
+        /^outline\-/,
+        /^justify\-/,
+        /^white\-/,
+        /^word\-/,
     ];
 
 
     /**
      * Create html from elm.
      * @param {HTMLElement} elm - Element to create form.
-     * @param {string} style - Style string.
      * @returns {string}
      */
-    PrObject.elmToHtml = function (elm, style) {
+    PrObject.elmToHtml = function (elm) {
         var elmStyle = PrObject.elmStyleString(elm) || '';
-        style = style || '';
         return  [
                 '<div class="pr-object" style="' + elmStyle + '">',
-            ('<style type="text/css">' + style + '</style>'),
             elm.innerHTML,
             '</div>'
         ].join('');
@@ -213,16 +223,13 @@
     /**
      * Create a parari object from element.
      * @param {HTMLElement} elm - Element to create form.
-     * @param {string} style - Style string.
      * @returns {PrObject}
      */
-    PrObject.fromElement = function (elm, style) {
-
+    PrObject.fromElement = function (elm) {
         var elmStyle = u.getStyleString(elm);
         var obj = new PrObject({
             elm: elm,
-            style: style,
-            html: PrObject.elmToHtml(elm, style)
+            html: PrObject.elmToHtml(elm)
         });
 
         var imgLoad = function (img) {
@@ -231,7 +238,6 @@
                 obj.onPrImgLoad && obj.onPrImgLoad(img);
             });
         };
-        imgLoad._timer = null;
 
         u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
             img.onload = function () {
