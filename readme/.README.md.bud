@@ -17,15 +17,16 @@ module.exports = {
         links: require('./.links'),
         get sections() {
             var dirname = path.resolve(__dirname, 'sections');
-            return fs.readdirSync(dirname).map(function (filename) {
-                return {
-                    name: path.basename(filename, path.extname(filename)),
-                    content: fs.readFileSync(path.resolve(dirname, filename)).toString(),
-                    get title() {
-                        return this.content.split('\n').shift().trim();
+            return fs.readdirSync(dirname)
+                .map(function (filename) {
+                    return {
+                        name: path.basename(filename, path.extname(filename)),
+                        content: fs.readFileSync(path.resolve(dirname, filename)).toString(),
+                        get title() {
+                            return this.content.split('\n').shift().trim();
+                        }
                     }
-                }
-            });
+                });
         }
     }
 };
