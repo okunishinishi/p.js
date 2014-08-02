@@ -39,4 +39,8 @@ describe('pr.utilities', function () {
         })('foo', 'bar');
     });
 
+    it('Covert to svn embeddable html.', function(){
+        var html = u.toSVGEmbeddableHtml('<span><img src="foo"></span>');
+        expect(html).toBeDefined();
+    });
 });

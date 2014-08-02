@@ -82,6 +82,29 @@
         }
     };
 
+    /**
+     * Create html from elm.
+     * @param {HTMLElement} elm - Element to create form.
+     * @param {string} style - Style string.
+     * @returns {string}
+     */
+    PrObject.elmToHtml = function (elm, style) {
+        var elmStyle = u.getStyleString(elm) || '';
+        style = style || '';
+        return  [
+                '<div class="pr-object" style="' + elmStyle + '">',
+            ('<style type="text/css">' + style + '</style>'),
+            elm.innerHTML,
+            '</div>'
+        ].join('');
+    };
+
+    /**
+     * Create a parari object from element.
+     * @param {HTMLElement} elm - Element to create form.
+     * @param {string} style - Style string.
+     * @returns {PrObject}
+     */
     PrObject.fromElement = function (elm, style) {
         var w = elm.offsetWidth,
             h = elm.offsetHeight,
@@ -102,6 +125,23 @@
                 '</div>'
             ].join('')
         });
+
+        function reload() {
+
+        }
+
+        u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
+            img.onload = function () {
+                //TODO replace image html.
+                setTimeout(function () {
+                    obj.html = PrObject.elmToHtml(elm, style);
+                    obj.load();
+                }, 5);
+
+            };
+        });
+
+        return  obj;
     };
 
     pr.Object = PrObject;

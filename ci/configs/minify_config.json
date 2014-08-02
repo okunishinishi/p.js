@@ -1,12 +1,12 @@
 [
     {
-        "src": "dist/.third_party/*.js",
-        "destDir": "dist/.third_party",
+        "src": "assets/.third_party/*.js",
+        "destDir": "assets/.third_party",
         "type": "js"
     },
     {
-        "src": "dist/.third_party/*.css",
-        "destDir": "dist/.third_party",
+        "src": "assets/.third_party/*.css",
+        "destDir": "assets/.third_party",
         "type": "css"
     }
 ]

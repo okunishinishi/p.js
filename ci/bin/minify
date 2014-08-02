@@ -13,10 +13,13 @@ var u = require('apeman-util'),
 
 process.chdir(h.basedir);
 
-function minifyJs(src, dest, callback) {
-    async.waterfaill([
+function minifyFile(src, dest, converter, callback) {
+    async.waterfall([
         function (callback) {
-            minify.minifyJsString(src, callback);
+            fs.readFile(src, callback);
+        },
+        function (src, callback) {
+            converter(src.toString(), callback);
         },
         function (content, callback) {
             h.generateFile(dest, content, callback);
@@ -24,15 +27,12 @@ function minifyJs(src, dest, callback) {
     ], callback);
 };
 
+function minifyJs(src, dest, callback) {
+    minifyFile(src, dest, minify.minifyJsString, callback);
+};
+
 function minifyCss(src, dest, callback) {
-    async.waterfaill([
-        function (callback) {
-            minify.minifyCssString(src, callback);
-        },
-        function (content, callback) {
-            h.generateFile(dest, content, callback);
-        }
-    ], callback);
+    minifyFile(src, dest, minify.minifyCssString, callback);
 };
 
 async.eachSeries(config, function (config, callback) {

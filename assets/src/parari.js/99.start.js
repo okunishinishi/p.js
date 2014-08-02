@@ -26,7 +26,7 @@
         u.insertAfter(canvas, root);
 
         var style = u.getDocumentStyleString(),
-            src = new pr.Src(root),
+            src = new pr.Src(root, style),
             objects = src.getObjects({
                 vLock: !!options.vLock,
                 hLock: !!options.hLock

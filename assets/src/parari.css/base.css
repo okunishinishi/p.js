@@ -5,7 +5,7 @@ html {
 
 body {
     height: 100%;
-    max-width: 960px;
+    width: 100%;
     padding: 0;
     margin: 0 auto;
     font-size: 2.2em;
@@ -42,9 +42,12 @@ li {
     min-width: 120px;
 }
 
-
-
-
+.pr-src,
+.pr-screen canvas {
+    max-width: 960px;
+    margin: 0 auto;
+    display: block;
+}
 
 .pr-screen {
     position: fixed;
@@ -52,10 +55,8 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: white;
     box-sizing: border-box;
-
-    opacity: .5; //FIXME
+    background-color: rgba(0, 0, 0, 0.75);
 }
 
 .pr-object {
@@ -67,8 +68,17 @@ li {
     box-sizing: border-box;
 }
 
-
 .pr-page {
     padding: 40px;
     min-height: 480px;
+}
+
+.pr-pseudo-img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #000000;
 }

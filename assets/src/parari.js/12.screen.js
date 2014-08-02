@@ -17,10 +17,19 @@
         var s = this;
         s.canvas = canvas;
         s.objects = [];
-        s.canvas.classList.add(Screen._className);
+        s.wrapCanvas(s.canvas);
     };
 
     Screen.prototype = {
+        /**
+         * Wrap canvas element with screen div.
+         */
+        wrapCanvas: function (canvas) {
+            var div = document.createElement('div');
+            div.classList.add(Screen._className);
+            u.insertAfter(div, canvas);
+            div.appendChild(canvas);
+        },
         /**
          * Get canvas context.
          * @returns {CanvasRenderingContext2D}

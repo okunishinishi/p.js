@@ -32,6 +32,9 @@
          */
         insertAfter: function (newElement, targetElement) {
             var parent = targetElement.parentNode;
+            if (!parent) {
+                return parent;
+            }
             var isLast = parent.lastchild == targetElement;
             if (isLast) {
                 parent.appendChild(newElement);
@@ -112,7 +115,9 @@
             for (var i = 0, len = style.length; i < len; i++) {
                 var key = style[i],
                     val = style.getPropertyValue(key);
-                result += [key, val].join(':') + ';';
+                if (val) {
+                    result += [key, val].join(':') + ';';
+                }
             }
             return result;
         },
@@ -129,7 +134,23 @@
                 y: elm.offsetTop + (h / 2)
             };
         },
-
+        /**
+         * Convert html to svg embeddable.
+         * @param {string} html - Html string.
+         * @returns {string} - Converted html string.
+         */
+        toSVGEmbeddableHtml: function (html) {
+            var workingDiv = document.createElement('div');
+            workingDiv.innerHTML = html;
+            var imgs = workingDiv.querySelectorAll('img');
+            for (var i = 0; i < imgs.length; i++) {
+                var img = imgs[i];
+                img.parentNode.removeChild(img);
+            }
+            var html = workingDiv.outerHTML;
+            html = html.replace(/&nbsp;/g, '');
+            return  html;
+        },
         /**
          * Convert an html to a image.
          * @param {string} html -  Html string.
@@ -138,7 +159,7 @@
          * @param {function} callback - Callback when done.
          */
         htmlToImage: function (html, width, height, callback) {
-            console.log(html);
+            html = u.toSVGEmbeddableHtml(html);
             var svgString = [
                         '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">',
                     '<foreignObject width="100%" height="100%">',
