@@ -49,6 +49,17 @@ li {
     display: block;
 }
 
+.pr-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: rgb(70, 70, 70);
+    /*opacity: 0.9;*/
+}
+
 .pr-screen canvas {
     opacity: 0.1;
     -webkit-transition: opacity 300ms ease;
@@ -60,16 +71,6 @@ li {
 
 .pr-screen canvas.pr-canvas-ready {
     opacity: 1;
-}
-
-.pr-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    background-color: rgb(70, 70, 70);
 }
 
 .pr-object {

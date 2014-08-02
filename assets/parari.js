@@ -434,19 +434,19 @@ window.parari = (function (parari) {
 	            html: PrObject.elmToHtml(elm, style)
 	        });
 	
-	        var reload = function () {
-	            clearTimeout(reload._timer);
-	            reload._timer = setTimeout(function () {
-	                obj.reload(function () {
-	                    obj.invalidate();
-	                    obj.onPrImageLoad && obj.onPrImageLoad();
-	                });
-	            }, 50);
+	        var imgLoad = function (img) {
+	            obj.reload(function () {
+	                obj.invalidate();
+	                obj.onPrImgLoad && obj.onPrImgLoad(img);
+	            });
 	        };
-	        reload._timer = null;
+	        imgLoad._timer = null;
 	
 	        u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
-	            img.onload = reload
+	            img.onload = function () {
+	                console.log('loaded', arguments);
+	                imgLoad(img);
+	            }
 	        });
 	
 	        return  obj;
@@ -573,9 +573,47 @@ window.parari = (function (parari) {
 	                s.objects.push(object);
 	                s.loadObjects(queue, callback);
 	            });
-	            object.onPrImageLoad = s.redraw.bind(s);
+	            object.onPrImgLoad = function (img) {
+	                s.redraw();
+	                s.addImgElement(img);
+	            };
 	        },
+	        addImgElement: function (img) {
+	            var s = this,
+	                obj = new pr.Object(img);
+	            obj.image = img;
+	            obj.load = function (callback) {
+	                var center = u.centerPoint(s.canvas);
+	                obj.dx = obj.x - center.x;
+	                obj.dy = obj.y - center.y;
+	                s.objects.push(obj);
+	                callback && callback(null);
+	            };
+	            obj.invalidate = function () {
+	                var s = this;
+	                s.offset = u.offsetSum(img);
+	            };
+	            obj.invalidate();
+	            obj.draw = function (ctx, x, y) {
+	                var s = this;
+	                if (!s.image) {
+	                    return;
+	                }
 	
+	                var w = s.width,
+	                    h = s.height;
+	                var left = s.offset.left,
+	                    top = s.offset.top;
+	                ctx.drawImage(s.image, left - x, top - y, w, h);
+	            }
+	
+	            obj.load(function () {
+	                setTimeout(function () {
+	                    s.invalidate();
+	                    s.redraw();
+	                }, 1000);
+	            });
+	        },
 	        /**
 	         * Draw screen.
 	         */

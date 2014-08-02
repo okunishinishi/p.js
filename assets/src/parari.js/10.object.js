@@ -144,19 +144,18 @@
             html: PrObject.elmToHtml(elm, style)
         });
 
-        var reload = function () {
-            clearTimeout(reload._timer);
-            reload._timer = setTimeout(function () {
-                obj.reload(function () {
-                    obj.invalidate();
-                    obj.onPrImageLoad && obj.onPrImageLoad();
-                });
-            }, 50);
+        var imgLoad = function (img) {
+            obj.reload(function () {
+                obj.invalidate();
+                obj.onPrImgLoad && obj.onPrImgLoad(img);
+            });
         };
-        reload._timer = null;
+        imgLoad._timer = null;
 
         u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
-            img.onload = reload
+            img.onload = function () {
+                imgLoad(img);
+            }
         });
 
         return  obj;
