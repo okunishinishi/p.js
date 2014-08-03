@@ -29,7 +29,10 @@ describe('pr.layers.StarFlowLayer', function () {
     });
 
     it('Create stars.', function () {
-        var stars = l.StarFlowLayer.stars({
+        var layer = new l.StarFlowLayer({
+
+        });
+        var stars = layer.createStars({
             minX: 10,
             minY: 20,
             maxX: 200,
@@ -39,7 +42,10 @@ describe('pr.layers.StarFlowLayer', function () {
     });
 
     it('numberStartsForBounds', function () {
-        var count = l.StarFlowLayer.numberStartsForBounds({
+        var layer = new l.StarFlowLayer({
+
+        });
+        var count = layer.numberStartsForBounds({
             minX: 10,
             minY: 20,
             maxX: 200,

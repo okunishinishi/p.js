@@ -1000,14 +1000,15 @@ window.parari = (function (parari) {
 	        {
 	            z: -10,
 	            saturation: 10,
+	            dense: 0.0025,
 	            setBounds: function () {
 	                var s = this;
 	                Layer.prototype.setBounds.apply(s, arguments);
-	                s.stars = StarFlowLayer.stars(s.getBounds(), s.saturation);
+	                s.stars = s.createStars(s.getBounds(), s.saturation);
 	            },
 	            reload: function (callback) {
 	                var s = this;
-	                s.stars = StarFlowLayer.stars(s.getBounds(), s.saturation);
+	                s.stars = s.createStars(s.getBounds(), s.saturation);
 	                s.load(callback);
 	            },
 	            stars: [],
@@ -1022,42 +1023,44 @@ window.parari = (function (parari) {
 	                    star.draw(ctx);
 	                }
 	                ctx.restore();
-	            }
+	            },
+	            /**
+	             * Create stars.
+	             * @param bounds
+	             * @param saturation
+	             * @returns {Array}
+	             */
+	            createStars: function (bounds, saturation) {
+	                var s = this,
+	                    count = s.numberStartsForBounds(bounds),
+	                    stars = [];
+	                for (var i = 0; i < count; i++) {
+	                    var radius = Math.random(),
+	                        star = new Star({
+	                                baseX: u.randomInt(bounds.minX, bounds.maxX),
+	                                baseY: u.randomInt(bounds.minY, bounds.maxY),
+	                                radius: radius,
+	                                color: s.randomColor(saturation),
+	                                speed: radius
+	                            }
+	                        );
+	                    stars.push(star);
+	                }
+	                return stars;
+	            },
+	            numberStartsForBounds: function (bounds) {
+	                var s = this,
+	                    w = bounds.maxX - bounds.minX,
+	                    h = bounds.maxY - bounds.minY;
+	                return w * h * s.dense;
+	            },
+	            randomColor: function (saturation) {
+	                var rgb = u.hsv2rgb(u.randomInt(0, 360), saturation, 100);
+	                return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
+	            },
 	        },
 	        StarFlowLayer.prototype);
 	
-	    StarFlowLayer.numberStartsForBounds = function (bounds) {
-	        var w = bounds.maxX - bounds.minX,
-	            h = bounds.maxY - bounds.minY;
-	        return w * h / 400;
-	    };
-	
-	    StarFlowLayer.randomColor = function (saturation) {
-	        var rgb = u.hsv2rgb(u.randomInt(0, 360), saturation, 100);
-	        return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
-	    };
-	
-	    /**
-	     * Create stars.
-	     * @returns {Star[]} - Stars.
-	     */
-	    StarFlowLayer.stars = function (bounds, saturation) {
-	        var count = StarFlowLayer.numberStartsForBounds(bounds);
-	        var stars = [];
-	        for (var i = 0; i < count; i++) {
-	            var radius = Math.random(),
-	                star = new Star({
-	                        baseX: u.randomInt(bounds.minX, bounds.maxX),
-	                        baseY: u.randomInt(bounds.minY, bounds.maxY),
-	                        radius: radius,
-	                        color: StarFlowLayer.randomColor(saturation),
-	                        speed: radius
-	                    }
-	                );
-	            stars.push(star);
-	        }
-	        return stars;
-	    };
 	
 	    /**
 	     * @memberof StarFlowLayer
@@ -1143,6 +1146,7 @@ window.parari = (function (parari) {
 	        {
 	            z: -11,
 	            speed: 0.5,
+	            expansion: 3,
 	            colors: [
 	                '#8ED6FF', '#004CB3'
 	            ],
@@ -1173,7 +1177,7 @@ window.parari = (function (parari) {
 	                    rx = radius * 0.8,
 	                    ry = rx;
 	
-	                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (2 + Math.abs(factor)));
+	                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (s.expansion - 1 + Math.abs(factor)));
 	
 	
 	                for (var i = 0; i < s.colors.length; i++) {

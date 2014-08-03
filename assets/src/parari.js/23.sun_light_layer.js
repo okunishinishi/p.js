@@ -24,6 +24,7 @@
         {
             z: -11,
             speed: 0.5,
+            expansion: 3,
             colors: [
                 '#8ED6FF', '#004CB3'
             ],
@@ -54,7 +55,7 @@
                     rx = radius * 0.8,
                     ry = rx;
 
-                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (2 + Math.abs(factor)));
+                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (s.expansion - 1 + Math.abs(factor)));
 
 
                 for (var i = 0; i < s.colors.length; i++) {
