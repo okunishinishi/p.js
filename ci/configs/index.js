@@ -14,7 +14,6 @@ module.exports = {
     get ghPagesConfig() { return require('./gh_pages_config'); },
     get indexConfig() { return require('./index_config'); },
     get jsdocConfig() { return require('./jsdoc_config'); },
-    get kssConfig() { return require('./kss_config'); },
     get minifyConfig() { return require('./minify_config'); },
     get mkdirConfig() { return require('./mkdir_config'); },
     get mochaConfig() { return require('./mocha_config'); },

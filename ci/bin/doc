@@ -16,7 +16,6 @@ process.chdir(h.basedir);
 new tasks.ForkTask({
     files: [
         'ci/bin/build',
-        'ci/bin/doc_apiguide',
-        'ci/bin/doc_styleguide'
+        'ci/bin/doc_apiguide'
     ]
 }).run(h.done('Doc done!'));

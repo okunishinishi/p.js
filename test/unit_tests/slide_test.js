@@ -75,3 +75,32 @@ exports['Slide.'] = function (test) {
     test.ok(slide);
     test.done();
 };
+
+exports['Layer data.'] = function (test) {
+    var data = slide._layerData({
+        layers: {
+            foo: 'bar',
+            baz: 0,
+            quz: [1, 2, 3]
+        }
+    });
+    test.ok(data);
+    test.done();
+};
+
+exports['Render.'] = function (test) {
+    var tmpl = h.resolveMockFile('mock_tmpl.hbs');
+    slide._render(tmpl, {}, h.resolveWorkFile('work_rendered.txt'), function (err) {
+        test.ifError(err);
+        test.done();
+    });
+};
+
+exports['Invalid theme.'] = function (test) {
+    test.throws(function () {
+        slide(null, null, {theme: '__invalid_theme__'}, function (err) {
+
+        });
+    });
+    test.done();
+};

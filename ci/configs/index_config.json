@@ -26,6 +26,7 @@
         "doc": {
             "file": "parari",
             "module": "parari/lib/themes"
-        }
+        },
+        "descProperties": true
     }
 ]
