@@ -9,6 +9,7 @@
     var u = pr.utilities;
 
     var layers = {
+        lightRays: pr.layers.LightRaysLayer,
         nightSky: pr.layers.NightSkyLayer
     };
 
@@ -69,8 +70,12 @@
                 if (!Layer) {
                     throw new Error('Unknwon layer: ' + name)
                 }
-                var option = options.layers[name],
-                    layer = new Layer(option);
+                var option = options.layers[name];
+                u.copy({
+                    vLock: !!vLock,
+                    hLock: !!hLock
+                }, option);
+                var layer = new Layer(option);
                 objects.push(layer);
             });
 

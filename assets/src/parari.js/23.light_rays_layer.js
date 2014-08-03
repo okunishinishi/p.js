@@ -34,12 +34,29 @@
             draw: function (ctx, scrollX, scrollY) {
                 var s = this,
                     bounds = s.getBounds();
+
+                var minX = bounds.minX,
+                    minY = bounds.minY,
+                    maxX = bounds.maxX,
+                    maxY = bounds.maxY;
+
                 ctx.save();
-                for (var i = 0; i < s.stars.length; i++) {
-                    var star = s.stars[i];
-                    star.move(-scrollX, -scrollY, bounds);
-                    star.draw(ctx);
-                }
+
+                ctx.rect(minX, minY, maxX, maxY);
+
+                var x = scrollX % maxX, y = scrollY % maxY,
+                    factor = s.factor(x, y),
+                    radius = (maxY - minY) / 3,
+                    rx = radius * 0.8,
+                    ry = rx;
+
+                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (2 + Math.abs(factor)));
+
+                gradient.addColorStop(0, '#8ED6FF');
+                gradient.addColorStop(1, '#004CB3');
+
+                ctx.fillStyle = gradient;
+                ctx.fill();
                 ctx.restore();
             }
         },

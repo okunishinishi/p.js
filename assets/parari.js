@@ -464,10 +464,6 @@ window.parari = (function (parari) {
 	                return;
 	            }
 	            var factor = s.factor(x, y);
-	
-	            if (isNaN(factor)) {
-	                factor = 0;
-	            }
 	            ctx.drawImage(s.image, x, y, w, h);
 	        },
 	        /**
@@ -477,11 +473,16 @@ window.parari = (function (parari) {
 	         * @returns {number} - Factor value. -1 ~ +1.
 	         */
 	        factor: function (x, y) {
+	            var s = this,
+	                facor = s._factor(x, y);
+	            return isNaN(facor) ? 0 : facor;
+	        },
+	        _factor: function (x, y) {
 	            var s = this;
-	            if (s.hLock) {
+	            if (s.vLock) {
 	                return u.rate(s.minX, s.maxX, x) * 2 - 1;
 	            }
-	            if (s.vLock) {
+	            if (s.hLock) {
 	                return u.rate(s.minY, s.maxY, y) * 2 - 1;
 	            }
 	            return 0;
@@ -1119,12 +1120,29 @@ window.parari = (function (parari) {
 	            draw: function (ctx, scrollX, scrollY) {
 	                var s = this,
 	                    bounds = s.getBounds();
+	
+	                var minX = bounds.minX,
+	                    minY = bounds.minY,
+	                    maxX = bounds.maxX,
+	                    maxY = bounds.maxY;
+	
 	                ctx.save();
-	                for (var i = 0; i < s.stars.length; i++) {
-	                    var star = s.stars[i];
-	                    star.move(-scrollX, -scrollY, bounds);
-	                    star.draw(ctx);
-	                }
+	
+	                ctx.rect(minX, minY, maxX, maxY);
+	
+	                var x = scrollX % maxX, y = scrollY % maxY,
+	                    factor = s.factor(x, y),
+	                    radius = (maxY - minY) / 3,
+	                    rx = radius * 0.8,
+	                    ry = rx;
+	
+	                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (2 + Math.abs(factor)));
+	
+	                gradient.addColorStop(0, '#8ED6FF');
+	                gradient.addColorStop(1, '#004CB3');
+	
+	                ctx.fillStyle = gradient;
+	                ctx.fill();
 	                ctx.restore();
 	            }
 	        },
@@ -1145,6 +1163,7 @@ window.parari = (function (parari) {
 	    var u = pr.utilities;
 	
 	    var layers = {
+	        lightRays: pr.layers.LightRaysLayer,
 	        nightSky: pr.layers.NightSkyLayer
 	    };
 	
@@ -1205,8 +1224,12 @@ window.parari = (function (parari) {
 	                if (!Layer) {
 	                    throw new Error('Unknwon layer: ' + name)
 	                }
-	                var option = options.layers[name],
-	                    layer = new Layer(option);
+	                var option = options.layers[name];
+	                u.copy({
+	                    vLock: !!vLock,
+	                    hLock: !!hLock
+	                }, option);
+	                var layer = new Layer(option);
 	                objects.push(layer);
 	            });
 	

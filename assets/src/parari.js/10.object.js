@@ -94,10 +94,6 @@
                 return;
             }
             var factor = s.factor(x, y);
-
-            if (isNaN(factor)) {
-                factor = 0;
-            }
             ctx.drawImage(s.image, x, y, w, h);
         },
         /**
@@ -107,11 +103,16 @@
          * @returns {number} - Factor value. -1 ~ +1.
          */
         factor: function (x, y) {
+            var s = this,
+                facor = s._factor(x, y);
+            return isNaN(facor) ? 0 : facor;
+        },
+        _factor: function (x, y) {
             var s = this;
-            if (s.hLock) {
+            if (s.vLock) {
                 return u.rate(s.minX, s.maxX, x) * 2 - 1;
             }
-            if (s.vLock) {
+            if (s.hLock) {
                 return u.rate(s.minY, s.maxY, y) * 2 - 1;
             }
             return 0;
