@@ -36,9 +36,13 @@
                 s.y = (s.minY + s.maxY) / 2;
                 s.width = s.maxX - s.minX;
                 s.height = s.maxY - s.minY;
-                if (!s.stars.length) {
-                    s.stars = NightSkyLayer.stars(s.getBounds());
-                }
+
+            },
+            z: -10,
+            setBounds: function () {
+                var s = this;
+                pr.Object.prototype.setBounds.apply(s, arguments);
+                s.stars = NightSkyLayer.stars(s.getBounds());
             },
             reload: function (callback) {
                 var s = this;
@@ -54,7 +58,7 @@
 
                 for (var i = 0; i < s.stars.length; i++) {
                     var star = s.stars[i];
-                    star.move(scrollX, scrollY, bounds);
+                    star.move(-scrollX, -scrollY, bounds);
                     star.draw(ctx);
                 }
 
@@ -64,7 +68,14 @@
         NightSkyLayer.prototype);
 
     NightSkyLayer.numberStartsForBounds = function (bounds) {
-        return 400; //TODO
+        var w = bounds.maxX - bounds.minX,
+            h = bounds.maxY - bounds.minY;
+        return w * h / 400;
+    };
+
+    NightSkyLayer.randomColor = function () {
+        var rgb = u.hsv2rgb(u.randomInt(0, 360), 10, 100);
+        return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
     };
 
     /**
@@ -78,8 +89,9 @@
             var star = new Star({
                     baseX: u.randomInt(bounds.minX, bounds.maxX),
                     baseY: u.randomInt(bounds.minY, bounds.maxY),
-                    color: u.hsv2rgbaString(u.randomInt(0, 360), 30, 50),
-                    speed: u.randomInt(0, 3) / 2
+                    radius: Math.random(),
+                    color: NightSkyLayer.randomColor(),
+                    speed: u.randomInt(1, 10) / 10
                 }
             );
             stars.push(star);

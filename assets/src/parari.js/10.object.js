@@ -256,7 +256,7 @@
                     if (obj.onPrImgLoad) {
                         obj.onPrImgLoad(img);
                     }
-                }, 10);
+                }, 100);
             }
         });
 

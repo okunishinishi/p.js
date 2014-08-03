@@ -69,6 +69,15 @@
             };
         },
         /**
+         * Resort objects.
+         */
+        resort: function () {
+            var s = this;
+            s.objects = s.objects.sort(function (a, b) {
+                return Number(a.z || 0) - Number(b.z || 0);
+            });
+        },
+        /**
          * Add a image elemnt.
          * @param img
          */
@@ -77,11 +86,13 @@
             var s = this,
                 obj = new pr.Object(img);
             obj.image = img;
+            obj.z = 10;
             obj.load = function (callback) {
                 var center = u.centerPoint(s.canvas);
                 obj.dx = obj.x - center.x;
                 obj.dy = obj.y - center.y;
                 s.objects.push(obj);
+                s.resort();
                 callback && callback(null);
             };
             obj.invalidate = function () {
@@ -171,8 +182,10 @@
                 w = rect.width,
                 h = rect.height;
             s.size(w, h);
-            s.invalidate();
-            s.redraw();
+            setTimeout(function () {
+                s.invalidate();
+                s.redraw();
+            }, 1);
         }
     };
 

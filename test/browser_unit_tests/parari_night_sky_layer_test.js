@@ -29,7 +29,22 @@ describe('pr.layers.NightSkyLayer', function () {
     });
 
     it('Create stars.', function () {
-        var stars = l.NightSkyLayer.stars(10, {});
-        expect(stars.length).toEqual(10);
+        var stars = l.NightSkyLayer.stars({
+            minX: 10,
+            minY: 20,
+            maxX: 200,
+            maxY: 400
+        });
+        expect(stars).toBeDefined();
+    });
+
+    it('numberStartsForBounds', function () {
+        var count = l.NightSkyLayer.numberStartsForBounds({
+            minX: 10,
+            minY: 20,
+            maxX: 200,
+            maxY: 400
+        });
+        expect(count).toBeDefined();
     });
 });

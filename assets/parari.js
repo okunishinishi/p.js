@@ -385,8 +385,7 @@ window.parari = (function (parari) {
 	        var s = this;
 	        u.copy(data || {}, s);
 	        s.invalidate();
-	
-	    };
+	    }
 	
 	    PrObject.prototype = {
 	        /**
@@ -398,7 +397,9 @@ window.parari = (function (parari) {
 	            u.htmlToImage(s.html, s.width, s.height, function (image) {
 	                s.image = image;
 	                s.invalidate();
-	                callback && callback(s);
+	                if (callback) {
+	                    callback(s);
+	                }
 	            });
 	        },
 	        /**
@@ -622,8 +623,10 @@ window.parari = (function (parari) {
 	        u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
 	            img.onload = function () {
 	                setTimeout(function () {
-	                    obj.onPrImgLoad && obj.onPrImgLoad(img);
-	                }, 10);
+	                    if (obj.onPrImgLoad) {
+	                        obj.onPrImgLoad(img);
+	                    }
+	                }, 100);
 	            }
 	        });
 	
@@ -757,6 +760,15 @@ window.parari = (function (parari) {
 	            };
 	        },
 	        /**
+	         * Resort objects.
+	         */
+	        resort: function () {
+	            var s = this;
+	            s.objects = s.objects.sort(function (a, b) {
+	                return Number(a.z || 0) - Number(b.z || 0);
+	            });
+	        },
+	        /**
 	         * Add a image elemnt.
 	         * @param img
 	         */
@@ -765,11 +777,13 @@ window.parari = (function (parari) {
 	            var s = this,
 	                obj = new pr.Object(img);
 	            obj.image = img;
+	            obj.z = 10;
 	            obj.load = function (callback) {
 	                var center = u.centerPoint(s.canvas);
 	                obj.dx = obj.x - center.x;
 	                obj.dy = obj.y - center.y;
 	                s.objects.push(obj);
+	                s.resort();
 	                callback && callback(null);
 	            };
 	            obj.invalidate = function () {
@@ -859,8 +873,10 @@ window.parari = (function (parari) {
 	                w = rect.width,
 	                h = rect.height;
 	            s.size(w, h);
-	            s.invalidate();
-	            s.redraw();
+	            setTimeout(function () {
+	                s.invalidate();
+	                s.redraw();
+	            }, 1);
 	        }
 	    };
 	
@@ -918,9 +934,13 @@ window.parari = (function (parari) {
 	                s.y = (s.minY + s.maxY) / 2;
 	                s.width = s.maxX - s.minX;
 	                s.height = s.maxY - s.minY;
-	                if (!s.stars.length) {
-	                    s.stars = NightSkyLayer.stars(s.getBounds());
-	                }
+	
+	            },
+	            z: -10,
+	            setBounds: function () {
+	                var s = this;
+	                pr.Object.prototype.setBounds.apply(s, arguments);
+	                s.stars = NightSkyLayer.stars(s.getBounds());
 	            },
 	            reload: function (callback) {
 	                var s = this;
@@ -936,7 +956,7 @@ window.parari = (function (parari) {
 	
 	                for (var i = 0; i < s.stars.length; i++) {
 	                    var star = s.stars[i];
-	                    star.move(scrollX, scrollY, bounds);
+	                    star.move(-scrollX, -scrollY, bounds);
 	                    star.draw(ctx);
 	                }
 	
@@ -946,7 +966,14 @@ window.parari = (function (parari) {
 	        NightSkyLayer.prototype);
 	
 	    NightSkyLayer.numberStartsForBounds = function (bounds) {
-	        return 400; //TODO
+	        var w = bounds.maxX - bounds.minX,
+	            h = bounds.maxY - bounds.minY;
+	        return w * h / 400;
+	    };
+	
+	    NightSkyLayer.randomColor = function () {
+	        var rgb = u.hsv2rgb(u.randomInt(0, 360), 10, 100);
+	        return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
 	    };
 	
 	    /**
@@ -960,8 +987,9 @@ window.parari = (function (parari) {
 	            var star = new Star({
 	                    baseX: u.randomInt(bounds.minX, bounds.maxX),
 	                    baseY: u.randomInt(bounds.minY, bounds.maxY),
-	                    color: u.hsv2rgbaString(u.randomInt(0, 360), 30, 50),
-	                    speed: u.randomInt(0, 3) / 2
+	                    radius: Math.random(),
+	                    color: NightSkyLayer.randomColor(),
+	                    speed: u.randomInt(1, 10) / 10
 	                }
 	            );
 	            stars.push(star);
@@ -1038,6 +1066,12 @@ window.parari = (function (parari) {
 	
 	    var u = pr.utilities;
 	
+	    var layers = {
+	        star: new pr.layers.NightSkyLayer({
+	
+	        })
+	    };
+	
 	    /**
 	     * @lends start
 	     * @param {HTMLElement|string} root - Root element.
@@ -1089,13 +1123,20 @@ window.parari = (function (parari) {
 	        window.addEventListener('resize', resize, false);
 	
 	
-	        objects.push(new pr.layers.NightSkyLayer({
+	        Object.keys(layers)
+	            .filter(function () {
+	                return true;//TODO
+	            })
+	            .forEach(function (name) {
+	                objects.push(layers[name]);
+	            });
 	
-	        }));
+	
 	        screen.loadObjects(objects, function () {
 	            resize();
 	            redraw();
-	            canvas.classList.add(pr.prefixed('canvas-ready'))
+	            canvas.classList.add(pr.prefixed('canvas-ready'));
+	            screen.resort();
 	        });
 	
 	

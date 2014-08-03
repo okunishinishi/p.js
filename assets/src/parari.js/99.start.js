@@ -8,6 +8,12 @@
 
     var u = pr.utilities;
 
+    var layers = {
+        star: new pr.layers.NightSkyLayer({
+
+        })
+    };
+
     /**
      * @lends start
      * @param {HTMLElement|string} root - Root element.
@@ -59,13 +65,20 @@
         window.addEventListener('resize', resize, false);
 
 
-        objects.push(new pr.layers.NightSkyLayer({
+        Object.keys(layers)
+            .filter(function () {
+                return true;//TODO
+            })
+            .forEach(function (name) {
+                objects.push(layers[name]);
+            });
 
-        }));
+
         screen.loadObjects(objects, function () {
             resize();
             redraw();
-            canvas.classList.add(pr.prefixed('canvas-ready'))
+            canvas.classList.add(pr.prefixed('canvas-ready'));
+            screen.resort();
         });
 
 

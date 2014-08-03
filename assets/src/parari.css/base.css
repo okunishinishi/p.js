@@ -60,7 +60,6 @@ li {
     height: 100%;
     box-sizing: border-box;
     background-color: rgb(70, 70, 70);
-    opacity: 0.9;
 }
 
 .pr-screen canvas {
