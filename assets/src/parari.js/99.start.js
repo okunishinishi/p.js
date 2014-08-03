@@ -9,9 +9,7 @@
     var u = pr.utilities;
 
     var layers = {
-        star: new pr.layers.NightSkyLayer({
-
-        })
+        nightSky: pr.layers.NightSkyLayer
     };
 
     /**
@@ -65,12 +63,15 @@
         window.addEventListener('resize', resize, false);
 
 
-        Object.keys(layers)
-            .filter(function () {
-                return true;//TODO
-            })
+        Object.keys(options.layers || {})
             .forEach(function (name) {
-                objects.push(layers[name]);
+                var Layer = layers[name] || pr.layers[name];
+                if (!Layer) {
+                    throw new Error('Unknwon layer: ' + name)
+                }
+                var option = options.layers[name],
+                    layer = new Layer(option);
+                objects.push(layer);
             });
 
 

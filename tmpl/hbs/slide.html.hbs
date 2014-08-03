@@ -29,7 +29,12 @@
 <script>
 parari.start('parari-slide-root', {
     vLock:false,
-    hLock:true
+    hLock:true,
+    layers: {
+        {{#each layers}}{{name}}: {
+            {{#each options}}{{@key}}:{{{this}}}{{/each}}
+        }{{#if @last}}{{else}},{{/if}}{{/each}}
+    }
 });
 </script>
 
