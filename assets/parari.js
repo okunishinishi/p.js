@@ -1108,7 +1108,7 @@ window.parari = (function (parari) {
 	    u.copy(
 	        /** @lends LightRaysLayer.prototype */
 	        {
-	            z: -10,
+	            z: -11,
 	            setBounds: function () {
 	                var s = this;
 	                Layer.prototype.setBounds.apply(s, arguments);
