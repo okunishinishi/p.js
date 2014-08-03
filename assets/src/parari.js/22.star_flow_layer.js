@@ -1,7 +1,7 @@
 /**
  * Parari object.
  * @memberof layers
- * @constructor NightSkyLayer
+ * @constructor StarFlowLayer
  * @param {object} options
  */
 (function (pr, document) {
@@ -10,27 +10,27 @@
     var u = pr.utilities,
         Layer = pr.layers.Layer;
 
-    /** @lends NightSkyLayer */
-    function NightSkyLayer(data) {
+    /** @lends StarFlowLayer */
+    function StarFlowLayer(data) {
         var s = this;
         u.copy(data || {}, s);
         s.invalidate();
     };
 
-    NightSkyLayer.prototype = new Layer({});
+    StarFlowLayer.prototype = new Layer({});
 
     u.copy(
-        /** @lends NightSkyLayer.prototype */
+        /** @lends StarFlowLayer.prototype */
         {
             z: -10,
             setBounds: function () {
                 var s = this;
                 Layer.prototype.setBounds.apply(s, arguments);
-                s.stars = NightSkyLayer.stars(s.getBounds());
+                s.stars = StarFlowLayer.stars(s.getBounds());
             },
             reload: function (callback) {
                 var s = this;
-                s.stars = NightSkyLayer.stars(s.getBounds());
+                s.stars = StarFlowLayer.stars(s.getBounds());
                 s.load(callback);
             },
             stars: [],
@@ -47,15 +47,15 @@
                 ctx.restore();
             }
         },
-        NightSkyLayer.prototype);
+        StarFlowLayer.prototype);
 
-    NightSkyLayer.numberStartsForBounds = function (bounds) {
+    StarFlowLayer.numberStartsForBounds = function (bounds) {
         var w = bounds.maxX - bounds.minX,
             h = bounds.maxY - bounds.minY;
         return w * h / 400;
     };
 
-    NightSkyLayer.randomColor = function () {
+    StarFlowLayer.randomColor = function () {
         var rgb = u.hsv2rgb(u.randomInt(0, 360), 10, 100);
         return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
     };
@@ -64,8 +64,8 @@
      * Create stars.
      * @returns {Star[]} - Stars.
      */
-    NightSkyLayer.stars = function (bounds) {
-        var count = NightSkyLayer.numberStartsForBounds(bounds);
+    StarFlowLayer.stars = function (bounds) {
+        var count = StarFlowLayer.numberStartsForBounds(bounds);
         var stars = [];
         for (var i = 0; i < count; i++) {
             var radius = Math.random(),
@@ -73,7 +73,7 @@
                         baseX: u.randomInt(bounds.minX, bounds.maxX),
                         baseY: u.randomInt(bounds.minY, bounds.maxY),
                         radius: radius,
-                        color: NightSkyLayer.randomColor(),
+                        color: StarFlowLayer.randomColor(),
                         speed: radius
                     }
                 );
@@ -83,7 +83,7 @@
     };
 
     /**
-     * @memberof NightSkyLayer
+     * @memberof StarFlowLayer
      * @constructor Star
      * @param {object} options
      * @private
@@ -134,9 +134,8 @@
     };
 
 
-    pr.layers.NightSkyLayer = NightSkyLayer;
+    pr.layers.StarFlowLayer = StarFlowLayer;
 
-    pr.layers.NightSkyLayer.Star = Star;
+    pr.layers.StarFlowLayer.Star = Star;
 
-})
-(window.parari = window.parari || {}, document);
+})(window.parari = window.parari || {}, document);

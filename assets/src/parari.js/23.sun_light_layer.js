@@ -1,7 +1,7 @@
 /**
  * Parari object.
  * @memberof layers
- * @constructor LightRaysLayer
+ * @constructor SunLightLayer
  * @param {object} options
  */
 (function (pr, document) {
@@ -10,17 +10,17 @@
     var u = pr.utilities,
         Layer = pr.layers.Layer;
 
-    /** @lends LightRaysLayer */
-    function LightRaysLayer(data) {
+    /** @lends SunLightLayer */
+    function SunLightLayer(data) {
         var s = this;
         u.copy(data || {}, s);
         s.invalidate();
     };
 
-    LightRaysLayer.prototype = new Layer({});
+    SunLightLayer.prototype = new Layer({});
 
     u.copy(
-        /** @lends LightRaysLayer.prototype */
+        /** @lends SunLightLayer.prototype */
         {
             z: -11,
             setBounds: function () {
@@ -60,8 +60,8 @@
                 ctx.restore();
             }
         },
-        LightRaysLayer.prototype);
+        SunLightLayer.prototype);
 
-    pr.layers.LightRaysLayer = LightRaysLayer;
+    pr.layers.SunLightLayer = SunLightLayer;
 })
 (window.parari = window.parari || {}, document);

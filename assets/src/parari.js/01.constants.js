@@ -1,12 +1,10 @@
 /**
  * Constants for parari.
- * @membrerof para
- * @namespace constants
+ * @membrerof parari
+ * @member constants
  */
 (function (pr) {
     "use strict";
-
-    var u = pr.utilities;
 
     /**
      * @lends para.constants

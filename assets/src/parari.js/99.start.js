@@ -8,10 +8,6 @@
 
     var u = pr.utilities;
 
-    var layers = {
-        lightRays: pr.layers.LightRaysLayer,
-        nightSky: pr.layers.NightSkyLayer
-    };
 
     /**
      * @lends start
@@ -66,7 +62,7 @@
 
         Object.keys(options.layers || {})
             .forEach(function (name) {
-                var Layer = layers[name] || pr.layers[name];
+                var Layer = pr.resolveLayer(name);
                 if (!Layer) {
                     throw new Error('Unknwon layer: ' + name)
                 }

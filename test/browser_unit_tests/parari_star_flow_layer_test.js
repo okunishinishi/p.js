@@ -1,18 +1,18 @@
 /**
- *  @file Test for parari night sky layer
+ *  @file Test for parari star flow layer.
  *  RUn with karma.
  */
 
 "use strcit"
 
 
-describe('pr.layers.NightSkyLayer', function () {
+describe('pr.layers.StarFlowLayer', function () {
 
     var pr = window.parari,
         l = pr.layers;
 
     it('Create a star.', function () {
-        var star = new l.NightSkyLayer.Star({
+        var star = new l.StarFlowLayer.Star({
             radius: 2,
             speed: 1,
             color: '#FFF'
@@ -22,14 +22,14 @@ describe('pr.layers.NightSkyLayer', function () {
     });
 
     it('Craet a night sky.', function () {
-        var layer = new l.NightSkyLayer({
+        var layer = new l.StarFlowLayer({
 
         });
         expect(layer).toBeDefined();
     });
 
     it('Create stars.', function () {
-        var stars = l.NightSkyLayer.stars({
+        var stars = l.StarFlowLayer.stars({
             minX: 10,
             minY: 20,
             maxX: 200,
@@ -39,7 +39,7 @@ describe('pr.layers.NightSkyLayer', function () {
     });
 
     it('numberStartsForBounds', function () {
-        var count = l.NightSkyLayer.numberStartsForBounds({
+        var count = l.StarFlowLayer.numberStartsForBounds({
             minX: 10,
             minY: 20,
             maxX: 200,
