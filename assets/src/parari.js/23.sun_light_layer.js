@@ -11,9 +11,9 @@
         Layer = pr.layers.Layer;
 
     /** @lends SunLightLayer */
-    function SunLightLayer(data) {
+    function SunLightLayer(options) {
         var s = this;
-        u.copy(data || {}, s);
+        u.copy(options || {}, s);
         s.invalidate();
     };
 
@@ -23,6 +23,10 @@
         /** @lends SunLightLayer.prototype */
         {
             z: -11,
+            speed: 0.5,
+            colors: [
+                '#8ED6FF', '#004CB3'
+            ],
             setBounds: function () {
                 var s = this;
                 Layer.prototype.setBounds.apply(s, arguments);
@@ -41,10 +45,10 @@
                     maxY = bounds.maxY;
 
                 ctx.save();
-
                 ctx.rect(minX, minY, maxX, maxY);
 
-                var x = scrollX % maxX, y = scrollY % maxY,
+                var x = (scrollX * s.speed) % maxX,
+                    y = (scrollY * s.speed) % maxY,
                     factor = s.factor(x, y),
                     radius = (maxY - minY) / 3,
                     rx = radius * 0.8,
@@ -52,8 +56,10 @@
 
                 var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (2 + Math.abs(factor)));
 
-                gradient.addColorStop(0, '#8ED6FF');
-                gradient.addColorStop(1, '#004CB3');
+
+                for (var i = 0; i < s.colors.length; i++) {
+                    gradient.addColorStop(i / (s.colors.length - 1), s.colors[i]);
+                }
 
                 ctx.fillStyle = gradient;
                 ctx.fill();

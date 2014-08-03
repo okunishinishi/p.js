@@ -11,10 +11,11 @@
         Layer = pr.layers.Layer;
 
     /** @lends StarFlowLayer */
-    function StarFlowLayer(data) {
+    function StarFlowLayer(options) {
         var s = this;
-        u.copy(data || {}, s);
+        u.copy(options || {}, s);
         s.invalidate();
+
     };
 
     StarFlowLayer.prototype = new Layer({});
