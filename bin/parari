@@ -19,10 +19,10 @@ program
 program
     .command('slide <src> [dest]')
     .description('Generate a slide show.')
-    .option('-c, --css', 'CSS file name to include.')
-    .option('-j, --js', 'Javascript file name to include.')
-    .option('-T, --title', 'Title of the slide.')
-    .option('-t, --theme', 'Theme of the slide.')
+    .option('-c, --css <css>', 'CSS file name to include.')
+    .option('-j, --js <js>', 'Javascript file name to include.')
+    .option('-T, --title <title>', 'Title of the slide.')
+    .option('-t, --theme <theme>', 'Theme of the slide.')
     .action(commands.slide.bind(commands));
 
 program.parse(process.argv);
