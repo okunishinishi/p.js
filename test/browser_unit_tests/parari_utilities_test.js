@@ -52,4 +52,18 @@ describe('pr.utilities', function () {
     it('Rate.', function () {
         expect(u.rate(10, 40, 25)).toEqual(0.5);
     });
+
+    it('Random int.', function () {
+        expect(u.randomInt(1, 10)).toBeDefined();
+    });
+
+    it('hsv2rgb', function () {
+        var rgb = u.hsv2rgb(200, 80, 80);
+        expect(rgb.r).toEqual(40);
+        expect(rgb.g).toEqual(149);
+        expect(rgb.b).toEqual(204);
+    });
+    it('rgba2string', function () {
+        expect(u.rgba2string(200, 100, 300)).toEqual('rgba(200,100,300,1)');
+    })
 });

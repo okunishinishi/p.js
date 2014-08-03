@@ -56,7 +56,7 @@
                 callback(s);
                 return;
             }
-            object.load(function (object) {
+            object.load(function () {
                 var center = u.centerPoint(s.canvas);
                 object.dx = object.x - center.x;
                 object.dy = object.y - center.y;
@@ -64,8 +64,8 @@
                 s.loadObjects(queue, callback);
             });
             object.onPrImgLoad = function (img) {
-                s.redraw();
                 s.addImgElement(img);
+                s.redraw();
             };
         },
         /**
@@ -73,6 +73,7 @@
          * @param img
          */
         addImgElement: function (img) {
+
             var s = this,
                 obj = new pr.Object(img);
             obj.image = img;

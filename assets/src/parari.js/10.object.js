@@ -2,6 +2,7 @@
  * Parari object.
  * @memberof parari
  * @constructor Object
+ * @param {object} options
  */
 (function (pr, document) {
     "use strict";
@@ -14,8 +15,7 @@
         var s = this;
         u.copy(data || {}, s);
         s.invalidate();
-
-    };
+    }
 
     PrObject.prototype = {
         /**
@@ -27,7 +27,9 @@
             u.htmlToImage(s.html, s.width, s.height, function (image) {
                 s.image = image;
                 s.invalidate();
-                callback && callback(s);
+                if (callback) {
+                    callback(s);
+                }
             });
         },
         /**
@@ -62,6 +64,8 @@
             var s = this;
             return s.y + s.height / 2;
         },
+        dx: 0,
+        dy: 0,
         /**
          * Draw object.
          * @param {CanvasRenderingContext2D} ctx
@@ -125,6 +129,19 @@
             s.minY = minY;
             s.maxX = maxX;
             s.maxY = maxY;
+        },
+        /**
+         * Get bound object.
+         * @returns {object} - Boudns object.
+         */
+        getBounds: function () {
+            var s = this;
+            return {
+                minX: s.minX,
+                minY: s.minY,
+                maxX: s.maxX,
+                maxY: s.maxY,
+            }
         },
         /**
          * Invalidate object rendering.
@@ -232,16 +249,14 @@
             html: PrObject.elmToHtml(elm)
         });
 
-        var imgLoad = function (img) {
-            obj.reload(function () {
-                obj.invalidate();
-                obj.onPrImgLoad && obj.onPrImgLoad(img);
-            });
-        };
 
         u.toArray(elm.querySelectorAll('img')).forEach(function (img) {
             img.onload = function () {
-                imgLoad(img);
+                setTimeout(function () {
+                    if (obj.onPrImgLoad) {
+                        obj.onPrImgLoad(img);
+                    }
+                }, 10);
             }
         });
 
@@ -250,5 +265,4 @@
 
     pr.Object = PrObject;
 
-})
-(window.parari = window.parari || {}, document);
+})(window.parari = window.parari || {}, document);

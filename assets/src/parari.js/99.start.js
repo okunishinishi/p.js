@@ -59,6 +59,9 @@
         window.addEventListener('resize', resize, false);
 
 
+        objects.push(new pr.layers.NightSkyLayer({
+
+        }));
         screen.loadObjects(objects, function () {
             resize();
             redraw();

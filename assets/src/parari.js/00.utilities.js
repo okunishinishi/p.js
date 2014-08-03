@@ -35,7 +35,7 @@
             if (!parent) {
                 return parent;
             }
-            var isLast = parent.lastchild == targetElement;
+            var isLast = parent.lastchild === targetElement;
             if (isLast) {
                 parent.appendChild(newElement);
             } else {
@@ -148,8 +148,8 @@
         offsetSum: function (elm) {
             var top = 0, left = 0;
             while (elm) {
-                top = top + parseInt(elm.offsetTop);
-                left = left + parseInt(elm.offsetLeft);
+                top = top + parseInt(elm.offsetTop, 10);
+                left = left + parseInt(elm.offsetLeft, 10);
                 elm = elm.offsetParent;
             }
             return {top: top, left: left};
@@ -188,7 +188,7 @@
                 top: top,
                 width: w,
                 height: h
-            }
+            };
         },
         /**
          * Center point for a element.
@@ -217,9 +217,7 @@
                 var img = imgs[i];
                 img.parentNode.removeChild(img);
             }
-            var html = workingDiv.outerHTML;
-            html = html.replace(/&nbsp;/g, '');
-            return  html;
+            return workingDiv.outerHTML.replace(/&nbsp;/g, '');
         },
         /**
          * Convert an html to a image.
@@ -259,6 +257,57 @@
                 .sort(function (a, b) {
                     return a - b;
                 })[0];
+        },
+        /**
+         * Get a random int.
+         * @param {number} min - Min value.
+         * @param {number} max - Max value.
+         */
+        randomInt: function (min, max) {
+            var range = max - min;
+            return parseInt(min + range * Math.random());
+        },
+        hsv2rgb: function (h, s, v) {
+            //r, g, b means  red, blue, green, 0 ~ 255.
+            //a means alpha, 0.0 ~ 1.0
+            //h means hue, 0 ~ 360
+            //s, v means saturation, value of brgitness, 0 ~ 100
+            var rgb = (function (h, s, v) {
+                if (s == 0) return ({r: v, g: v, b: v});//gray
+                h = h % 360;
+                var i = Math.floor(h / 60);
+                var f = h / 60 - i;
+                v = v * 255 / 100;
+                var m = v * (1 - s / 100);
+                var n = v * (1 - s / 100 * f);
+                var k = v * (1 - s / 100 * (1 - f));
+                switch (i) {
+                    case 0:
+                        return {r: v, g: k, b: m};
+                    case 1:
+                        return {r: n, g: v, b: m};
+                    case 2:
+                        return {r: m, g: v, b: k};
+                    case 3:
+                        return {r: m, g: n, b: v};
+                    case 4:
+                        return {r: k, g: m, b: v};
+                    case 5:
+                        return {r: v, g: m, b: n};
+                }
+            })(h, s, v);
+            rgb.r = parseInt(rgb.r);
+            rgb.g = parseInt(rgb.g);
+            rgb.b = parseInt(rgb.b);
+            return rgb;
+        },
+        rgba2string: function (r, g, b, a) {
+            if (!a) a = 1;
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+        },
+        hsv2rgbaString: function (h, s, v) {
+            var rgba = this.hsv2rgb(h, s, v)
+            return this.rgba2string(rgba.r, rgba.g, rgba.b);
         }
     };
 

@@ -1,6 +1,6 @@
 /**
  * @file Test for parari constatns.
- * Runs with kara.
+ * Runs with karma.
  */
 
 "use strict";
