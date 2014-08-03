@@ -36,12 +36,8 @@ module.exports = {
                     alias = alias[0].toLowerCase() + alias.substr(1);
                     map[alias] = ['pr', 'layers', name].join('.')
                 })
-            return toJson(map, 1);
+            return toJson(map, 3);
 
-        },
-        get layerOptions() {
-            var options = require('./.layer-options');
-            return toJson(options, 1);
         }
     }
 };

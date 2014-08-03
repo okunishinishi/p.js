@@ -1,5 +1,5 @@
 /**
- * Bud file for rainbow theme.
+ * Bud file for rainbow .
  */
 
 "use strict";
@@ -25,22 +25,17 @@ module.exports = {
         var hueCount = 14,
             scheme = new ColorScheme;
 
-
-        var themeName = 'rainbow';
-
-        function themeSelector(selector) {
+        function prSelector(selector) {
             return [
-                ['.pr-theme', themeName].join('-'),
-                selector
+                '.pr-src', selector
             ].join(' ');
         }
 
 
         return {
-            themeName: themeName,
             componentStyles: [
                 {
-                    selector: themeSelector('img'),
+                    selector: prSelector('img'),
                     get values() {
                         return {
                             opacity: 0.9,
@@ -59,7 +54,7 @@ module.exports = {
                         return '#' + hex;
                     });
 
-                var selector = themeSelector(
+                var selector = prSelector(
                     ['.pr-page', util.format('nth-child(%dn+%d)', hueCount, i)].join(':')
                 );
                 var white = '#FFF';

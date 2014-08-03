@@ -917,19 +917,12 @@ window.parari = (function (parari) {
 	    /** @lends layers */
 	    pr.layers = {
 	        /** Short names for layers. */
-	        get _layerNameMap(){
+	        get _layerNameMap() {
 	            return {
-		    resolve: pr.layers.ResolveLayer,
-		    starFlow: pr.layers.StarFlowLayer,
-		    sunLight: pr.layers.SunLightLayer
-		};
-	        },
-	        /** Default layer options. */
-	        get _layerOptions(){
-	            return {
-		    starFlow: {},
-		    sunLight: {}
-		};
+				    resolve: pr.layers.ResolveLayer,
+				    starFlow: pr.layers.StarFlowLayer,
+				    sunLight: pr.layers.SunLightLayer
+				};
 	        }
 	    };
 	
@@ -1006,14 +999,15 @@ window.parari = (function (parari) {
 	        /** @lends StarFlowLayer.prototype */
 	        {
 	            z: -10,
+	            saturation: 10,
 	            setBounds: function () {
 	                var s = this;
 	                Layer.prototype.setBounds.apply(s, arguments);
-	                s.stars = StarFlowLayer.stars(s.getBounds());
+	                s.stars = StarFlowLayer.stars(s.getBounds(), s.saturation);
 	            },
 	            reload: function (callback) {
 	                var s = this;
-	                s.stars = StarFlowLayer.stars(s.getBounds());
+	                s.stars = StarFlowLayer.stars(s.getBounds(), s.saturation);
 	                s.load(callback);
 	            },
 	            stars: [],
@@ -1038,8 +1032,8 @@ window.parari = (function (parari) {
 	        return w * h / 400;
 	    };
 	
-	    StarFlowLayer.randomColor = function () {
-	        var rgb = u.hsv2rgb(u.randomInt(0, 360), 10, 100);
+	    StarFlowLayer.randomColor = function (saturation) {
+	        var rgb = u.hsv2rgb(u.randomInt(0, 360), saturation, 100);
 	        return u.rgba2string(rgb.r, rgb.g, rgb.b, 0.8);
 	    };
 	
@@ -1047,7 +1041,7 @@ window.parari = (function (parari) {
 	     * Create stars.
 	     * @returns {Star[]} - Stars.
 	     */
-	    StarFlowLayer.stars = function (bounds) {
+	    StarFlowLayer.stars = function (bounds, saturation) {
 	        var count = StarFlowLayer.numberStartsForBounds(bounds);
 	        var stars = [];
 	        for (var i = 0; i < count; i++) {
@@ -1056,7 +1050,7 @@ window.parari = (function (parari) {
 	                        baseX: u.randomInt(bounds.minX, bounds.maxX),
 	                        baseY: u.randomInt(bounds.minY, bounds.maxY),
 	                        radius: radius,
-	                        color: StarFlowLayer.randomColor(),
+	                        color: StarFlowLayer.randomColor(saturation),
 	                        speed: radius
 	                    }
 	                );
@@ -1170,7 +1164,6 @@ window.parari = (function (parari) {
 	                    maxY = bounds.maxY;
 	
 	                ctx.save();
-	
 	                ctx.rect(minX, minY, maxX, maxY);
 	
 	                var x = (scrollX * s.speed) % maxX,

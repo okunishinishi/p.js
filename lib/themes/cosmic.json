@@ -1,0 +1,16 @@
+{
+    "layers": {
+        "sunLight": {
+            "z": -11,
+            "speed": 0.2,
+            "colors": [
+                "#8ED6FF",
+                "#004CB3"
+            ]
+        },
+        "starFlow": {
+            "saturation": 10,
+            "z": -10
+        }
+    }
+}

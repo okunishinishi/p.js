@@ -21,7 +21,7 @@
 
 
 </head>
-<body class="pr-theme-{{theme}}" id="parari-slide-root">
+<body id="parari-slide-root">
 
 {{{src}}}
 
@@ -32,8 +32,10 @@ parari.start('parari-slide-root', {
     hLock:true,
     layers: {
         {{#each layers}}{{name}}: {
-            {{#each options}}{{@key}}:{{{this}}}{{/each}}
-        }{{#if @last}}{{else}},{{/if}}{{/each}}
+            {{#each options}}{{key}}:{{{val}}}{{#if @last}}{{else}},
+            {{/if}}{{/each}}
+        }{{#if @last}}{{else}},
+        {{/if}}{{/each}}
     }
 });
 </script>

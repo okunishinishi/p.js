@@ -14,6 +14,7 @@
         "doc/coverage",
         "doc/readme",
         "lib",
+        "lib/themes",
         "lib/commands",
         "test",
         "test/.work",

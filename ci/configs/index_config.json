@@ -20,5 +20,12 @@
             "file": "parari",
             "module": "parari/lib/commands"
         }
+    },
+    {
+        "dirname": "lib/themes",
+        "doc": {
+            "file": "parari",
+            "module": "parari/lib/themes"
+        }
     }
 ]

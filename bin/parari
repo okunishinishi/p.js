@@ -21,7 +21,8 @@ program
     .description('Generate a slide show.')
     .option('-c, --css', 'CSS file name to include.')
     .option('-j, --js', 'Javascript file name to include.')
-    .option('-t, --title', 'Title of the slide.')
+    .option('-T, --title', 'Title of the slide.')
+    .option('-t, --theme', 'Theme of the slide.')
     .action(commands.slide.bind(commands));
 
 program.parse(process.argv);

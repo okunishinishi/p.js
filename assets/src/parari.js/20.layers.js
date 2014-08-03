@@ -9,19 +9,12 @@
     /** @lends layers */
     pr.layers = {
         /** Short names for layers. */
-        get _layerNameMap(){
+        get _layerNameMap() {
             return {
-	    resolve: pr.layers.ResolveLayer,
-	    starFlow: pr.layers.StarFlowLayer,
-	    sunLight: pr.layers.SunLightLayer
-	};
-        },
-        /** Default layer options. */
-        get _layerOptions(){
-            return {
-	    starFlow: {},
-	    sunLight: {}
-	};
+			    resolve: pr.layers.ResolveLayer,
+			    starFlow: pr.layers.StarFlowLayer,
+			    sunLight: pr.layers.SunLightLayer
+			};
         }
     };
 
