@@ -897,28 +897,24 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {}, document);
     
     /**
-	 * Parari object.
+	 * Parari layers.
 	 * @memberof layers
-	 * @constructor NightSkyLayer
-	 * @param {object} options
+	 * @constructor Layer
 	 */
 	(function (pr, document) {
 	    "use strict";
 	
-	    var u = pr.utilities,
-	        c = pr.constants;
+	    var u = pr.utilities;
 	
-	    /** @lends NightSkyLayer */
-	    function NightSkyLayer(data) {
-	        var s = this;
-	        u.copy(data || {}, s);
-	        s.invalidate();
+	    /** @lends Layer*/
+	    function Layer() {
+	
 	    };
 	
-	    NightSkyLayer.prototype = new pr.Object;
+	    Layer.prototype = new pr.Object({});
 	
 	    u.copy(
-	        /** @lends NightSkyLayer.prototype */
+	        /** @lends Layer.prototype */
 	        {
 	            load: function (callback) {
 	                var s = this;
@@ -934,12 +930,44 @@ window.parari = (function (parari) {
 	                s.y = (s.minY + s.maxY) / 2;
 	                s.width = s.maxX - s.minX;
 	                s.height = s.maxY - s.minY;
-	
 	            },
+	        },
+	        Layer.prototype
+	    )
+	
+	    pr.layers.Layer = Layer;
+	
+	
+	})(window.parari = window.parari || {}, document);
+    
+    /**
+	 * Parari object.
+	 * @memberof layers
+	 * @constructor NightSkyLayer
+	 * @param {object} options
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Layer = pr.layers.Layer;
+	
+	    /** @lends NightSkyLayer */
+	    function NightSkyLayer(data) {
+	        var s = this;
+	        u.copy(data || {}, s);
+	        s.invalidate();
+	    };
+	
+	    NightSkyLayer.prototype = new Layer({});
+	
+	    u.copy(
+	        /** @lends NightSkyLayer.prototype */
+	        {
 	            z: -10,
 	            setBounds: function () {
 	                var s = this;
-	                pr.Object.prototype.setBounds.apply(s, arguments);
+	                Layer.prototype.setBounds.apply(s, arguments);
 	                s.stars = NightSkyLayer.stars(s.getBounds());
 	            },
 	            reload: function (callback) {
@@ -948,7 +976,6 @@ window.parari = (function (parari) {
 	                s.load(callback);
 	            },
 	            stars: [],
-	
 	            draw: function (ctx, scrollX, scrollY) {
 	                var s = this,
 	                    bounds = s.getBounds();
@@ -959,7 +986,6 @@ window.parari = (function (parari) {
 	                    star.move(-scrollX, -scrollY, bounds);
 	                    star.draw(ctx);
 	                }
-	
 	                ctx.restore();
 	            }
 	        },
@@ -984,14 +1010,15 @@ window.parari = (function (parari) {
 	        var count = NightSkyLayer.numberStartsForBounds(bounds);
 	        var stars = [];
 	        for (var i = 0; i < count; i++) {
-	            var star = new Star({
-	                    baseX: u.randomInt(bounds.minX, bounds.maxX),
-	                    baseY: u.randomInt(bounds.minY, bounds.maxY),
-	                    radius: Math.random(),
-	                    color: NightSkyLayer.randomColor(),
-	                    speed: u.randomInt(1, 10) / 10
-	                }
-	            );
+	            var radius = Math.random(),
+	                star = new Star({
+	                        baseX: u.randomInt(bounds.minX, bounds.maxX),
+	                        baseY: u.randomInt(bounds.minY, bounds.maxY),
+	                        radius: radius,
+	                        color: NightSkyLayer.randomColor(),
+	                        speed: radius
+	                    }
+	                );
 	            stars.push(star);
 	        }
 	        return stars;
@@ -1053,6 +1080,57 @@ window.parari = (function (parari) {
 	
 	    pr.layers.NightSkyLayer.Star = Star;
 	
+	})
+	(window.parari = window.parari || {}, document);
+    
+    /**
+	 * Parari object.
+	 * @memberof layers
+	 * @constructor LightRaysLayer
+	 * @param {object} options
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Layer = pr.layers.Layer;
+	
+	    /** @lends LightRaysLayer */
+	    function LightRaysLayer(data) {
+	        var s = this;
+	        u.copy(data || {}, s);
+	        s.invalidate();
+	    };
+	
+	    LightRaysLayer.prototype = new Layer({});
+	
+	    u.copy(
+	        /** @lends LightRaysLayer.prototype */
+	        {
+	            z: -10,
+	            setBounds: function () {
+	                var s = this;
+	                Layer.prototype.setBounds.apply(s, arguments);
+	            },
+	            reload: function (callback) {
+	                var s = this;
+	                s.load(callback);
+	            },
+	            draw: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.getBounds();
+	                ctx.save();
+	                for (var i = 0; i < s.stars.length; i++) {
+	                    var star = s.stars[i];
+	                    star.move(-scrollX, -scrollY, bounds);
+	                    star.draw(ctx);
+	                }
+	                ctx.restore();
+	            }
+	        },
+	        LightRaysLayer.prototype);
+	
+	    pr.layers.LightRaysLayer = LightRaysLayer;
 	})
 	(window.parari = window.parari || {}, document);
     

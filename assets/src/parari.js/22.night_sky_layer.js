@@ -8,7 +8,7 @@
     "use strict";
 
     var u = pr.utilities,
-        c = pr.constants;
+        Layer = pr.layers.Layer;
 
     /** @lends NightSkyLayer */
     function NightSkyLayer(data) {
@@ -17,31 +17,15 @@
         s.invalidate();
     };
 
-    NightSkyLayer.prototype = new pr.Object;
+    NightSkyLayer.prototype = new Layer({});
 
     u.copy(
         /** @lends NightSkyLayer.prototype */
         {
-            load: function (callback) {
-                var s = this;
-                s.invalidate();
-                callback && callback(s);
-            },
-            /**
-             * Invalidate object rendering.
-             */
-            invalidate: function () {
-                var s = this;
-                s.x = (s.minX + s.maxX) / 2;
-                s.y = (s.minY + s.maxY) / 2;
-                s.width = s.maxX - s.minX;
-                s.height = s.maxY - s.minY;
-
-            },
             z: -10,
             setBounds: function () {
                 var s = this;
-                pr.Object.prototype.setBounds.apply(s, arguments);
+                Layer.prototype.setBounds.apply(s, arguments);
                 s.stars = NightSkyLayer.stars(s.getBounds());
             },
             reload: function (callback) {
@@ -50,7 +34,6 @@
                 s.load(callback);
             },
             stars: [],
-
             draw: function (ctx, scrollX, scrollY) {
                 var s = this,
                     bounds = s.getBounds();
@@ -61,7 +44,6 @@
                     star.move(-scrollX, -scrollY, bounds);
                     star.draw(ctx);
                 }
-
                 ctx.restore();
             }
         },
@@ -86,14 +68,15 @@
         var count = NightSkyLayer.numberStartsForBounds(bounds);
         var stars = [];
         for (var i = 0; i < count; i++) {
-            var star = new Star({
-                    baseX: u.randomInt(bounds.minX, bounds.maxX),
-                    baseY: u.randomInt(bounds.minY, bounds.maxY),
-                    radius: Math.random(),
-                    color: NightSkyLayer.randomColor(),
-                    speed: u.randomInt(1, 10) / 10
-                }
-            );
+            var radius = Math.random(),
+                star = new Star({
+                        baseX: u.randomInt(bounds.minX, bounds.maxX),
+                        baseY: u.randomInt(bounds.minY, bounds.maxY),
+                        radius: radius,
+                        color: NightSkyLayer.randomColor(),
+                        speed: radius
+                    }
+                );
             stars.push(star);
         }
         return stars;
