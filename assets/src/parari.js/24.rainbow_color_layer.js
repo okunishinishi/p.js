@@ -34,6 +34,7 @@
 
                 ctx.save();
 
+
                 var x = (scrollX * s.velocity) % bounds.right,
                     y = (scrollY * s.velocity) % bounds.bottom,
                     factor = s.factor(x, y);

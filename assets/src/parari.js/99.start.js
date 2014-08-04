@@ -67,8 +67,8 @@
                     throw new Error('Unknwon layer: ' + name)
                 }
                 var option = options.layers[name];
+
                 [].concat(option).forEach(function (option) {
-                    console.log('option', option)
                     u.copy({
                         vLock: !!vLock,
                         hLock: !!hLock
