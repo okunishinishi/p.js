@@ -41,8 +41,8 @@
 
                 ctx.save();
 
-                var x = (scrollX * s.velocity) % maxX,
-                    y = (scrollY * s.velocity) % maxY,
+                var x = (scrollX * s.velocity + s.vx) % maxX,
+                    y = (scrollY * s.velocity + s.vy) % maxY,
                     centerX = bounds.center.x - s.centerX,
                     centerY = bounds.center.y - s.centerY,
                     factor = s.factor(x, y);
@@ -54,12 +54,14 @@
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true)
                 ctx.strokeStyle = s.strokeStyle;
                 ctx.fillStyle = s.fillStyle;
-                ctx.lineWidth = s.lingWidth;
+                ctx.lineWidth = s.lineWidth;
                 ctx.stroke();
                 ctx.fill();
                 ctx.closePath();
                 ctx.restore();
-            }
+            },
+            vx: 0,
+            vy: 0
         },
         RippleCircleLayer.prototype);
 

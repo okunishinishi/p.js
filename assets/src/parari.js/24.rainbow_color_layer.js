@@ -23,7 +23,7 @@
         /** @lends RainbowColorLayer.prototype */
         {
             z: -9,
-            velocity: 0.5,
+            velocity: 0.15,
             value: 100,
             saturation: 70,
             alpha: 0.8,

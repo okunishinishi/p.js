@@ -31,10 +31,13 @@ parari.start('parari-slide-root', {
     vLock:false,
     hLock:true,
     layers: {
-        {{#each layers}}{{name}}: {
-            {{#each options}}{{key}}:{{{val}}}{{#if @last}}{{else}},
+        {{#each layers}}{{name}}: [
+            {{#each options}}{
+            {{#each this}}    {{key}}:{{{val}}}{{#if @last}}{{else}},
             {{/if}}{{/each}}
-        }{{#if @last}}{{else}},
+            }{{#if @last}}{{else}},
+            {{/if}}{{/each}}
+        ]{{#if @last}}{{else}},
         {{/if}}{{/each}}
     }
 });

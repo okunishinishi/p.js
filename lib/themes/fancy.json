@@ -1,21 +1,73 @@
 {
     "layers": {
         "rainbowColor": {
-            "velocity": 0.04,
+            "velocity": 0.05,
             "hue": 120,
             "saturation": 50,
             "value": 80,
             "alpha": 1
         },
-        "rippleCircle": {
-            "strokeStyle": "rgba(255,255,255,0.2)",
-            "fillStyle": "transparent",
-            "z": -8,
-            "velocity": 0.25,
-            "centerX": -900,
-            "centerY": -900,
-            "maxRadiusRate": "2",
-            "lingWidth": 1
-        }
+        "rippleCircle": [
+            {
+                "strokeStyle": "rgba(255,255,255,0.2)",
+                "fillStyle": "transparent",
+                "z": -8,
+                "velocity": 0.3,
+                "centerX": -400,
+                "centerY": -500,
+                "maxRadiusRate": "2",
+                "lineWidth": 1,
+                "vx": 100,
+                "vy": 100
+            },
+            {
+                "strokeStyle": "rgba(255,255,255,0.2)",
+                "fillStyle": "transparent",
+                "z": -8,
+                "velocity": 0.3,
+                "centerX": -400,
+                "centerY": -500,
+                "maxRadiusRate": "2",
+                "lineWidth": 1,
+                "vx": 200,
+                "vy": 200
+            },
+            {
+                "strokeStyle": "rgba(255,255,255,0.2)",
+                "fillStyle": "transparent",
+                "z": -8,
+                "velocity": 0.3,
+                "centerX": -400,
+                "centerY": -500,
+                "maxRadiusRate": "2",
+                "lineWidth": 1,
+                "vx": 300,
+                "vy": 300
+            },
+            {
+                "strokeStyle": "rgba(255,255,255,0.2)",
+                "fillStyle": "transparent",
+                "z": -8,
+                "velocity": 0.3,
+                "centerX": -400,
+                "centerY": -500,
+                "maxRadiusRate": "2",
+                "lineWidth": 1,
+                "vx": 400,
+                "vy": 400
+            },
+            {
+                "strokeStyle": "rgba(255,255,255,0.2)",
+                "fillStyle": "transparent",
+                "z": -8,
+                "velocity": 0.3,
+                "centerX": -400,
+                "centerY": -500,
+                "maxRadiusRate": "2",
+                "lineWidth": 1,
+                "vx": 500,
+                "vy": 500
+            }
+        ]
     }
 }

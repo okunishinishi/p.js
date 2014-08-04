@@ -1,7 +1,7 @@
 /**
  * @file Generate parallax page from html.
  * @namespace parari
- * @version 0.0.2
+ * @version 0.0.3
  * @require fabric.js 
  * @require one-color.js 
  */
@@ -1264,7 +1264,7 @@ window.parari = (function (parari) {
 	        /** @lends RainbowColorLayer.prototype */
 	        {
 	            z: -9,
-	            velocity: 0.5,
+	            velocity: 0.15,
 	            value: 100,
 	            saturation: 70,
 	            alpha: 0.8,
@@ -1343,8 +1343,8 @@ window.parari = (function (parari) {
 	
 	                ctx.save();
 	
-	                var x = (scrollX * s.velocity) % maxX,
-	                    y = (scrollY * s.velocity) % maxY,
+	                var x = (scrollX * s.velocity + s.vx) % maxX,
+	                    y = (scrollY * s.velocity + s.vy) % maxY,
 	                    centerX = bounds.center.x - s.centerX,
 	                    centerY = bounds.center.y - s.centerY,
 	                    factor = s.factor(x, y);
@@ -1356,12 +1356,14 @@ window.parari = (function (parari) {
 	                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true)
 	                ctx.strokeStyle = s.strokeStyle;
 	                ctx.fillStyle = s.fillStyle;
-	                ctx.lineWidth = s.lingWidth;
+	                ctx.lineWidth = s.lineWidth;
 	                ctx.stroke();
 	                ctx.fill();
 	                ctx.closePath();
 	                ctx.restore();
-	            }
+	            },
+	            vx: 0,
+	            vy: 0
 	        },
 	        RippleCircleLayer.prototype);
 	
@@ -1439,12 +1441,15 @@ window.parari = (function (parari) {
 	                    throw new Error('Unknwon layer: ' + name)
 	                }
 	                var option = options.layers[name];
-	                u.copy({
-	                    vLock: !!vLock,
-	                    hLock: !!hLock
-	                }, option);
-	                var layer = new Layer(option);
-	                objects.push(layer);
+	                [].concat(option).forEach(function (option) {
+	                    console.log('option', option)
+	                    u.copy({
+	                        vLock: !!vLock,
+	                        hLock: !!hLock
+	                    }, option);
+	                    var layer = new Layer(option);
+	                    objects.push(layer);
+	                });
 	            });
 	
 	
