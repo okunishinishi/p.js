@@ -122,7 +122,6 @@
             if (s.y < bounds.minY) {
                 s.y += (bounds.maxY - bounds.minY);
             }
-
         },
         /**
          * Draw a star.

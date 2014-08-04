@@ -1,40 +1,39 @@
 {
-  "name": "parari",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Generate parallax page from html.",
-  "main": "index.js",
-  "bin": {
-    "parari": "bin/parari"
-  },
-  "scripts": {
-    "test": "./ci/bin/test",
-    "coverage": "istanbul cover nodeunit test/unit_tests/* --dir doc/coverage",
-    "send-coverage": "codeclimate < doc/coverage/lcov.info"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/okunishinishi/p.js.git"
-  },
-  "author": "Taka Okunishi",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/okunishinishi/p.js/issues"
-  },
-  "homepage": "https://github.com/okunishinishi/p.js",
-  "dependencies": {
-    "apeman-util": "0.0.16",
-    "commander": "^2.3.0",
-    "marked": "^0.3.2",
-    "cheerio": "^0.17.0",
-    "onecolor": "^2.4.1",
-    "color-scheme": "0.0.5",
-    "html-entities": "^1.0.10"
-  },
-  "devDependencies": {
-    "apeman-tasks": "0.0.9",
-    "codeclimate-test-reporter": "0.0.3",
-    "nodeunit": "^0.9.0",
-    "istanbul": "^0.3.0"
-  }
+    "name": "parari",
+    "version": "0.0.2",
+    "description": "Generate parallax page from html.",
+    "main": "index.js",
+    "bin": {
+        "parari": "bin/parari"
+    },
+    "scripts": {
+        "test": "./ci/bin/test",
+        "coverage": "istanbul cover nodeunit test/unit_tests/* --dir doc/coverage",
+        "send-coverage": "codeclimate < doc/coverage/lcov.info"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/okunishinishi/p.js.git"
+    },
+    "author": "Taka Okunishi",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/okunishinishi/p.js/issues"
+    },
+    "homepage": "https://github.com/okunishinishi/p.js",
+    "dependencies": {
+        "apeman-util": "0.0.16",
+        "commander": "^2.3.0",
+        "marked": "^0.3.2",
+        "cheerio": "^0.17.0",
+        "onecolor": "^2.4.1",
+        "color-scheme": "0.0.5",
+        "html-entities": "^1.0.10"
+    },
+    "devDependencies": {
+        "apeman-tasks": "0.0.9",
+        "codeclimate-test-reporter": "0.0.3",
+        "nodeunit": "^0.9.0",
+        "istanbul": "^0.3.0"
+    }
 }

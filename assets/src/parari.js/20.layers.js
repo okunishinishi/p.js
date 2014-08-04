@@ -13,7 +13,9 @@
             return {
 			    resolve: pr.layers.ResolveLayer,
 			    starFlow: pr.layers.StarFlowLayer,
-			    sunLight: pr.layers.SunLightLayer
+			    sunLight: pr.layers.SunLightLayer,
+			    rainbowColor: pr.layers.RainbowColorLayer,
+			    rippleCircle: pr.layers.RippleCircleLayer
 			};
         }
     };

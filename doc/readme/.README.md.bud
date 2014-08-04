@@ -4,8 +4,12 @@
 
 "use strict";
 
-var path = require('path'),
-    fs = require('fs');
+var u = require('apeman-util'),
+    mapping = u.mapping,
+    reducing = u.reducing,
+    filtering = u.filtering,
+    path = u.core.path,
+    fs = u.core.fs;
 
 module.exports = {
     mode: '444',
@@ -18,6 +22,7 @@ module.exports = {
         get sections() {
             var dirname = path.resolve(__dirname, 'sections');
             return fs.readdirSync(dirname)
+                .filter(filtering.patternAcceptFilter(/\.md$/))
                 .map(function (filename) {
                     return {
                         name: path.basename(filename, path.extname(filename)),

@@ -23,6 +23,10 @@
                 s.invalidate();
                 callback && callback(s);
             },
+            reload: function (callback) {
+                var s = this;
+                s.load(callback);
+            },
             /**
              * Invalidate object rendering.
              */

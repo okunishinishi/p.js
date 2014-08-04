@@ -1,0 +1,21 @@
+{
+    "layers": {
+        "rainbowColor": {
+            "velocity": 0.04,
+            "hue": 120,
+            "saturation": 50,
+            "value": 80,
+            "alpha": 1
+        },
+        "rippleCircle": {
+            "strokeStyle": "rgba(255,255,255,0.2)",
+            "fillStyle": "transparent",
+            "z": -8,
+            "velocity": 0.25,
+            "centerX": -900,
+            "centerY": -900,
+            "maxRadiusRate": "2",
+            "lingWidth": 1
+        }
+    }
+}

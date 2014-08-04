@@ -1,7 +1,7 @@
 /**
  * @file Generate parallax page from html.
  * @namespace parari
- * @version 0.0.0
+ * @version 0.0.2
  * @require fabric.js 
  * @require one-color.js 
  */
@@ -921,7 +921,9 @@ window.parari = (function (parari) {
 	            return {
 				    resolve: pr.layers.ResolveLayer,
 				    starFlow: pr.layers.StarFlowLayer,
-				    sunLight: pr.layers.SunLightLayer
+				    sunLight: pr.layers.SunLightLayer,
+				    rainbowColor: pr.layers.RainbowColorLayer,
+				    rippleCircle: pr.layers.RippleCircleLayer
 				};
 	        }
 	    };
@@ -953,6 +955,10 @@ window.parari = (function (parari) {
 	                var s = this;
 	                s.invalidate();
 	                callback && callback(s);
+	            },
+	            reload: function (callback) {
+	                var s = this;
+	                s.load(callback);
 	            },
 	            /**
 	             * Invalidate object rendering.
@@ -1097,7 +1103,6 @@ window.parari = (function (parari) {
 	            if (s.y < bounds.minY) {
 	                s.y += (bounds.maxY - bounds.minY);
 	            }
-	
 	        },
 	        /**
 	         * Draw a star.
@@ -1121,12 +1126,12 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {}, document);
     
     /**
-	 * Parari object.
+	 * Sun light layer.
 	 * @memberof layers
 	 * @constructor SunLightLayer
 	 * @param {object} options
 	 */
-	(function (pr, document) {
+	(function (pr) {
 	    "use strict";
 	
 	    var u = pr.utilities,
@@ -1145,19 +1150,11 @@ window.parari = (function (parari) {
 	        /** @lends SunLightLayer.prototype */
 	        {
 	            z: -11,
-	            speed: 0.5,
+	            velocity: 0.5,
 	            expansion: 3,
 	            colors: [
 	                '#8ED6FF', '#004CB3'
 	            ],
-	            setBounds: function () {
-	                var s = this;
-	                Layer.prototype.setBounds.apply(s, arguments);
-	            },
-	            reload: function (callback) {
-	                var s = this;
-	                s.load(callback);
-	            },
 	            draw: function (ctx, scrollX, scrollY) {
 	                var s = this,
 	                    bounds = s.getBounds();
@@ -1170,8 +1167,8 @@ window.parari = (function (parari) {
 	                ctx.save();
 	                ctx.rect(minX, minY, maxX, maxY);
 	
-	                var x = (scrollX * s.speed) % maxX,
-	                    y = (scrollY * s.speed) % maxY,
+	                var x = (scrollX * s.velocity) % maxX,
+	                    y = (scrollY * s.velocity) % maxY,
 	                    factor = s.factor(x, y),
 	                    radius = (maxY - minY) / 3,
 	                    rx = radius * 0.8,
@@ -1192,8 +1189,143 @@ window.parari = (function (parari) {
 	        SunLightLayer.prototype);
 	
 	    pr.layers.SunLightLayer = SunLightLayer;
-	})
-	(window.parari = window.parari || {}, document);
+	
+	})(window.parari = window.parari || {});
+    
+    /**
+	 * Rainbow layer.
+	 * @memberof layers
+	 * @constructor RainbowColorLayer
+	 * @param {object} options
+	 *
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Layer = pr.layers.Layer;
+	
+	    /** @lends RainbowColorLayer */
+	    function RainbowColorLayer(options) {
+	        var s = this;
+	        u.copy(options || {}, s);
+	        s.invalidate();
+	    };
+	
+	    RainbowColorLayer.prototype = new Layer({});
+	    u.copy(
+	        /** @lends RainbowColorLayer.prototype */
+	        {
+	            z: -9,
+	            velocity: 0.5,
+	            value: 100,
+	            saturation: 70,
+	            alpha: 0.8,
+	            hue: 30,
+	            draw: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.getBounds();
+	
+	                var minX = bounds.minX,
+	                    minY = bounds.minY,
+	                    maxX = bounds.maxX,
+	                    maxY = bounds.maxY;
+	
+	                ctx.save();
+	
+	                var x = (scrollX * s.velocity) % maxX,
+	                    y = (scrollY * s.velocity) % maxY,
+	                    factor = s.factor(x, y);
+	
+	                ctx.beginPath();
+	                ctx.rect(minX, minY, maxX, maxY);
+	                ctx.fillStyle = s.fillColor(factor);
+	                ctx.fill();
+	                ctx.closePath();
+	                ctx.restore();
+	            },
+	            fillColor: function (factor) {
+	                var s = this,
+	                    hue = (s.hue + (factor + 1) * 360) % 360;
+	                var rgb = u.hsv2rgb(hue, s.saturation, s.value);
+	                return u.rgba2string(rgb.r, rgb.g, rgb.b, s.alpha);
+	            }
+	        },
+	        RainbowColorLayer.prototype);
+	
+	    pr.layers.RainbowColorLayer = RainbowColorLayer;
+	
+	
+	})(window.parari = window.parari || {});
+    
+    /**
+	 * Rainbow layer.
+	 * @memberof layers
+	 * @constructor RippleCircleLayer
+	 * @param {object} options
+	 *
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Layer = pr.layers.Layer;
+	
+	    /** @lends RippleCircleLayer */
+	    function RippleCircleLayer(options) {
+	        var s = this;
+	        u.copy(options || {}, s);
+	        s.invalidate();
+	    };
+	
+	    RippleCircleLayer.prototype = new Layer({});
+	    u.copy(
+	        /** @lends RippleCircleLayer.prototype */
+	        {
+	            z: -9,
+	            velocity: 0.5,
+	            strokeStyle: '#FFF',
+	            fillStyle: 'rgba(255,255,255,0.2)',
+	            centerX: -80,
+	            centerY: -80,
+	            lingWidth: 2,
+	            maxRadiusRate: 2,
+	            draw: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.getBounds();
+	
+	                var minX = bounds.minX,
+	                    minY = bounds.minY,
+	                    maxX = bounds.maxX,
+	                    maxY = bounds.maxY;
+	
+	                ctx.save();
+	
+	                var x = (scrollX * s.velocity) % maxX,
+	                    y = (scrollY * s.velocity) % maxY,
+	                    centerX = (minX + maxX) / 2 - s.centerX,
+	                    centerY = (minY + maxY) / 2 - s.centerY,
+	                    factor = s.factor(x, y);
+	
+	                var width = (maxX - minX);
+	                var radius = (width * (factor + 2)) % (width * s.maxRadiusRate);
+	                ctx.beginPath();
+	                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true)
+	                ctx.strokeStyle = s.strokeStyle;
+	                ctx.fillStyle = s.fillStyle;
+	                ctx.lineWidth = s.lingWidth;
+	                ctx.stroke();
+	                ctx.fill();
+	                ctx.closePath();
+	                ctx.restore();
+	            }
+	        },
+	        RippleCircleLayer.prototype);
+	
+	    pr.layers.RippleCircleLayer = RippleCircleLayer;
+	
+	
+	})(window.parari = window.parari || {});
     
     /**
 	 * Start para.

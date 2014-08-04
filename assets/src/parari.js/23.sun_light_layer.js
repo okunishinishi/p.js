@@ -1,10 +1,10 @@
 /**
- * Parari object.
+ * Sun light layer.
  * @memberof layers
  * @constructor SunLightLayer
  * @param {object} options
  */
-(function (pr, document) {
+(function (pr) {
     "use strict";
 
     var u = pr.utilities,
@@ -23,19 +23,11 @@
         /** @lends SunLightLayer.prototype */
         {
             z: -11,
-            speed: 0.5,
+            velocity: 0.5,
             expansion: 3,
             colors: [
                 '#8ED6FF', '#004CB3'
             ],
-            setBounds: function () {
-                var s = this;
-                Layer.prototype.setBounds.apply(s, arguments);
-            },
-            reload: function (callback) {
-                var s = this;
-                s.load(callback);
-            },
             draw: function (ctx, scrollX, scrollY) {
                 var s = this,
                     bounds = s.getBounds();
@@ -48,8 +40,8 @@
                 ctx.save();
                 ctx.rect(minX, minY, maxX, maxY);
 
-                var x = (scrollX * s.speed) % maxX,
-                    y = (scrollY * s.speed) % maxY,
+                var x = (scrollX * s.velocity) % maxX,
+                    y = (scrollY * s.velocity) % maxY,
                     factor = s.factor(x, y),
                     radius = (maxY - minY) / 3,
                     rx = radius * 0.8,
@@ -70,5 +62,5 @@
         SunLightLayer.prototype);
 
     pr.layers.SunLightLayer = SunLightLayer;
-})
-(window.parari = window.parari || {}, document);
+
+})(window.parari = window.parari || {});
