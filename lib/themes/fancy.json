@@ -1,7 +1,7 @@
 {
     "layers": {
         "rainbowColor": {
-            "velocity": 0.05,
+            "velocity": 0.15,
             "hue": 120,
             "saturation": 50,
             "value": 80,
