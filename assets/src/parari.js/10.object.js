@@ -110,26 +110,26 @@
         _factor: function (x, y) {
             var s = this;
             if (s.vLock) {
-                return u.rate(s.minX, s.maxX, x) * 2 - 1;
+                var minX = s.bounds.left, maxX = s.bounds.right;
+                return u.rate(minX, maxX, x) * 2 - 1;
             }
             if (s.hLock) {
-                return u.rate(s.minY, s.maxY, y) * 2 - 1;
+                var minY = s.bounds.top, maxY = s.bounds.bottom;
+                return u.rate(minY, maxY, y) * 2 - 1;
             }
             return 0;
         },
+        bounds: pr.Rect.RectZero(),
         /**
          * Set object bounds.
-         * @param {number} minX - Minimum x vlaue.
-         * @param {number} minY - Minimum y value.
-         * @param {number} maxX - Maximum x value.
-         * @param {number} maxY - Maximum y value.
+         * @param {number} left - Minimum x vlaue.
+         * @param {number} top - Minimum y value.
+         * @param {number} width - Bounds width.
+         * @param {number} height - Bounds height.
          */
-        setBounds: function (minX, minY, maxX, maxY) {
+        setBounds: function (left, top, width, height) {
             var s = this;
-            s.minX = minX;
-            s.minY = minY;
-            s.maxX = maxX;
-            s.maxY = maxY;
+            s.bounds = new pr.Rect(left, top, width, height);
         },
         /**
          * Get bound object.
@@ -137,12 +137,7 @@
          */
         getBounds: function () {
             var s = this;
-            return {
-                minX: s.minX,
-                minY: s.minY,
-                maxX: s.maxX,
-                maxY: s.maxY,
-            }
+            return s.bounds.clone();
         },
         /**
          * Invalidate object rendering.

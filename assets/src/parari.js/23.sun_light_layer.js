@@ -32,20 +32,16 @@
                 var s = this,
                     bounds = s.getBounds();
 
-                var minX = bounds.minX,
-                    minY = bounds.minY,
-                    maxX = bounds.maxX,
-                    maxY = bounds.maxY;
-
                 ctx.save();
-                ctx.rect(minX, minY, maxX, maxY);
+                ctx.rect(bounds.left, bounds.top, bounds.width, bounds.height);
 
-                var x = (scrollX * s.velocity) % maxX,
-                    y = (scrollY * s.velocity) % maxY,
+                var x = (scrollX * s.velocity) % bounds.right,
+                    y = (scrollY * s.velocity) % bounds.bottom,
                     factor = s.factor(x, y),
-                    radius = (maxY - minY) / 3,
+                    radius = bounds.height / 3,
                     rx = radius * 0.8,
                     ry = rx;
+
 
                 var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (s.expansion - 1 + Math.abs(factor)));
 

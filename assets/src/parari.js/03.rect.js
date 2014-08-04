@@ -36,10 +36,19 @@
                 x: (s.left + s.right) / 2,
                 y: (s.top + s.bottom) / 2
             }
+        },
+        clone: function () {
+            var s = this;
+            return new Rect(s.left, s.top, s.width, s.height);
         }
     };
 
+
     pr.Rect = Rect;
+
+    pr.Rect.RectZero = function () {
+        return new Rect(0, 0, 0, 0);
+    }
 
 
 })(window.parari = window.parari || {});

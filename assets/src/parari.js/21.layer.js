@@ -31,11 +31,12 @@
              * Invalidate object rendering.
              */
             invalidate: function () {
-                var s = this;
-                s.x = (s.minX + s.maxX) / 2;
-                s.y = (s.minY + s.maxY) / 2;
-                s.width = s.maxX - s.minX;
-                s.height = s.maxY - s.minY;
+                var s = this,
+                    center = s.bounds.center;
+                s.x = center.x;
+                s.y = center.y;
+                s.width = s.bounds.width;
+                s.height = s.bounds.height;
             },
         },
         Layer.prototype

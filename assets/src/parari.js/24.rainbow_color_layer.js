@@ -32,19 +32,14 @@
                 var s = this,
                     bounds = s.getBounds();
 
-                var minX = bounds.minX,
-                    minY = bounds.minY,
-                    maxX = bounds.maxX,
-                    maxY = bounds.maxY;
-
                 ctx.save();
 
-                var x = (scrollX * s.velocity) % maxX,
-                    y = (scrollY * s.velocity) % maxY,
+                var x = (scrollX * s.velocity) % bounds.right,
+                    y = (scrollY * s.velocity) % bounds.bottom,
                     factor = s.factor(x, y);
 
                 ctx.beginPath();
-                ctx.rect(minX, minY, maxX, maxY);
+                ctx.rect(bounds.left, bounds.top, bounds.width, bounds.height);
                 ctx.fillStyle = s.fillColor(factor);
                 ctx.fill();
                 ctx.closePath();

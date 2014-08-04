@@ -367,6 +367,61 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {});
     
     /**
+	 * Rect.
+	 * @membrerof para
+	 * @constructor Rect
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities;
+	
+	    /** @lends Rect */
+	    function Rect(left, top, width, height) {
+	        var s = this;
+	        s.left = left;
+	        s.top = top;
+	        s.width = width;
+	        s.height = height;
+	    }
+	
+	    Rect.prototype = {
+	        left: 0,
+	        top: 0,
+	        get right() {
+	            var s = this;
+	            return s.left + s.width;
+	        },
+	        get bottom() {
+	            var s = this;
+	            return s.top + s.height;
+	        },
+	        width: 0,
+	        height: 0,
+	        get center() {
+	            var s = this;
+	            return {
+	                x: (s.left + s.right) / 2,
+	                y: (s.top + s.bottom) / 2
+	            }
+	        },
+	        clone: function () {
+	            var s = this;
+	            return new Rect(s.left, s.top, s.width, s.height);
+	        }
+	    };
+	
+	
+	    pr.Rect = Rect;
+	
+	    pr.Rect.RectZero = function () {
+	        return new Rect(0, 0, 0, 0);
+	    }
+	
+	
+	})(window.parari = window.parari || {});
+    
+    /**
 	 * Resolve a layer by name.
 	 * @membrerof para
 	 * @function resolveLayer
@@ -499,26 +554,26 @@ window.parari = (function (parari) {
 	        _factor: function (x, y) {
 	            var s = this;
 	            if (s.vLock) {
-	                return u.rate(s.minX, s.maxX, x) * 2 - 1;
+	                var minX = s.bounds.left, maxX = s.bounds.right;
+	                return u.rate(minX, maxX, x) * 2 - 1;
 	            }
 	            if (s.hLock) {
-	                return u.rate(s.minY, s.maxY, y) * 2 - 1;
+	                var minY = s.bounds.top, maxY = s.bounds.bottom;
+	                return u.rate(minY, maxY, y) * 2 - 1;
 	            }
 	            return 0;
 	        },
+	        bounds: pr.Rect.RectZero(),
 	        /**
 	         * Set object bounds.
-	         * @param {number} minX - Minimum x vlaue.
-	         * @param {number} minY - Minimum y value.
-	         * @param {number} maxX - Maximum x value.
-	         * @param {number} maxY - Maximum y value.
+	         * @param {number} left - Minimum x vlaue.
+	         * @param {number} top - Minimum y value.
+	         * @param {number} width - Bounds width.
+	         * @param {number} height - Bounds height.
 	         */
-	        setBounds: function (minX, minY, maxX, maxY) {
+	        setBounds: function (left, top, width, height) {
 	            var s = this;
-	            s.minX = minX;
-	            s.minY = minY;
-	            s.maxX = maxX;
-	            s.maxY = maxY;
+	            s.bounds = new pr.Rect(left, top, width, height);
 	        },
 	        /**
 	         * Get bound object.
@@ -526,12 +581,7 @@ window.parari = (function (parari) {
 	         */
 	        getBounds: function () {
 	            var s = this;
-	            return {
-	                minX: s.minX,
-	                minY: s.minY,
-	                maxX: s.maxX,
-	                maxY: s.maxY,
-	            }
+	            return s.bounds.clone();
 	        },
 	        /**
 	         * Invalidate object rendering.
@@ -964,11 +1014,12 @@ window.parari = (function (parari) {
 	             * Invalidate object rendering.
 	             */
 	            invalidate: function () {
-	                var s = this;
-	                s.x = (s.minX + s.maxX) / 2;
-	                s.y = (s.minY + s.maxY) / 2;
-	                s.width = s.maxX - s.minX;
-	                s.height = s.maxY - s.minY;
+	                var s = this,
+	                    center = s.bounds.center;
+	                s.x = center.x;
+	                s.y = center.y;
+	                s.width = s.bounds.width;
+	                s.height = s.bounds.height;
 	            },
 	        },
 	        Layer.prototype
@@ -1043,8 +1094,8 @@ window.parari = (function (parari) {
 	                for (var i = 0; i < count; i++) {
 	                    var radius = Math.random(),
 	                        star = new Star({
-	                                baseX: u.randomInt(bounds.minX, bounds.maxX),
-	                                baseY: u.randomInt(bounds.minY, bounds.maxY),
+	                                baseX: u.randomInt(bounds.left, bounds.right),
+	                                baseY: u.randomInt(bounds.top, bounds.bottom),
 	                                radius: radius,
 	                                color: s.randomColor(saturation),
 	                                speed: radius
@@ -1056,8 +1107,8 @@ window.parari = (function (parari) {
 	            },
 	            numberStartsForBounds: function (bounds) {
 	                var s = this,
-	                    w = bounds.maxX - bounds.minX,
-	                    h = bounds.maxY - bounds.minY;
+	                    w = bounds.width,
+	                    h = bounds.height;
 	                return w * h * s.dense;
 	            },
 	            randomColor: function (saturation) {
@@ -1095,13 +1146,13 @@ window.parari = (function (parari) {
 	         */
 	        move: function (dx, dy, bounds) {
 	            var s = this;
-	            s.x = (dx * s.speed + s.baseX) % bounds.maxX;
-	            s.y = (dy * s.speed + s.baseY) % bounds.maxY;
-	            if (s.x < bounds.minX) {
-	                s.x += (bounds.maxX - bounds.minX);
+	            s.x = (dx * s.speed + s.baseX) % bounds.right;
+	            s.y = (dy * s.speed + s.baseY) % bounds.bottom;
+	            if (s.x < bounds.left) {
+	                s.x += bounds.width;
 	            }
-	            if (s.y < bounds.minY) {
-	                s.y += (bounds.maxY - bounds.minY);
+	            if (s.y < bounds.top) {
+	                s.y += bounds.height;
 	            }
 	        },
 	        /**
@@ -1159,20 +1210,16 @@ window.parari = (function (parari) {
 	                var s = this,
 	                    bounds = s.getBounds();
 	
-	                var minX = bounds.minX,
-	                    minY = bounds.minY,
-	                    maxX = bounds.maxX,
-	                    maxY = bounds.maxY;
-	
 	                ctx.save();
-	                ctx.rect(minX, minY, maxX, maxY);
+	                ctx.rect(bounds.left, bounds.top, bounds.width, bounds.height);
 	
-	                var x = (scrollX * s.velocity) % maxX,
-	                    y = (scrollY * s.velocity) % maxY,
+	                var x = (scrollX * s.velocity) % bounds.right,
+	                    y = (scrollY * s.velocity) % bounds.bottom,
 	                    factor = s.factor(x, y),
-	                    radius = (maxY - minY) / 3,
+	                    radius = bounds.height / 3,
 	                    rx = radius * 0.8,
 	                    ry = rx;
+	
 	
 	                var gradient = ctx.createRadialGradient(rx, ry, radius, rx, ry, radius * (s.expansion - 1 + Math.abs(factor)));
 	
@@ -1226,19 +1273,14 @@ window.parari = (function (parari) {
 	                var s = this,
 	                    bounds = s.getBounds();
 	
-	                var minX = bounds.minX,
-	                    minY = bounds.minY,
-	                    maxX = bounds.maxX,
-	                    maxY = bounds.maxY;
-	
 	                ctx.save();
 	
-	                var x = (scrollX * s.velocity) % maxX,
-	                    y = (scrollY * s.velocity) % maxY,
+	                var x = (scrollX * s.velocity) % bounds.right,
+	                    y = (scrollY * s.velocity) % bounds.bottom,
 	                    factor = s.factor(x, y);
 	
 	                ctx.beginPath();
-	                ctx.rect(minX, minY, maxX, maxY);
+	                ctx.rect(bounds.left, bounds.top, bounds.width, bounds.height);
 	                ctx.fillStyle = s.fillColor(factor);
 	                ctx.fill();
 	                ctx.closePath();
@@ -1294,21 +1336,22 @@ window.parari = (function (parari) {
 	                var s = this,
 	                    bounds = s.getBounds();
 	
-	                var minX = bounds.minX,
-	                    minY = bounds.minY,
-	                    maxX = bounds.maxX,
-	                    maxY = bounds.maxY;
+	                var minX = bounds.left,
+	                    minY = bounds.top,
+	                    maxX = bounds.right,
+	                    maxY = bounds.bottom;
 	
 	                ctx.save();
 	
 	                var x = (scrollX * s.velocity) % maxX,
 	                    y = (scrollY * s.velocity) % maxY,
-	                    centerX = (minX + maxX) / 2 - s.centerX,
-	                    centerY = (minY + maxY) / 2 - s.centerY,
+	                    centerX = bounds.center.x - s.centerX,
+	                    centerY = bounds.center.y - s.centerY,
 	                    factor = s.factor(x, y);
 	
-	                var width = (maxX - minX);
-	                var radius = (width * (factor + 2)) % (width * s.maxRadiusRate);
+	                var width = bounds.width,
+	                    radius = (width * (factor + 2)) % (width * s.maxRadiusRate);
+	
 	                ctx.beginPath();
 	                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true)
 	                ctx.strokeStyle = s.strokeStyle;

@@ -62,8 +62,8 @@
                 for (var i = 0; i < count; i++) {
                     var radius = Math.random(),
                         star = new Star({
-                                baseX: u.randomInt(bounds.minX, bounds.maxX),
-                                baseY: u.randomInt(bounds.minY, bounds.maxY),
+                                baseX: u.randomInt(bounds.left, bounds.right),
+                                baseY: u.randomInt(bounds.top, bounds.bottom),
                                 radius: radius,
                                 color: s.randomColor(saturation),
                                 speed: radius
@@ -75,8 +75,8 @@
             },
             numberStartsForBounds: function (bounds) {
                 var s = this,
-                    w = bounds.maxX - bounds.minX,
-                    h = bounds.maxY - bounds.minY;
+                    w = bounds.width,
+                    h = bounds.height;
                 return w * h * s.dense;
             },
             randomColor: function (saturation) {
@@ -114,13 +114,13 @@
          */
         move: function (dx, dy, bounds) {
             var s = this;
-            s.x = (dx * s.speed + s.baseX) % bounds.maxX;
-            s.y = (dy * s.speed + s.baseY) % bounds.maxY;
-            if (s.x < bounds.minX) {
-                s.x += (bounds.maxX - bounds.minX);
+            s.x = (dx * s.speed + s.baseX) % bounds.right;
+            s.y = (dy * s.speed + s.baseY) % bounds.bottom;
+            if (s.x < bounds.left) {
+                s.x += bounds.width;
             }
-            if (s.y < bounds.minY) {
-                s.y += (bounds.maxY - bounds.minY);
+            if (s.y < bounds.top) {
+                s.y += bounds.height;
             }
         },
         /**
