@@ -1,5 +1,5 @@
 /**
- * @file Test for parari constatns.
+ * @file Test for parari prefixed.
  * Runs with kara.
  */
 
