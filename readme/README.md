@@ -23,22 +23,48 @@ Generate parallax page from html.
 
 Table of Contents
 -----
-- [Requirements](#02-requirements)
-- [Documents](#04-documents)
+- [What's this?](#01-whats-this)
+- [Why this?](#02-why-this)
+- [Demo](#03-demo)
+- [Requirements](#04-requirements)
+- [Documents](#05-documents)
 - [Donation](#10-donation)
 - [License](#11-license)
 
 
 
 
-<a name="02-requirements"></a>
+<a name="01-whats-this"></a>
+What's this?
+-----
+
+A slideshow generator.
+
+Convert markdown files into html with [parallax effect][wikipedia_parallax] scrolling. 
+
+<a name="02-why-this"></a>
+Why this?
+---------
+
+It's fast.
+
+parari based on HTML canvas and provides really smooth scrolling.
+
+<a name="03-demo"></a>
+Demo
+-------
+
++ [parari-cosmic](http://okunishinishi.github.io/parari/demo/parari-readme/parari-cosmic.html)
++ [parari-fancy](http://okunishinishi.github.io/parari/demo/parari-readme/parari-fancy.html)
+
+<a name="04-requirements"></a>
 Requirements
 ------
 
 + [node.js][nodejs_url]
 
 
-<a name="04-documents"></a>
+<a name="05-documents"></a>
 Documents
 ------
 + [API Guide][my_apiguide_url]
@@ -65,6 +91,7 @@ This software is released under the [MIT License][my_license_url].
 <!-- Links start -->
 
 [nodejs_url]: http://nodejs.org/
+[wikipedia_parallax]: http://en.wikipedia.org/wiki/Parallax
 [my_license_url]: http://raw.github.com/okunishinishi/parari/master/LICENSE
 [my_travis_url]: http://travis-ci.org/okunishinishi/parari
 [my_travis_badge_url]: http://img.shields.io/travis/okunishinishi/parari.svg?style=flat
@@ -72,6 +99,7 @@ This software is released under the [MIT License][my_license_url].
 [my_codeclimate_badge_url]: http://img.shields.io/codeclimate/github/okunishinishi/parari.svg?style=flat
 [my_codeclimate_coverage_badge_url]: http://img.shields.io/codeclimate/coverage/github/okunishinishi/parari.svg?style=flat
 [my_apiguide_url]: http://okunishinishi.github.io/parari/apiguide/
+[my_demo_url]: http://okunishinishi.github.io/parari/demo/
 [my_coverage_report_url]: http://okunishinishi.github.io/parari/coverage/lcov-report/
 [my_gittip_url]: http://www.gittip.com/okunishinishi/
 [my_gittip_budge_url]: http://img.shields.io/gittip/okunishinishi.svg?style=flat

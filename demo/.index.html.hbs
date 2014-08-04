@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parari demo</title>
+    <style>
+        body{
+            padding: 50px;
+            background-color: #FFF;
+            color:#555;
+        }
+        a{
+            color:#38A;
+            text-decoration: none;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<ul>
+{{#each pages}}
+<li><a href="{{url}}">{{name}}</a></li>
+{{/each}}
+</ul>
+</body>
+
+</html>

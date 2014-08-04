@@ -1,5 +1,6 @@
 {
     "nodejs_url": "http://nodejs.org/",
+    "wikipedia_parallax": "http://en.wikipedia.org/wiki/Parallax",
     "my_license_url": "http://raw.github.com/okunishinishi/parari/master/LICENSE",
     "my_travis_url": "http://travis-ci.org/okunishinishi/parari",
     "my_travis_badge_url": "http://img.shields.io/travis/okunishinishi/parari.svg?style=flat",
@@ -7,6 +8,7 @@
     "my_codeclimate_badge_url": "http://img.shields.io/codeclimate/github/okunishinishi/parari.svg?style=flat",
     "my_codeclimate_coverage_badge_url": "http://img.shields.io/codeclimate/coverage/github/okunishinishi/parari.svg?style=flat",
     "my_apiguide_url": "http://okunishinishi.github.io/parari/apiguide/",
+    "my_demo_url": "http://okunishinishi.github.io/parari/demo/",
     "my_coverage_report_url": "http://okunishinishi.github.io/parari/coverage/lcov-report/",
     "my_gittip_url": "http://www.gittip.com/okunishinishi/",
     "my_gittip_budge_url": "http://img.shields.io/gittip/okunishinishi.svg?style=flat",

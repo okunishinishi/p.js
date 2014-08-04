@@ -1,0 +1,41 @@
+/**
+ * Bud file for demo.
+ */
+
+"use strict";
+
+var u = require('apeman-util'),
+    mapping = u.mapping,
+    reducing = u.reducing,
+    filtering = u.filtering,
+    path = u.core.path,
+    fs = u.core.fs;
+
+var demoDir = 'doc/demo',
+    demoURL = require('../.links')['my_demo_url'];
+
+module.exports = {
+    mode: '444',
+    force: true,
+    data: {
+        get pages() {
+            var pages = fs.readdirSync(demoDir)
+                .map(mapping.pathResolveMap(demoDir))
+                .filter(function (filename) {
+                    return fs.statSync(filename).isDirectory();
+                })
+                .map(function (dirname) {
+                    return fs.readdirSync(dirname)
+                        .filter(filtering.patternAcceptFilter(/\.html$/))
+                        .map(function (filename) {
+                            return {
+                                name: path.basename(filename, '.html'),
+                                url: demoURL + path.join(path.basename(dirname), filename)
+                            }
+                        })
+                })
+                .reduce(reducing.concatReduce());
+            return  pages;
+        }
+    }
+};
