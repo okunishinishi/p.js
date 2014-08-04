@@ -27,7 +27,8 @@ Table of Contents
 - [Why this?](#02-why-this)
 - [Demo](#03-demo)
 - [Requirements](#04-requirements)
-- [Documents](#05-documents)
+- [Installation](#05-install)
+- [Documents](#06-documents)
 - [Donation](#10-donation)
 - [License](#11-license)
 
@@ -64,7 +65,15 @@ Requirements
 + [node.js][nodejs_url]
 
 
-<a name="05-documents"></a>
+<a name="05-install"></a>
+Installation
+-----
+
+```bash
+$ sudo npm install parari -g
+```
+
+<a name="06-documents"></a>
 Documents
 ------
 + [API Guide][my_apiguide_url]
