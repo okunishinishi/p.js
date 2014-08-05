@@ -367,6 +367,35 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {});
     
     /**
+	 * Object to get body scroll amount.
+	 * @membrerof para
+	 * @member bodyScroller
+	 * @property {number} scrollLeft - Scroll left position.
+	 * @property {number} scrollTop - Scroll top position.
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities;
+	
+	    pr.bodyScroller = {
+	        _scrollValueForKey: function (key) {
+	            return document.documentElement[key] || document.body[key];
+	        },
+	        get scrollLeft() {
+	            var s = this;
+	            return s._scrollValueForKey('scrollLeft');
+	        },
+	        get scrollTop() {
+	            var s = this;
+	            return s._scrollValueForKey('scrollTop');
+	        }
+	    };
+	
+	
+	})(window.parari = window.parari || {});
+    
+    /**
 	 * Rect.
 	 * @membrerof para
 	 * @constructor Rect
@@ -1412,19 +1441,7 @@ window.parari = (function (parari) {
 	            }),
 	            screen = new pr.Screen(canvas);
 	
-	        screen.scroller = options.scroller || {
-	            _scrollValueForKey: function (key) {
-	                return document.documentElement[key] || document.body[key];
-	            },
-	            get scrollLeft() {
-	                var s = this;
-	                return s._scrollValueForKey('scrollLeft');
-	            },
-	            get scrollTop() {
-	                var s = this;
-	                return s._scrollValueForKey('scrollTop');
-	            }
-	        };
+	        screen.scroller = options.scroller || pr.bodyScroller;
 	        screen.sizer = src.elm;
 	
 	
@@ -1433,22 +1450,16 @@ window.parari = (function (parari) {
 	
 	        window.addEventListener('scroll', redraw, false);
 	        window.addEventListener('resize', resize, false);
+	        window.addEventListener('click', function () {
+	
+	        }, false);
 	
 	
 	        Object.keys(options.layers || {})
 	            .forEach(function (name) {
-	                var Layer = pr.resolveLayer(name);
-	                if (!Layer) {
-	                    throw new Error('Unknwon layer: ' + name)
-	                }
-	                var option = options.layers[name];
-	
-	                [].concat(option).forEach(function (option) {
-	                    u.copy({
-	                        vLock: !!vLock,
-	                        hLock: !!hLock
-	                    }, option);
-	                    var layer = new Layer(option);
+	                var option = options.layers[name],
+	                    layers = pr.start._newLayers(name, option, vLock, hLock);
+	                layers.forEach(function (layer) {
 	                    objects.push(layer);
 	                });
 	            });
@@ -1462,17 +1473,37 @@ window.parari = (function (parari) {
 	        });
 	
 	
-	        var onload = window.onload && window.onload.bind(window);
-	        window.onload = function () {
+	        window.addEventListener('load', function () {
 	            resize();
 	            screen.invalidate();
 	            screen.redraw();
-	            onload && onload();
-	        }
+	        }, false);
 	
 	
 	        resize();
 	        redraw();
+	    };
+	
+	    /**
+	     * Create new layers.
+	     * @param {string} name - Layer name.
+	     * @param {object|object[]} option - Layer options.
+	     * @param {boolean} vLock - Should lock vertically.
+	     * @param {boolean} hLock - Should lock horizontaly.
+	     * @private
+	     */
+	    pr.start._newLayers = function (name, option, vLock, hLock) {
+	        var Layer = pr.resolveLayer(name);
+	        if (!Layer) {
+	            throw new Error('Unknwon layer: ' + name)
+	        }
+	        return [].concat(option).map(function (option) {
+	            u.copy({
+	                vLock: !!vLock,
+	                hLock: !!hLock
+	            }, option);
+	            return new Layer(option);
+	        });
 	    };
 	
 	})(window.parari = window.parari || {}, document, window);
