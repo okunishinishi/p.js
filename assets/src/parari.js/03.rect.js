@@ -40,6 +40,17 @@
         clone: function () {
             var s = this;
             return new Rect(s.left, s.top, s.width, s.height);
+        },
+        /**
+         * Contains a porint or not.
+         * @param {number} x - X position.
+         * @param {number} y - Y position.
+         * @returns {boolean} - Contains or not.
+         */
+        contains: function (x, y) {
+            var s = this;
+            return (s.left <= x) && (x <= s.right) &&
+                (s.top <= y) && (y <= s.bottom);
         }
     };
 

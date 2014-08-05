@@ -437,6 +437,17 @@ window.parari = (function (parari) {
 	        clone: function () {
 	            var s = this;
 	            return new Rect(s.left, s.top, s.width, s.height);
+	        },
+	        /**
+	         * Contains a porint or not.
+	         * @param {number} x - X position.
+	         * @param {number} y - Y position.
+	         * @returns {boolean} - Contains or not.
+	         */
+	        contains: function (x, y) {
+	            var s = this;
+	            return (s.left <= x) && (x <= s.right) &&
+	                (s.top <= y) && (y <= s.bottom);
 	        }
 	    };
 	
@@ -808,6 +819,9 @@ window.parari = (function (parari) {
 	        s.canvas = canvas;
 	        s.objects = [];
 	        s.wrapCanvas(s.canvas);
+	        s.canvas.addEventListener('click', function (e) {
+	            s.onclick(e);
+	        }, false);
 	    };
 	
 	    Screen.prototype = {
@@ -832,7 +846,19 @@ window.parari = (function (parari) {
 	            }
 	            return ctx;
 	        },
-	
+	        /**
+	         * Handle click event.
+	         * @param {Event} e
+	         */
+	        onclick: function (e) {
+	            var s = this,
+	                x = e.offsetX, y = e.offsetY;
+	            for (var i = 0, len = s.objects.length; i < len; i++) {
+	                var object = s.objects[len - 1 - i];
+	//                    hit = object.bounds.contains(x, y);
+	//                console.log(hit);
+	            }
+	        },
 	        /**
 	         * Load objects.
 	         * @param {para.Object[]} objects - Objects to load.
@@ -1427,33 +1453,24 @@ window.parari = (function (parari) {
 	        }
 	        options = options || {};
 	
-	        var canvas = document.createElement('canvas');
-	        u.insertAfter(canvas, root);
+	        var vLock = !!options.vLock,
+	            hLock = !!options.hLock;
 	
-	        var vLock = options.vLock,
-	            hLock = options.hLock;
-	
-	        var style = u.getDocumentStyleString(),
-	            src = new pr.Src(root, style),
+	        var src = pr.start._newSrc(root),
 	            objects = src.getObjects({
-	                vLock: !!vLock,
-	                hLock: !!hLock
+	                vLock: vLock,
+	                hLock: hLock
 	            }),
-	            screen = new pr.Screen(canvas);
+	            screen = pr.start._newScreen(root);
 	
 	        screen.scroller = options.scroller || pr.bodyScroller;
 	        screen.sizer = src.elm;
-	
 	
 	        var redraw = screen.redraw.bind(screen),
 	            resize = screen.resize.bind(screen);
 	
 	        window.addEventListener('scroll', redraw, false);
 	        window.addEventListener('resize', resize, false);
-	        window.addEventListener('click', function () {
-	
-	        }, false);
-	
 	
 	        Object.keys(options.layers || {})
 	            .forEach(function (name) {
@@ -1468,7 +1485,7 @@ window.parari = (function (parari) {
 	        screen.loadObjects(objects, function () {
 	            resize();
 	            redraw();
-	            canvas.classList.add(pr.prefixed('canvas-ready'));
+	            screen.canvas.classList.add(pr.prefixed('canvas-ready'));
 	            screen.resort();
 	        });
 	
@@ -1490,6 +1507,7 @@ window.parari = (function (parari) {
 	     * @param {object|object[]} option - Layer options.
 	     * @param {boolean} vLock - Should lock vertically.
 	     * @param {boolean} hLock - Should lock horizontaly.
+	     * @returns {parari.Layer[]} - Layers.
 	     * @private
 	     */
 	    pr.start._newLayers = function (name, option, vLock, hLock) {
@@ -1499,12 +1517,35 @@ window.parari = (function (parari) {
 	        }
 	        return [].concat(option).map(function (option) {
 	            u.copy({
-	                vLock: !!vLock,
-	                hLock: !!hLock
+	                vLock: vLock,
+	                hLock: hLock
 	            }, option);
 	            return new Layer(option);
 	        });
 	    };
+	
+	    /**
+	     * Create a new src object.
+	     * @param {HTMLElement} root - Root object.
+	     * @returns {parari.Src} - A source object.
+	     * @private
+	     */
+	    pr.start._newSrc = function (root) {
+	        var style = u.getDocumentStyleString();
+	        return new pr.Src(root, style);
+	    }
+	
+	    /**
+	     * Create a new screen object.
+	     * @param {HTMLElement} root - Root object.
+	     * @returns {parari.Screen} - A screen object.
+	     * @private
+	     */
+	    pr.start._newScreen = function (root) {
+	        var canvas = document.createElement('canvas');
+	        u.insertAfter(canvas, root);
+	        return new pr.Screen(canvas);
+	    }
 	
 	})(window.parari = window.parari || {}, document, window);
     

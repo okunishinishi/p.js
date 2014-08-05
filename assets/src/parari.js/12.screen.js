@@ -18,6 +18,9 @@
         s.canvas = canvas;
         s.objects = [];
         s.wrapCanvas(s.canvas);
+        s.canvas.addEventListener('click', function (e) {
+            s.onclick(e);
+        }, false);
     };
 
     Screen.prototype = {
@@ -42,7 +45,19 @@
             }
             return ctx;
         },
-
+        /**
+         * Handle click event.
+         * @param {Event} e
+         */
+        onclick: function (e) {
+            var s = this,
+                x = e.offsetX, y = e.offsetY;
+            for (var i = 0, len = s.objects.length; i < len; i++) {
+                var object = s.objects[len - 1 - i];
+//                    hit = object.bounds.contains(x, y);
+//                console.log(hit);
+            }
+        },
         /**
          * Load objects.
          * @param {para.Object[]} objects - Objects to load.
