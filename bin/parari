@@ -23,12 +23,14 @@ program
     .option('-j, --js <js>', 'Javascript file name to include.')
     .option('-T, --title <title>', 'Title of the slide.')
     .option('-t, --theme <theme>', 'Theme of the slide.')
+    .option('-F, --favicon <favicon>', 'Favicon file path.')
     .action(commands.slide.bind(commands));
 
 program.parse(process.argv);
 
 
-
-
+if (process.argv.length < 3) {
+    program.help();
+}
 
 

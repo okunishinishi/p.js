@@ -1,0 +1,20 @@
+/**
+ * Generate favcion.
+ */
+
+"use strict";
+
+var h = require('../_helper');
+
+process.chdir(__dirname + '/../../');
+
+require('fur').commands.favicon(
+    'doc/resources/parari-favicon.png',
+    {
+        colorTheme: 'jf',
+        fontTheme: 'bp',
+        fontSize: 92,
+        text: 'pa',
+        textTop: -12
+    }
+);

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML to Image Test</title>
+    <style>
+        body {
+            background-color: #FFF;
+            color: #555;
+            padding: 50px;
+        }
+
+        #mock-html-div-inner {
+            width: 400px;
+            height: 400px;
+            background-color: #fffddb;
+        }
+    </style>
+    <script src="../../assets/src/parari.js/00.utilities.js"></script>
+</head>
+<body>
+<div id="mock-html-div">
+    <div id="mock-html-div-inner">
+        <h1>This is h1</h1>
+
+        <h2>This is h2</h2>
+
+        <h3>This is h3</h3>
+        <h4>This is h4</h4>
+        <h5>This is h5</h5>
+
+        <p>
+            Paragraph
+        </p>
+        <ul>
+            <li>list item 0</li>
+            <li>list item 1</li>
+            <li>list item 2</li>
+        </ul>
+    </div>
+</div>
+<fieldset>
+    <legend>Rendered image</legend>
+    <canvas id="render-canvas"></canvas>
+    <div id="img-container"></div>
+</fieldset>
+<fieldset>
+    <legend>SVG</legend>
+    <div id="svg-container"></div>
+</fieldset>
+<script>
+    (function (pr) {
+        var mockHtmlDiv = document.getElementById('mock-html-div');
+        var u = pr.utilities;
+        var canvas = document.getElementById('render-canvas');
+        var w, h;
+        w = h = 400;
+        canvas.style.width = canvas.width = w;
+        canvas.style.height = canvas.height = h;
+
+        var ctx = canvas.getContext('2d');
+//        u.optimizeCanvasRatio(canvas, ctx);
+        var html = mockHtmlDiv.innerHTML;
+        u.htmlToImage(html, w, h, function (image) {
+            console.log(image.width, image.height)
+            ctx.drawImage(image, 0, 0, w, h);
+            document.getElementById('img-container').appendChild(image);
+
+            var svgContainer = document.getElementById('svg-container');
+            svgContainer.innerHTML = u.toSVGString(html, w, h);
+        });
+    })(window.parari);
+</script>
+</body>
+</html>

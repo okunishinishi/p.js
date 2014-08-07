@@ -10,7 +10,12 @@
 <head>
 <meta charset="utf-8"/>
 <title>{{title}}</title>
-{{#each js}}<!-- Copied from {{filename}} -->
+
+<!-- Converted from {{favicon.filename}} -->
+<link href="data:image/x-icon;base64,{{{favicon.data}}}" rel="icon" type="image/x-icon" />
+
+
+    {{#each js}}<!-- Copied from {{filename}} -->
 <script>{{{content}}}</script>
 {{/each}}
 

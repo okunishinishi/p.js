@@ -219,6 +219,16 @@
             }
             return workingDiv.outerHTML.replace(/&nbsp;/g, '');
         },
+        toSVGString: function (html, width, height) {
+            html = u.toSVGEmbeddableHtml(html);
+            return [
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">',
+                '<foreignObject width="100%" height="100%">',
+                    '<div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;position:relative;">' + html + '</div>',
+                '</foreignObject>' ,
+                '</svg>'
+            ].join('');
+        },
         /**
          * Convert an html to a image.
          * @param {string} html -  Html string.
@@ -227,14 +237,7 @@
          * @param {function} callback - Callback when done.
          */
         htmlToImage: function (html, width, height, callback) {
-            html = u.toSVGEmbeddableHtml(html);
-            var svgString = [
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">',
-                    '<foreignObject width="100%" height="100%">',
-                        '<div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%">' + html + '</div>',
-                    '</foreignObject>' ,
-                    '</svg>'
-                ].join(''),
+            var svgString = u.toSVGString(html, width, height),
                 svg = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'}),
                 src = u.createObjectURL(svg),
                 image = new Image();
