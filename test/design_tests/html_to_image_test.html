@@ -19,7 +19,10 @@
 </head>
 <body>
 <div id="mock-html-div">
-    <div id="mock-html-div-inner">
+    <div id="mock-html-div-inner" style="background-color: #38A;color:#FFF;font-size:24px;padding:20px;display: block;">
+        <pre data-pr-object="true" data-pr-speed="0.8"><code class="lang-bash">$ sudo npm install parari -g
+        </code></pre>
+
         <h1>This is h1</h1>
 
         <h2>This is h2</h2>
@@ -41,6 +44,10 @@
 <fieldset>
     <legend>Rendered image</legend>
     <canvas id="render-canvas"></canvas>
+</fieldset>
+<fieldset>
+    <legend>Row image</legend>
+
     <div id="img-container"></div>
 </fieldset>
 <fieldset>
@@ -58,15 +65,20 @@
         canvas.style.height = canvas.height = h;
 
         var ctx = canvas.getContext('2d');
-//        u.optimizeCanvasRatio(canvas, ctx);
+        u.optimizeCanvasRatio(canvas, ctx);
         var html = mockHtmlDiv.innerHTML;
         u.htmlToImage(html, w, h, function (image) {
-            console.log(image.width, image.height)
-            ctx.drawImage(image, 0, 0, w, h);
-            document.getElementById('img-container').appendChild(image);
+            setTimeout(function () {
+                ctx.fillStyle = '#EEE';
+                ctx.rect(0, 0, w, h);
+                ctx.fill();
+                console.log(image.width, image.height)
+                ctx.drawImage(image, 0, 0, w, h);
+                document.getElementById('img-container').appendChild(image);
 
-            var svgContainer = document.getElementById('svg-container');
-            svgContainer.innerHTML = u.toSVGString(html, w, h);
+                var svgContainer = document.getElementById('svg-container');
+                svgContainer.innerHTML = u.toSVGString(html, w, h);
+            }, 400);
         });
     })(window.parari);
 </script>

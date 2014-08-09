@@ -242,12 +242,12 @@
                 src = u.createObjectURL(svg),
                 image = new Image();
             image.onload = function () {
-                callback(image);
+                callback && callback(image);
             };
             image.onerror = function (err) {
                 console.error(err.stack || err);
                 console.log('Failed to create image from html:', html);
-                callback(null);
+                callback && callback(null);
             };
             image.src = src;
         },

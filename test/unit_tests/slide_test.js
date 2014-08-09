@@ -50,7 +50,7 @@ exports['Data.'] = function (test) {
         h.resolveMockFile('mock_js.js')
     ], [
         h.resolveMockFile('mock_css.css')
-    ], {}, function (err, data) {
+    ], null, {}, function (err, data) {
         test.ifError(err);
         test.ok(data.src);
         test.ok(data.js);
