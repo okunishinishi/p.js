@@ -15,6 +15,9 @@
     function Fragment(elm) {
         var s = this;
         s.elm = elm;
+
+        elm.classList.add(c.classNames.FRAGMENT);
+
         s.reload();
     };
 
@@ -48,6 +51,38 @@
             }
             s.load(s.elm);
         },
+
+        /**
+         * Update drwable frame.
+         * @param {number} x - X position.
+         * @param {number} y - Y position.
+         * @param {number} w - Horizontal size.
+         * @param {number} h - Vertical size.
+         */
+        updateFrame: function (x, y, w, h) {
+            var s = this;
+
+            s.drawable.set({
+                width: w,
+                height: h,
+                x: x,
+                y: y
+            });
+
+            s.parts.background.set({
+                width: w,
+                height: h,
+                left: -w / 2,
+                top: -h / 2,
+            });
+
+            s.parts.text.set({
+                width: w,
+                height: h,
+                left: x - w,
+                top: y - h
+            });
+        },
         /**
          * Mark as needing to be drawn.
          */
@@ -55,33 +90,10 @@
             var s = this,
                 rect = pr.Rect.ofElement(s.elm, s.bounds);
 
-            var w = rect.width,
-                h = rect.height,
+            var w = rect.width, h = rect.height,
                 center = rect.center;
 
-            s.drawable.set({
-                width: w,
-                height: h,
-                x: center.x,
-                y: center.y
-            });
-
-
-            var background = s.parts.background;
-            background.set({
-                width: w,
-                height: h,
-                left: -w / 2,
-                top: -h / 2,
-            });
-
-            var text = s.parts.text;
-            text.set({
-                width: w,
-                height: h,
-                left: center.x - w,
-                top: center.y - h
-            });
+            s.updateFrame(center.x, center.y, w, h);
         },
         /**
          * Bounds of the element.

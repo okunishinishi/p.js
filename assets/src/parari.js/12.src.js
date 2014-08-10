@@ -25,7 +25,7 @@
 
         _findObjectElements: function () {
             var s = this,
-                selector = c.OBJECT_SELECOTR,
+                selector = c.FRAGMENT_SELECOTR,
                 elements = s.elm.querySelectorAll(selector);
             return u.toArray(elements);
         },

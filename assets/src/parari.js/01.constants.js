@@ -20,9 +20,9 @@
             SRC: prefixed('src'),
             SCREEN: prefixed('screen'),
             SCREEN_CONTAINER: prefixed('screen-container'),
-            OBJECT: prefixed('object')
+            FRAGMENT: prefixed('fragment')
         },
-        OBJECT_SELECOTR: '[data-' + prefixed('object') + ']'
+        FRAGMENT_SELECOTR: '[data-' + prefixed('fragment') + ']'
     };
 
     pr.constants = c;
