@@ -1,12 +1,14 @@
 /**
- * @file Test for parari rect.
- * Runs with kara.
+ * Brower unit test for pr.rect
+ * Runs with Kamra.
  */
 
 "use strict";
 
+describe('pr.rect', function () {
 
-describe('pr.Rect', function () {
+    var pr = window.parari;
+
 
     var pr = window.parari,
         Rect = pr.Rect;
@@ -43,4 +45,13 @@ describe('pr.Rect', function () {
         expect(rect.contains(20, 10)).toEqual(false);
     });
 
+    it('Clip', function () {
+        var rect = new Rect(20, 30, 100, 200),
+            clpped = rect.clip(new Rect(10, 50, 20, 40));
+        expect(clpped.left).toEqual(20);
+        expect(clpped.right).toEqual(30);
+        expect(clpped.top).toEqual(50);
+        expect(clpped.bottom).toEqual(90);
+
+    });
 });

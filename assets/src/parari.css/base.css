@@ -79,6 +79,7 @@ li {
     height: 100%;
     box-sizing: border-box;
     background-color: rgb(70, 70, 70);
+    opacity: 0.8;//FIXME
 }
 
 .pr-screen .canvas-container{
@@ -88,6 +89,8 @@ li {
     -ms-transition: opacity 300ms ease;
     -o-transition: opacity 300ms ease;
     transition: opacity 300ms ease;
+
+    background-color: white;//FIXME
 }
 
 .pr-screen .canvas-container {

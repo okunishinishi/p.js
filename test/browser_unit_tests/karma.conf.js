@@ -16,7 +16,7 @@ module.exports = function (config) {
         files: [
             'assets/.third_party/*.min.js',
             'assets/src/parari.js/*.js',
-            'test/browser_unit_tests/**/*_test.js'
+            'test/browser_unit_tests/**/*-test.js'
         ],
 
 

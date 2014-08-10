@@ -4,8 +4,6 @@
  * @constructor Rect
  * @param {number} left - Left position.
  * @param {number} top - Top position.
- * @param {number} width - Horizontal size.
- * @param {number} height - Vertical size.
  */
 (function (pr) {
     "use strict";
@@ -22,28 +20,18 @@
     }
 
     Rect.prototype = {
-        /** Left position */
         left: 0,
-        /** Top position */
         top: 0,
-        /** Right position. */
         get right() {
             var s = this;
             return s.left + s.width;
         },
-        /** Bottom position */
         get bottom() {
             var s = this;
             return s.top + s.height;
         },
-        /** Height */
         width: 0,
-        /** With */
         height: 0,
-        /**
-         * Center point.
-         * @returns {{x: number, y: number}}
-         */
         get center() {
             var s = this;
             return {
@@ -51,10 +39,6 @@
                 y: (s.top + s.bottom) / 2
             }
         },
-        /**
-         * Create a clone of this rect.
-         * @returns {Rect}
-         */
         clone: function () {
             var s = this;
             return new Rect(s.left, s.top, s.width, s.height);
@@ -69,20 +53,6 @@
             var s = this;
             return (s.left <= x) && (x <= s.right) &&
                 (s.top <= y) && (y <= s.bottom);
-        },
-        /**
-         * Create a clipped rect.
-         * @param {Rect} bounds
-         * @returns {Rect} - Clpped rect.
-         */
-        clip: function (bounds) {
-            var s = this;
-            var left = u.max(s.left, bounds.left),
-                top = u.max(s.top, bounds.top),
-                right = u.min(s.right, bounds.right),
-                bottom = u.min(s.bottom, bounds.bottom);
-            var w = right - left, h = bottom - top;
-            return new Rect(left, top, w, h);
         }
     };
 

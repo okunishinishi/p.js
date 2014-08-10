@@ -1,0 +1,22 @@
+/**
+ * Bud file for browser unit tests.
+ */
+
+"use strict";
+
+var u = require('apeman-util'),
+    path = u.core.path,
+    string = u.string,
+    glob = u.ext.glob;
+
+module.exports = glob.sync('assets/src/parari.js/*.*.js').map(function (filename) {
+    var basename = path.basename(filename, '.js').split(/\./g).pop();
+    return {
+        path: __dirname + '/parari-' + basename + '-test.js',
+        mode: '644',
+        force: false,
+        data: {
+            name: 'pr.' + string.camelString(basename)
+        }
+    }
+});

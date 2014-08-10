@@ -70,9 +70,7 @@ Installation
 -----
 
 ```bash
-
 $ sudo npm install parari -g
-
 ```
 
 <a name="06-documents"></a>

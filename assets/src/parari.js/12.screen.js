@@ -1,225 +1,135 @@
 /**
- * Screen element.
+ * Screen.
  * @memberof parari
  * @constructor Screen
+ * @param {HTMLElement} container - Element to contains screen.
+ * @param {object} options - Optional settings.
  * @requires fabric
  */
 (function (pr, document, f) {
     "use strict";
 
-    var u = pr.utilities;
+    var u = pr.utilities,
+        c = pr.constants;
 
-
-    /**
-     * @lends Screen
-     * @param {HTMLElement} canvas - Canvas element
-     */
-    function Screen(canvas) {
+    /** @lends Screen */
+    function Screen(container, options) {
         var s = this;
-        s.wrapCanvas(canvas);
-        canvas.id = Screen.newCanvasId();
-        canvas.addEventListener('click', function (e) {
-            s.onclick(e);
-        }, false);
+        container = u.toElement(container);
+        if (!container) {
+            throw new Error('Screen container not found:', container);
+        }
+        container.classList.add(c.classNames.SCREEN_CONTAINER);
 
-        s.canvas = new f.Canvas(canvas.id);
+        u.copy(options || {}, s);
 
-        s.objects = [];
+        var canvasId = Screen._newCanvasId();
+        var elm = Screen._newScreenElement(canvasId);
+        container.appendChild(elm);
 
+        s.canvas = new f.Canvas(canvasId);
 
-    };
+    }
 
     Screen.prototype = {
         /**
-         * Wrap canvas element with screen div.
+         * Fabirc canvas.
+         * @type fabric.Canvas
          */
-        wrapCanvas: function (canvas) {
-            var div = document.createElement('div');
-            div.classList.add(Screen._className);
-            u.insertAfter(div, canvas);
-            div.appendChild(canvas);
-        },
+        canvas: null,
         /**
-         * Get canvas context.
-         * @returns {CanvasRenderingContext2D}
+         * Element to fit size with.
          */
-        getContext: function () {
-            var s = this,
-                ctx = s._ctx;
-            if (!ctx) {
-                ctx = s._ctx = s.canvas.getElement().getContext('2d');
-            }
-            return ctx;
-        },
+        sizer: null,
         /**
-         * Handle click event.
-         * @param {Event} e
+         * Element to scroll with.
          */
-        onclick: function (e) {
-            var s = this,
-                x = e.offsetX, y = e.offsetY;
-            for (var i = 0, len = s.objects.length; i < len; i++) {
-                var object = s.objects[len - 1 - i];
-//                    hit = object.bounds.contains(x, y);
-//                console.log(hit);
-            }
-        },
-        /**
-         * Load objects.
-         * @param {para.Object[]} objects - Objects to load.
-         * @param {function} callback - Callback when done.
-         */
-        loadObjects: function (objects, callback) {
-            var s = this;
-            var queue = [].concat(objects);
-            var object = queue.shift();
-            if (!object) {
-                callback(s);
-                return;
-            }
-            object.load(function () {
-                var center = u.centerPoint(s.canvas.getElement());
-                object.dx = object.x - center.x;
-                object.dy = object.y - center.y;
-                s.objects.push(object);
-                s.loadObjects(queue, callback);
-            });
-            object.onPrImgLoad = function (img) {
-                s.addImgElement(img);
-                s.redraw();
-            };
-        },
-        /**
-         * Resort objects.
-         */
-        resort: function () {
-            var s = this;
-            s.objects = s.objects.sort(function (a, b) {
-                return Number(a.z || 0) - Number(b.z || 0);
-            });
-        },
-        /**
-         * Add a image elemnt.
-         * @param img
-         */
-        addImgElement: function (img) {
-
-            var s = this,
-                obj = new pr.Object(img);
-            obj.image = img;
-            obj.z = 10;
-            obj.load = function (callback) {
-                var center = u.centerPoint(s.canvas.getElement());
-                obj.dx = obj.x - center.x;
-                obj.dy = obj.y - center.y;
-                s.objects.push(obj);
-                s.resort();
-                callback && callback(null);
-            };
-            obj.invalidate = function () {
-                var s = this;
-                s.offset = u.offsetSum(img);
-            };
-            obj.invalidate();
-            obj.draw = function (ctx, scrollX, scrollY) {
-                var s = this;
-                if (!s.image) {
-                    return;
-                }
-
-                var w = s.width || s.image.width,
-                    h = s.height || s.image.height;
-                var left = s.offset.left,
-                    top = s.offset.top;
-                var x = left - scrollX,
-                    y = top - scrollY;
-                ctx.drawImage(s.image, x, y, w, h);
-            }
-
-            obj.load(function () {
-                setTimeout(function () {
-                    s.invalidate();
-                    s.redraw();
-                }, 100);
-            });
-        },
+        scroller: null,
         /**
          * Draw screen.
          */
-        draw: function (scrollX, scrollY) {
+        draw: function () {
             var s = this,
-                ctx = s.getContext(),
-                canvas = s.canvas.getElement();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (var i = 0, len = s.objects.length; i < len; i++) {
-                s.objects[i].draw(ctx, scrollX, scrollY);
-            }
+                canvas = s.canvas;
+            canvas.renderAll();
         },
         /**
-         * Set screen size.
+         * Redraw screen.
+         */
+        redraw: function () {
+            var s = this;
+            s.draw();
+        },
+        /**
+         * Set size.
          * @param {number} w - Screen width.
          * @param {number} h - Screen height.
          */
         size: function (w, h) {
             var s = this,
-                canvas = s.canvas.getElement();
-            s.canvas.setWidth(w);
-            s.canvas.setHeight(h);
-            canvas.width = w;
-            canvas.height = h;
-            u.optimizeCanvasRatio(canvas, s.getContext());
-            for (var i = 0; i < s.objects.length; i++) {
-                s.objects[i].setBounds(0, 0, w, h);
-            }
+                canvas = s.canvas;
+            canvas.setWidth(w);
+            canvas.setHeight(h);
             s.redraw();
         },
         /**
-         * Element to tell the scroll position.
-         */
-        scroller: null,
-        /**
-         * Element to toll the sieze.
-         */
-        sizer: null,
-        /**
-         * Redraw screen with scroller position.
-         */
-        redraw: function () {
-            var s = this,
-                x = s.scroller.scrollLeft,
-                y = s.scroller.scrollTop;
-            s.draw(x, y);
-        },
-        invalidate: function () {
-            var s = this;
-            for (var i = 0; i < s.objects.length; i++) {
-                var object = s.objects[i];
-                object && object.invalidate();
-            }
-        },
-        /**
-         * Resize screen with sizer size.
+         * Resize screen.
          */
         resize: function () {
             var s = this,
-                rect = u.visibleRect(s.sizer),
-                w = rect.width,
-                h = rect.height;
-            s.size(w, h);
-            setTimeout(function () {
-                s.invalidate();
-                s.redraw();
-            }, 1);
+                rect = Screen._visibleRect(s.sizer);
+            s.size(rect.width, rect.height);
         }
     };
 
-    Screen._className = pr.prefixed('screen');
+    /**
+     * New canvas id.
+     * @returns {string} - Canvas id string.
+     * @private
+     */
+    Screen._newCanvasId = function () {
+        return pr.prefixed('canvas-' + new Date().getTime());
+    };
 
-    Screen.newCanvasId = function () {
-        return pr.prefixed(['canvas', new Date().getTime()].join('-'));
+    /**
+     * Create a new screen element.
+     * @param {string} canvasId - Id for canvas.
+     * @returns {HTMLElement} - A screen element.
+     * @private
+     */
+    Screen._newScreenElement = function (canvasId) {
+        var div = document.createElement('div');
+        div.classList.add(c.classNames.SCREEN);
+        var canvas = document.createElement('canvas');
+        canvas.id = canvasId;
+        div.appendChild(canvas);
+        return div;
+    }
+
+    /**
+     * Get visible rect
+     * @param {HTMLElement} elm - Elemnt to work with.
+     * @returns {parari.Rect} - Visible rectangle.
+     * @private
+     */
+    Screen._visibleRect = function (elm) {
+        var offset = u.offsetSum(elm),
+            rect = new pr.Rect(
+                offset.left,
+                offset.top,
+                elm.offsetWidth,
+                elm.offsetHeight
+            ),
+            bounds = new pr.Rect(
+                0, 0, window.innerWidth, window.innerHeight
+            );
+        return rect.clip(bounds);
     }
 
     pr.Screen = Screen;
 
-})(window.parari = window.parari || {}, document, window.fabric);
+})(
+    window.parari = window.parari || {},
+    document,
+    window.fabric
+);
