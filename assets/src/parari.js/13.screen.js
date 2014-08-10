@@ -103,7 +103,10 @@
             canvas.setWidth(w);
             canvas.setHeight(h);
 
-            var bounds = new pr.Rect.ofElement(canvas.getElement());
+            var canvasElement = canvas.getElement();
+            u.optimizeCanvasRatio(canvasElement);
+
+            var bounds = new pr.Rect.ofElement(canvasElement);
             s.syncAll(bounds);
             s.redraw();
         },

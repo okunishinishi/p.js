@@ -47,7 +47,6 @@
          * @param {HTMLElement} canvas
          * @param ctx
          */
-
         optimizeCanvasRatio: function (canvas, ctx) {
             var ratio = u.devicePixelRatio;
             if (!ratio) {

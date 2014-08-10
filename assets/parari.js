@@ -94,6 +94,24 @@ window.parari = (function (parari) {
 	            return {top: top, left: left};
 	        },
 	        /**
+	         * Optimize canvas pixel rate.
+	         * @param {HTMLElement} canvas
+	         */
+	        optimizeCanvasRatio: function (canvas) {
+	            var ratio = u.devicePixelRatio;
+	            if (!ratio) {
+	                return;
+	            }
+	            var w = canvas.width,
+	                h = canvas.height;
+	            console.log(w, h);
+	            canvas.width = w * ratio;
+	            canvas.height = h * ratio;
+	            canvas.getContext('2d').scale(ratio, ratio);
+	            canvas.style.width = w + 'px';
+	            canvas.style.height = h + 'px';
+	        },
+	        /**
 	         * Convert an iteratable object to array.
 	         * @param iteratable
 	         * @returns {Array}
@@ -139,9 +157,9 @@ window.parari = (function (parari) {
 	            SRC: prefixed('src'),
 	            SCREEN: prefixed('screen'),
 	            SCREEN_CONTAINER: prefixed('screen-container'),
-	            OBJECT: prefixed('object')
+	            FRAGMENT: prefixed('fragment')
 	        },
-	        OBJECT_SELECOTR: '[data-' + prefixed('object') + ']'
+	        FRAGMENT_SELECOTR: '[data-' + prefixed('fragment') + ']'
 	    };
 	
 	    pr.constants = c;
@@ -166,35 +184,6 @@ window.parari = (function (parari) {
 	    }
 	
 	    pr.prefixed = prefixed;
-	
-	
-	})(window.parari = window.parari || {});
-
-    /**
-	 * Object to get body scroll amount.
-	 * @membrerof para
-	 * @member bodyScroller
-	 * @property {number} scrollLeft - Scroll left position.
-	 * @property {number} scrollTop - Scroll top position.
-	 */
-	(function (pr) {
-	    "use strict";
-	
-	    var u = pr.utilities;
-	
-	    pr.bodyScroller = {
-	        _scrollValueForKey: function (key) {
-	            return document.documentElement[key] || document.body[key];
-	        },
-	        get scrollLeft() {
-	            var s = this;
-	            return s._scrollValueForKey('scrollLeft');
-	        },
-	        get scrollTop() {
-	            var s = this;
-	            return s._scrollValueForKey('scrollTop');
-	        }
-	    };
 	
 	
 	})(window.parari = window.parari || {});
@@ -330,6 +319,35 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {});
 
     /**
+	 * Object to get body scroll amount.
+	 * @membrerof para
+	 * @member bodyScroller
+	 * @property {number} scrollLeft - Scroll left position.
+	 * @property {number} scrollTop - Scroll top position.
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities;
+	
+	    pr.bodyScroller = {
+	        _scrollValueForKey: function (key) {
+	            return document.documentElement[key] || document.body[key];
+	        },
+	        get scrollLeft() {
+	            var s = this;
+	            return s._scrollValueForKey('scrollLeft');
+	        },
+	        get scrollTop() {
+	            var s = this;
+	            return s._scrollValueForKey('scrollTop');
+	        }
+	    };
+	
+	
+	})(window.parari = window.parari || {});
+
+    /**
 	 * Parari drawable.
 	 * @memberof parari
 	 * @constructor Drawable
@@ -343,43 +361,18 @@ window.parari = (function (parari) {
 	        c = pr.constants;
 	
 	    /** @lends Drawable */
-	    function Drawable(objects) {
-	        var s = this;
-	        (objects || []).forEach(function (object) {
-	            s.add(object);
-	        });
+	    function Drawable() {
 	    };
 	
 	    var Prototype = f.Group;
 	    Drawable.prototype = u.copy(
 	        /** @lends Drawable.prototype */
 	        {
-	            /**
-	             * Invalidate object.
-	             */
-	            invalidate: function () {
+	            addAll: function (objects) {
 	                var s = this;
-	                var result;
-	                if (Prototype.invalidate) {
-	                    result = Prototype.invalidate.apply(s, arguments);
-	                }
-	                return result;
-	            },
-	            /**
-	             * Load drawas.
-	             * @param object
-	             */
-	            load: function (object) {
-	                var s = this;
-	                s.add(object);
-	            },
-	            /**
-	             * Reload drawables.
-	             */
-	            reload: function () {
-	                var s = this;
-	                s.load(s.removeAll());
-	                s.invalidate();
+	                objects = [].concat(objects).forEach(function (object) {
+	                    s.add(object);
+	                });
 	            },
 	            /**
 	             * Remove all objects.
@@ -393,105 +386,9 @@ window.parari = (function (parari) {
 	                }
 	                return removed;
 	            },
-	            /**
-	             * Bounds of the element.
-	             */
-	            bounds: pr.Rect.RectZero()
 	        },
 	        new Prototype([], {})
 	    );
-	
-	    /**
-	     * Create a drawable from element.
-	     * @returns {Drawable}
-	     */
-	    Drawable.fromElement = function (elm) {
-	        var drawable = new Drawable([]);
-	
-	        /**
-	         * Load a drawable.
-	         * @param {HTML element} elm - Element to draw.
-	         */
-	        drawable.load = function (elm) {
-	            var s = this;
-	            var style = window.getComputedStyle(elm, '');
-	
-	            s.set({
-	                originX: 'left'
-	            })
-	
-	            s.refs = {};
-	            s.refs.background = new f.Rect({
-	                fill: style.backgroundColor,
-	            });
-	
-	            s.refs.text = new f.Text(elm.textContent, {
-	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
-	                fill: style.color,
-	                textAlign: style.textAlign
-	            });
-	
-	            Object.keys(s.refs).forEach(function (name) {
-	                [].concat(s.refs[name]).forEach(function (ref) {
-	                    s.add(ref);
-	                });
-	            });
-	
-	            s.invalidate();
-	        };
-	
-	        drawable.invalidate = function () {
-	            var s = this,
-	                result = Drawable.prototype.invalidate.apply(s, arguments);
-	
-	            var rect = pr.Rect.ofElement(elm, s.bounds);
-	
-	            var w = rect.width,
-	                h = rect.height,
-	                center = rect.center;
-	
-	            s.set({
-	                width: w,
-	                height: h,
-	                x: center.x,
-	                y: center.y
-	            });
-	
-	            var background = s.refs.background;
-	            background.set({
-	                width: w,
-	                height: h,
-	                left: -w / 2,
-	                top: -h / 2,
-	            });
-	
-	            console.log(w, h, center);
-	
-	            var text = s.refs.text;
-	            text.set({
-	                width: w,
-	                height: h,
-	                left: center.x - w,
-	                top: center.y - h
-	            });
-	
-	            return result;
-	        };
-	
-	        drawable.load(elm);
-	
-	        return drawable;
-	    }
-	
-	
-	    Drawable.textNodeFilter = function (node) {
-	        return node.nodeType === 3;
-	    }
-	
-	    Drawable.textNodesForElm = function (elm) {
-	        return u.toArray(elm.childNodes).filter(Drawable.textNodeFilter);
-	    }
-	
 	
 	    pr.Drawable = Drawable;
 	
@@ -517,14 +414,18 @@ window.parari = (function (parari) {
 	    /** @lends Fragment */
 	    function Fragment(elm) {
 	        var s = this;
-	        s.drawable = new f.Group([], {});
-	        s.load(elm);
+	        s.elm = elm;
+	
+	        elm.classList.add(c.classNames.FRAGMENT);
+	
+	        s.reload();
 	    };
 	
 	    Fragment.prototype = {
+	
 	        /**
 	         * Drawable object.
-	         * @type fabric.Object
+	         * @type fabric.Oect
 	         */
 	        drawable: null,
 	        /**
@@ -534,11 +435,120 @@ window.parari = (function (parari) {
 	        load: function (elm) {
 	            var s = this;
 	            s.parts = Fragment.parseElement(elm);
+	            s.drawable = new pr.Drawable([], {});
+	            s.drawable.addAll([
+	                s.parts.background,
+	                s.parts.text
+	            ]);
+	
+	            var properties = Fragment.fromDataset(elm.dataset);
+	            u.copy(properties, s);
 	        },
 	        /**
-	         * Bounds of the element.
+	         * Reload element.
 	         */
-	        bounds: pr.Rect.RectZero()
+	        reload: function () {
+	            var s = this;
+	            if (s.drawable) {
+	                s.drawable.removeAll();
+	            }
+	            s.load(s.elm);
+	        },
+	        /**
+	         * Layout parts.
+	         * @param {pr.Rect} rect - Frame rectangle.
+	         */
+	        layout: function (frame) {
+	            var s = this,
+	                w = frame.width,
+	                h = frame.height;
+	
+	            var bounds = {
+	                width: w,
+	                height: h,
+	                left: w / 2,
+	                top: h / 2,
+	                originX: 'center',
+	                originY: 'center'
+	            };
+	
+	            s.parts.background.set(bounds);
+	            s.parts.text.set(bounds);
+	        },
+	        /**
+	         * Re layout.
+	         */
+	        relayout: function () {
+	            var s = this;
+	            s.layout(s.frame);
+	        },
+	        /**
+	         * Update drwable frame.
+	         * @param {number} x - X position.
+	         * @param {number} y - Y position.
+	         * @param {number} w - Horizontal size.
+	         * @param {number} h - Vertical size.
+	         */
+	        _updateDrawable: function (x, y, w, h) {
+	            var s = this;
+	
+	            s.drawable.set({
+	                width: w,
+	                height: h,
+	                left: x - w,
+	                top: y - h
+	            });
+	
+	
+	        },
+	        /**
+	         * Move to point.
+	         * @param {number} scrollX - X position.
+	         * @param {number} scrollY - Y position.
+	         */
+	        move: function (scrollX, scrollY) {
+	            var s = this,
+	                frame = s.frame;
+	
+	            var center = frame.center,
+	                w = frame.width,
+	                h = frame.height;
+	
+	            var v = s.velocity;
+	
+	            var dx = s.hLock ? 0 : s.dx * (1 - v),
+	                dy = s.vLock ? 0 : s.dy * (1 - v);
+	
+	            var x = center.x - scrollX * v - dx,
+	                y = center.y - scrollY * v - dy;
+	            s._updateDrawable(x, y, w, h);
+	        },
+	        /**
+	         * Synchorize with source element.
+	         * @param {pr.Rect} bounds - Canvas bounds.
+	         */
+	        sync: function (bounds) {
+	            var s = this;
+	            var frame = pr.Rect.ofElement(s.elm, bounds);
+	
+	            s.dx = frame.center.x - bounds.width / 2;
+	            s.dy = frame.center.y - bounds.height / 2;
+	            s.frame = frame;
+	            s.relayout();
+	        },
+	        /**
+	         * Frame of the element.
+	         */
+	        frame: pr.Rect.RectZero(),
+	        velocity: 1,
+	        /** Horizontal distance from bounds center. */
+	        dx: 0,
+	        /** Vertical distance from bounds center. */
+	        dy: 0,
+	        /** Should lock horizontaly. */
+	        hLock: true,
+	        /** Should lock verticaly. */
+	        vLock: false
 	    };
 	
 	    /**
@@ -553,12 +563,42 @@ window.parari = (function (parari) {
 	                fill: style.backgroundColor
 	            }),
 	            text: new f.Text(elm.textContent, {
-	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
 	                fill: style.color,
+	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
+	                textBackgroundColor: 'rgb(0,200,0)',
+	                fontFamily: style.fontFamily,
+	                fontWeight: style.fontWeight,
 	                textAlign: style.textAlign
 	            })
 	        }
 	    };
+	
+	    /**
+	     * Get proeprty data from dataset.
+	     * @param {DOMStringMap} dataset - Element data set.
+	     * @returns {object} - Parari property values.
+	     */
+	    Fragment.fromDataset = function (dataset) {
+	        var pattern = Fragment.fromDataset._prefixPattern;
+	        var values = {};
+	        for (var key in dataset) {
+	            if (dataset.hasOwnProperty(key)) {
+	                var matches = key.match(pattern);
+	                if (matches) {
+	                    var unPrefixedKey = Fragment.fromDataset._unPrefix(key)
+	                    values[unPrefixedKey] = dataset[key];
+	                }
+	            }
+	        }
+	        return values;
+	    };
+	    Fragment.fromDataset._prefixPattern = new RegExp("^" + pr.constants.PREFIX);
+	    Fragment.fromDataset._unPrefix = function (key) {
+	        var pattern = Fragment.fromDataset._prefixPattern;
+	        key = key.replace(pattern, '');
+	        return  key.substr(0, 1).toLowerCase() + key.substr(1);
+	    }
+	
 	
 	    pr.Fragment = Fragment;
 	
@@ -595,7 +635,7 @@ window.parari = (function (parari) {
 	
 	        _findObjectElements: function () {
 	            var s = this,
-	                selector = c.OBJECT_SELECOTR,
+	                selector = c.FRAGMENT_SELECOTR,
 	                elements = s.elm.querySelectorAll(selector);
 	            return u.toArray(elements);
 	        },
@@ -641,8 +681,8 @@ window.parari = (function (parari) {
 	
 	        u.copy(options || {}, s);
 	
-	        var canvasId = Screen._newCanvasId();
-	        var elm = Screen._newScreenElement(canvasId);
+	        var canvasId = Screen._newCanvasId(),
+	            elm = Screen._newScreenElement(canvasId);
 	        container.appendChild(elm);
 	
 	        s.canvas = new f.Canvas(canvasId);
@@ -670,38 +710,45 @@ window.parari = (function (parari) {
 	         */
 	        scroller: null,
 	        /**
-	         * Add a fragment object.
+	         * Register a fragment object.
 	         * @param {parari.Fragment} fragment - Fragment.
 	         */
-	        add: function (fragment) {
+	        register: function (fragment) {
 	            var s = this;
 	            s.fragments.push(fragment);
 	            s.canvas.add(fragment.drawable);
 	        },
 	        /**
-	         * Add fragment objects.
+	         * Register fragment objects.
 	         * @param {parari.Fragment[]} fragments - Fragments.
 	         */
-	        addAll: function (fragments) {
+	        registerAll: function (fragments) {
 	            var s = this;
 	            [].concat(fragments).forEach(function (fragment) {
-	                s.add(fragment);
+	                s.register(fragment);
 	            });
 	        },
 	        /**
 	         * Draw screen.
 	         */
-	        draw: function () {
+	        draw: function (scrollX, scrollY) {
 	            var s = this,
 	                canvas = s.canvas;
+	
+	            for (var i = 0, len = s.fragments.length; i < len; i++) {
+	                var fragment = s.fragments[i];
+	                fragment.move(scrollX, scrollY);
+	            }
 	            canvas.renderAll();
 	        },
 	        /**
 	         * Redraw screen.
 	         */
 	        redraw: function () {
-	            var s = this;
-	            s.draw();
+	            var s = this,
+	                x = s.scroller.scrollLeft,
+	                y = s.scroller.scrollTop;
+	            s.draw(x, y);
 	        },
 	        /**
 	         * Set size.
@@ -714,13 +761,8 @@ window.parari = (function (parari) {
 	            canvas.setWidth(w);
 	            canvas.setHeight(h);
 	
-	            var rect = new pr.Rect.ofElement(canvas.getElement());
-	
-	            for (var i = 0; i < s.fragments.length; i++) {
-	                var fragment = s.fragments[i];
-	                fragment.bounds = rect;
-	            }
-	            s.invalidate();
+	            var bounds = new pr.Rect.ofElement(canvas.getElement());
+	            s.syncAll(bounds);
 	            s.redraw();
 	        },
 	        /**
@@ -732,15 +774,17 @@ window.parari = (function (parari) {
 	            s.size(rect.width, rect.height);
 	        },
 	        /**
-	         * Invalidate fragments.
+	         * @param {pr.Rect} bounds - Canvas bounds.
+	         * Sync all elements.
 	         */
-	        invalidate: function () {
+	        syncAll: function (bounds) {
 	            var s = this;
 	            for (var i = 0; i < s.fragments.length; i++) {
 	                var fragment = s.fragments[i];
-	                fragment.invalidate();
+	                fragment.sync(bounds);
 	            }
 	        }
+	
 	    };
 	
 	    /**
@@ -762,6 +806,7 @@ window.parari = (function (parari) {
 	        var div = document.createElement('div');
 	        div.classList.add(c.classNames.SCREEN);
 	        var canvas = document.createElement('canvas');
+	        u.optimizeCanvasRatio(canvas);
 	        canvas.id = canvasId;
 	        div.appendChild(canvas);
 	        return div;
@@ -856,7 +901,7 @@ window.parari = (function (parari) {
 	            resize = screen.resize.bind(screen),
 	            reload = function () {
 	                var fragments = src.createFragments();
-	                screen.addAll(fragments);
+	                screen.registerAll(fragments);
 	                redraw();
 	                resize();
 	            };

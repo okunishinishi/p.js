@@ -48,5 +48,10 @@ describe('pr.utilities', function () {
         expect(u.extractNumber('20px')).toEqual(20);
     });
 
+    it('Optimize canvas rate.', function () {
+        var canvas = document.createElement('canvas');
+        u.optimizeCanvasRatio(canvas);
+    });
+
 
 });

@@ -22,6 +22,7 @@
     };
 
     Fragment.prototype = {
+
         /**
          * Drawable object.
          * @type fabric.Oect
@@ -39,6 +40,9 @@
                 s.parts.background,
                 s.parts.text
             ]);
+
+            var properties = Fragment.fromDataset(elm.dataset);
+            u.copy(properties, s);
         },
         /**
          * Reload element.
@@ -49,6 +53,34 @@
                 s.drawable.removeAll();
             }
             s.load(s.elm);
+        },
+        /**
+         * Layout parts.
+         * @param {pr.Rect} rect - Frame rectangle.
+         */
+        layout: function (frame) {
+            var s = this,
+                w = frame.width,
+                h = frame.height;
+
+            var bounds = {
+                width: w,
+                height: h,
+                left: w / 2,
+                top: h / 2,
+                originX: 'center',
+                originY: 'center'
+            };
+
+            s.parts.background.set(bounds);
+            s.parts.text.set(bounds);
+        },
+        /**
+         * Re layout.
+         */
+        relayout: function () {
+            var s = this;
+            s.layout(s.frame);
         },
         /**
          * Update drwable frame.
@@ -67,22 +99,14 @@
                 top: y - h
             });
 
-            var bounds = {
-                width: w,
-                height: h,
-                left: 0,
-                top: 0,
-            };
 
-            s.parts.background.set(bounds);
-            s.parts.text.set(bounds);
         },
         /**
          * Move to point.
-         * @param {number} x - X position.
-         * @param {number} y - Y position.
+         * @param {number} scrollX - X position.
+         * @param {number} scrollY - Y position.
          */
-        move: function (x, y) {
+        move: function (scrollX, scrollY) {
             var s = this,
                 frame = s.frame;
 
@@ -91,11 +115,13 @@
                 h = frame.height;
 
             var v = s.velocity;
-            console.log('frame, bounds, scroll',
-                    s.frame && s.frame.center.y,
-                y);
 
-            s._updateDrawable(center.x, center.y, w, h);
+            var dx = s.hLock ? 0 : s.dx * (1 - v),
+                dy = s.vLock ? 0 : s.dy * (1 - v);
+
+            var x = center.x - scrollX * v - dx,
+                y = center.y - scrollY * v - dy;
+            s._updateDrawable(x, y, w, h);
         },
         /**
          * Synchorize with source element.
@@ -103,13 +129,26 @@
          */
         sync: function (bounds) {
             var s = this;
-            s.frame = pr.Rect.ofElement(s.elm, bounds);
+            var frame = pr.Rect.ofElement(s.elm, bounds);
+
+            s.dx = frame.center.x - bounds.width / 2;
+            s.dy = frame.center.y - bounds.height / 2;
+            s.frame = frame;
+            s.relayout();
         },
         /**
          * Frame of the element.
          */
         frame: pr.Rect.RectZero(),
-        velocity: 1
+        velocity: 1,
+        /** Horizontal distance from bounds center. */
+        dx: 0,
+        /** Vertical distance from bounds center. */
+        dy: 0,
+        /** Should lock horizontaly. */
+        hLock: true,
+        /** Should lock verticaly. */
+        vLock: false
     };
 
     /**
@@ -124,12 +163,42 @@
                 fill: style.backgroundColor
             }),
             text: new f.Text(elm.textContent, {
-                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
+                fontSize: u.extractNumber(style.fontSize),
                 fill: style.color,
+                fontFamily: style.fontFamily,
+                fontWeight: style.fontWeight,
+                textBackgroundColor: 'rgb(0,200,0)',
                 textAlign: style.textAlign
             })
         }
     };
+
+    /**
+     * Get proeprty data from dataset.
+     * @param {DOMStringMap} dataset - Element data set.
+     * @returns {object} - Parari property values.
+     */
+    Fragment.fromDataset = function (dataset) {
+        var pattern = Fragment.fromDataset._prefixPattern;
+        var values = {};
+        for (var key in dataset) {
+            if (dataset.hasOwnProperty(key)) {
+                var matches = key.match(pattern);
+                if (matches) {
+                    var unPrefixedKey = Fragment.fromDataset._unPrefix(key)
+                    values[unPrefixedKey] = dataset[key];
+                }
+            }
+        }
+        return values;
+    };
+    Fragment.fromDataset._prefixPattern = new RegExp("^" + pr.constants.PREFIX);
+    Fragment.fromDataset._unPrefix = function (key) {
+        var pattern = Fragment.fromDataset._prefixPattern;
+        key = key.replace(pattern, '');
+        return  key.substr(0, 1).toLowerCase() + key.substr(1);
+    }
+
 
     pr.Fragment = Fragment;
 

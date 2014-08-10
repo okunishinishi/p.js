@@ -15,4 +15,11 @@ describe('pr.fragment', function () {
 
         fragment.sync(pr.Rect.RectZero());
     });
+
+    it('From data set.', function () {
+        var data = pr.Fragment.fromDataset({
+            prVelocity: 0.5
+        });
+        expect(data.velocity).toEqual(0.5);
+    });
 });

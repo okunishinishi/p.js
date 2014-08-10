@@ -7,13 +7,17 @@
     "use strict";
     var u = {
         /**
+         * Device pixel ratio.
+         */
+        devicePixelRatio: window.devicePixelRatio || 1,
+        /**
          * Extract number from text.
          * @param {string} text - Text to extract from.
          * @returns {number} - Extracted number.
          * @example extractNumber('20px')
          */
         extractNumber: function (text) {
-            return Number(text.replace(/[^\d]/g, ''));
+            return Number(text.replace(/[^\d\.]/g, ''));
         },
 
         /**
@@ -63,6 +67,24 @@
                 elm = elm.offsetParent;
             }
             return {top: top, left: left};
+        },
+        /**
+         * Optimize canvas pixel rate.
+         * @param {HTMLElement} canvas
+         */
+        optimizeCanvasRatio: function (canvas) {
+            var ratio = u.devicePixelRatio;
+            console.log('ratio', ratio);
+            if (!ratio) {
+                return;
+            }
+            var w = canvas.width,
+                h = canvas.height;
+            canvas.width = w * ratio;
+            canvas.height = h * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
         },
         /**
          * Convert an iteratable object to array.
