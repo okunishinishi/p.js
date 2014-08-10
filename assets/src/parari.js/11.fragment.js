@@ -72,6 +72,7 @@
                 originY: 'center'
             };
 
+
             s.parts.background.set(bounds);
             s.parts.text.set(bounds);
         },
@@ -121,6 +122,7 @@
 
             var x = center.x - scrollX * v - dx,
                 y = center.y - scrollY * v - dy;
+
             s._updateDrawable(x, y, w, h);
         },
         /**
@@ -130,7 +132,6 @@
         sync: function (bounds) {
             var s = this;
             var frame = pr.Rect.ofElement(s.elm, bounds);
-
             s.dx = frame.center.x - bounds.width / 2;
             s.dy = frame.center.y - bounds.height / 2;
             s.frame = frame;
@@ -158,6 +159,7 @@
      */
     Fragment.parseElement = function (elm) {
         var style = window.getComputedStyle(elm, '');
+        var lineHeight = u.extractNumber(style.lineHeight);
         return {
             background: new f.Rect({
                 fill: style.backgroundColor
@@ -166,12 +168,23 @@
                 fontSize: u.extractNumber(style.fontSize),
                 fill: style.color,
                 fontFamily: style.fontFamily,
+                fontStyle: style.fontStyle,
                 fontWeight: style.fontWeight,
                 textBackgroundColor: 'rgb(0,200,0)',
-                textAlign: style.textAlign
+                textAlign: Fragment.parseElement._textAlign[style.textAlign],
             })
         }
     };
+
+    Fragment.parseElement._textAlign = {
+        start: 'left',
+        left: 'left',
+        center: 'center',
+        right: 'right',
+        justify: 'center',
+        initial: 'left',
+        inherit: 'left'
+    }
 
     /**
      * Get proeprty data from dataset.

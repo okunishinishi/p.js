@@ -47,8 +47,8 @@
         get center() {
             var s = this;
             return {
-                x: (s.left + s.right) / 2,
-                y: (s.top + s.bottom) / 2
+                x: s.left + s.width / 2,
+                y: s.top + s.height / 2
             }
         },
         /**

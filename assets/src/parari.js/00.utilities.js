@@ -74,7 +74,6 @@
          */
         optimizeCanvasRatio: function (canvas) {
             var ratio = u.devicePixelRatio;
-            console.log('ratio', ratio);
             if (!ratio) {
                 return;
             }
