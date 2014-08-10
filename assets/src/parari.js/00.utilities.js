@@ -7,6 +7,15 @@
     "use strict";
     var u = {
         /**
+         * Reduce function to concat. Should be passed to Array.prototype.reduce.
+         * @param {*} prev - Previous entry.
+         * @param {*} cur - Current entry.
+         * @returns {*}
+         */
+        concatReduce:function(prev, cur){
+            return prev.concat(cur);
+        },
+        /**
          * Device pixel ratio.
          */
         devicePixelRatio: window.devicePixelRatio || 1,

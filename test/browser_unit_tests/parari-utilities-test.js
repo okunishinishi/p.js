@@ -53,5 +53,9 @@ describe('pr.utilities', function () {
         u.optimizeCanvasRatio(canvas);
     });
 
+    it('Concat reduce.', function () {
+        var reduced = ['a', 'b', 'c'].reduce(u.concatReduce, '');
+        expect(reduced).toEqual('abc');
+    });
 
 });

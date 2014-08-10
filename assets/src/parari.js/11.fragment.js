@@ -36,13 +36,25 @@
             var s = this;
             s.parts = Fragment.parseElement(elm);
             s.drawable = new pr.Drawable([], {});
+
+            s.addParts(s.parts);
+            var properties = Fragment.fromDataset(elm.dataset);
+            u.copy(properties, s);
+        },
+        /**
+         * Add parts.
+         * @param {object} parts
+         */
+        addParts: function (parts) {
+            var s = this;
             s.drawable.addAll([
                 s.parts.background,
                 s.parts.text
             ]);
-
-            var properties = Fragment.fromDataset(elm.dataset);
-            u.copy(properties, s);
+            var children = parts.children || [];
+            for(var i=0; i<children.length;i++){
+                s.addParts(children[i]);
+            }
         },
         /**
          * Reload element.
@@ -172,9 +184,21 @@
                 fontWeight: style.fontWeight,
                 textBackgroundColor: 'rgb(0,200,0)',
                 textAlign: Fragment.parseElement._textAlign[style.textAlign],
-            })
+            }),
+            children: u.toArray(elm.childNodes)
+                .filter(Fragment.parseElement._filter)
+                .map(Fragment.parseElement._map)
+                .reduce(u.concatReduce, [])
         }
     };
+
+    Fragment.parseElement._filter = function (elm) {
+        return elm.nodeType === 1;
+    }
+    Fragment.parseElement._map = function (elm) {
+        return Fragment.parseElement(elm);
+    }
+
 
     Fragment.parseElement._textAlign = {
         start: 'left',
