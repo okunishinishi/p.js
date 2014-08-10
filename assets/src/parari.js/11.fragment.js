@@ -24,7 +24,7 @@
     Fragment.prototype = {
         /**
          * Drawable object.
-         * @type fabric.Object
+         * @type fabric.Oect
          */
         drawable: null,
         /**
@@ -39,7 +39,6 @@
                 s.parts.background,
                 s.parts.text
             ]);
-            s.invalidate();
         },
         /**
          * Reload element.
@@ -51,7 +50,6 @@
             }
             s.load(s.elm);
         },
-
         /**
          * Update drwable frame.
          * @param {number} x - X position.
@@ -59,7 +57,7 @@
          * @param {number} w - Horizontal size.
          * @param {number} h - Vertical size.
          */
-        updateFrame: function (x, y, w, h) {
+        _updateDrawable: function (x, y, w, h) {
             var s = this;
 
             s.drawable.set({
@@ -84,21 +82,31 @@
             });
         },
         /**
-         * Mark as needing to be drawn.
+         * Move to point.
+         * @param {number} x - X position.
+         * @param {number} y - Y position.
          */
-        invalidate: function () {
+        move: function (x, y) {
             var s = this,
-                rect = pr.Rect.ofElement(s.elm, s.bounds);
+                frame = s.frame;
 
-            var w = rect.width, h = rect.height,
-                center = rect.center;
-
-            s.updateFrame(center.x, center.y, w, h);
+            var center = frame.center,
+                w = frame.width,
+                h = frame.height;
+            s._updateDrawable(center.x, center.y, w, h);
         },
         /**
-         * Bounds of the element.
+         * Synchorize with source element.
+         * @param {pr.Rect} bounds - Canvas bounds.
          */
-        bounds: pr.Rect.RectZero()
+        sync: function (bounds) {
+            var s = this;
+            s.frame = pr.Rect.ofElement(s.elm, bounds);
+        },
+        /**
+         * Frame of the element.
+         */
+        frame: pr.Rect.RectZero(),
     };
 
     /**

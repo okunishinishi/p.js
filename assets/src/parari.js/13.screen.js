@@ -73,18 +73,24 @@
         /**
          * Draw screen.
          */
-        draw: function () {
+        draw: function (scrollX, scrollY) {
             var s = this,
                 canvas = s.canvas;
+
+            for (var i = 0, len = s.fragments.length; i < len; i++) {
+                var fragment = s.fragments[i];
+                fragment.move(scrollX, scrollY);
+            }
             canvas.renderAll();
         },
         /**
          * Redraw screen.
          */
         redraw: function () {
-            var s = this;
-            s.invalidateAll();
-            s.draw();
+            var s = this,
+                x = s.scroller.scrollLeft,
+                y = s.scroller.scrollTop;
+            s.draw(x, y);
         },
         /**
          * Set size.
@@ -97,12 +103,8 @@
             canvas.setWidth(w);
             canvas.setHeight(h);
 
-            var rect = new pr.Rect.ofElement(canvas.getElement());
-
-            for (var i = 0; i < s.fragments.length; i++) {
-                var fragment = s.fragments[i];
-                fragment.bounds = rect;
-            }
+            var bounds = new pr.Rect.ofElement(canvas.getElement());
+            s.syncAll(bounds);
             s.redraw();
         },
         /**
@@ -114,15 +116,17 @@
             s.size(rect.width, rect.height);
         },
         /**
-         * Invalidate fragments.
+         * @param {pr.Rect} bounds - Canvas bounds.
+         * Sync all elements.
          */
-        invalidateAll: function () {
+        syncAll: function (bounds) {
             var s = this;
             for (var i = 0; i < s.fragments.length; i++) {
                 var fragment = s.fragments[i];
-                fragment.invalidate();
+                fragment.sync(bounds);
             }
         }
+
     };
 
     /**

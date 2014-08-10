@@ -5,11 +5,14 @@
 
 "use strict";
 
-describe('pr.fragment', function(){
+describe('pr.fragment', function () {
 
     var pr = window.parari;
 
-    it('pr.fragment', function(){
+    it('pr.fragment', function () {
+        var fragment = new pr.Fragment(document.body);
+        expect(fragment).toBeDefined();
 
+        fragment.sync(pr.Rect.RectZero());
     });
 });

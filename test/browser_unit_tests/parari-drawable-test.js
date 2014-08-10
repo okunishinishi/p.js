@@ -15,7 +15,7 @@ describe('pr.Drawable', function () {
     });
 
     it('From element.', function () {
-        var drawable = pr.Drawable.fromElement(document.body);
+        var drawable = new pr.Drawable({});
         expect(drawable).toBeDefined();
     });
 });
