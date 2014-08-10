@@ -39,10 +39,7 @@ h1, h2, h3 {
     right: 40px;
     margin: 60px 0;
     left: auto;
-    width: 100%;
     text-align: right;
-    line-height: 1em;
-    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
 }

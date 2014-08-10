@@ -35,6 +35,34 @@
                 return result;
             },
             /**
+             * Load drawas.
+             * @param object
+             */
+            load: function (object) {
+                var s = this;
+                s.add(object);
+            },
+            /**
+             * Reload drawables.
+             */
+            reload: function () {
+                var s = this;
+                s.load(s.removeAll());
+                s.invalidate();
+            },
+            /**
+             * Remove all objects.
+             */
+            removeAll: function () {
+                var s = this,
+                    removed = [];
+                var obj;
+                while (obj = s.remove()) {
+                    removed.push(obj);
+                }
+                return removed;
+            },
+            /**
              * Bounds of the element.
              */
             bounds: pr.Rect.RectZero()
@@ -48,46 +76,89 @@
      */
     Drawable.fromElement = function (elm) {
         var drawable = new Drawable([]);
+
+        /**
+         * Load a drawable.
+         * @param {HTML element} elm - Element to draw.
+         */
+        drawable.load = function (elm) {
+            var s = this;
+            var style = window.getComputedStyle(elm, '');
+
+            s.set({
+                originX: 'left'
+            })
+
+            s.refs = {};
+            s.refs.background = new f.Rect({
+                fill: style.backgroundColor,
+            });
+
+            s.refs.text = new f.Text(elm.textContent, {
+                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
+                fill: style.color,
+                textAlign: style.textAlign
+            });
+
+            Object.keys(s.refs).forEach(function (name) {
+                [].concat(s.refs[name]).forEach(function (ref) {
+                    s.add(ref);
+                });
+            });
+
+            s.invalidate();
+        };
+
         drawable.invalidate = function () {
             var s = this,
                 result = Drawable.prototype.invalidate.apply(s, arguments);
 
-            var sytle = window.getComputedStyle(elm, ''),
-                rect = pr.Rect.ofElement(elm, s.bounds);
+            var rect = pr.Rect.ofElement(elm, s.bounds);
 
-            s.setWidth(rect.width);
-            s.setHeight(rect.height);
-            s.setPositionByOrigin(rect.center, 'center', 'center');
+            var w = rect.width,
+                h = rect.height,
+                center = rect.center;
 
+            s.set({
+                width: w,
+                height: h,
+                x: center.x,
+                y: center.y
+            });
 
-            s.add(new f.Rect({
-                fill: sytle.backgroundColor,
-                width: rect.width,
-                height: rect.height,
-                x: rect.center.x,
-                y: rect.center.y,
-                originX: 'center',
-                originY: 'center'
-            }));
+            var background = s.refs.background;
+            background.set({
+                width: w,
+                height: h,
+                left: -w / 2,
+                top: -h / 2,
+            });
 
-            s.add(new fabric.Circle({
-                radius: 100,
-                fill: '#eef',
-                originX: 'center',
-                originY: 'center'
-            }));
+            console.log(w, h, center);
 
-            s.add(new fabric.Text('hello world', {
-                fontSize: 30,
-                originX: 'center',
-                originY: 'center',
-                x: 10,
-                y: 10,
-            }));
+            var text = s.refs.text;
+            text.set({
+                width: w,
+                height: h,
+                left: center.x - w,
+                top: center.y - h
+            });
+
             return result;
         };
-        drawable.invalidate();
+
+        drawable.load(elm);
+
         return drawable;
+    }
+
+
+    Drawable.textNodeFilter = function (node) {
+        return node.nodeType === 3;
+    }
+
+    Drawable.textNodesForElm = function (elm) {
+        return u.toArray(elm.childNodes).filter(Drawable.textNodeFilter);
     }
 
 
