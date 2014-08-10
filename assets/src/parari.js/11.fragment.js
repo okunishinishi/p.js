@@ -63,15 +63,15 @@
             s.drawable.set({
                 width: w,
                 height: h,
-                x: x,
-                y: y
+                left: x - w,
+                top: y - h
             });
 
             var bounds = {
                 width: w,
                 height: h,
-                left: x - w,
-                top: y - h,
+                left: 0,
+                top: 0,
             };
 
             s.parts.background.set(bounds);
@@ -93,7 +93,6 @@
             var v = s.velocity;
             console.log('frame, bounds, scroll',
                     s.frame && s.frame.center.y,
-                    s.bounds && s.bounds.center.y,
                 y);
 
             s._updateDrawable(center.x, center.y, w, h);
@@ -105,7 +104,6 @@
         sync: function (bounds) {
             var s = this;
             s.frame = pr.Rect.ofElement(s.elm, bounds);
-            s.bounds = bounds;
         },
         /**
          * Frame of the element.
