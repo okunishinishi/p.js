@@ -4,6 +4,10 @@
         "dest": "assets/.third_party/normalize.css"
     },
     {
+        "src": "bower_components/fabric/dist/fabric.js",
+        "dest": "assets/.third_party/fabric.js"
+    },
+    {
         "src": "doc/readme/README.md",
         "dest": "README.md"
     },

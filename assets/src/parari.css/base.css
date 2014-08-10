@@ -63,10 +63,12 @@ li {
 }
 
 .pr-src,
-.pr-screen canvas {
+.pr-screen .canvas-container {
     max-width: 960px;
     margin: 0 auto;
     display: block;
+    width:auto;
+    height:auto;
 }
 
 .pr-screen {
@@ -79,7 +81,7 @@ li {
     background-color: rgb(70, 70, 70);
 }
 
-.pr-screen canvas {
+.pr-screen .canvas-container{
     opacity: 0.1;
     -webkit-transition: opacity 300ms ease;
     -moz-transition: opacity 300ms ease;
@@ -88,17 +90,12 @@ li {
     transition: opacity 300ms ease;
 }
 
-.pr-screen canvas.pr-canvas-ready {
+.pr-screen .canvas-container {
     opacity: 1;
 }
 
 .pr-object {
-    font-size: 16px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
+
 }
 
 .pr-page {

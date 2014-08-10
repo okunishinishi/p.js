@@ -24,4 +24,9 @@ describe('pr.screen', function () {
 
     });
 
+    it('New canvas id.', function () {
+        var id = pr.Screen.newCanvasId();
+        expect(id).toBeDefined();
+    });
+
 });

@@ -200,7 +200,6 @@
         'position',
         'opacity',
         'float',
-        'justify-content',
         'display',
         'letter-spacing',
         'font-size',
@@ -225,12 +224,7 @@
      * @returns {string}
      */
     PrObject.elmToHtml = function (elm) {
-        var elmStyle = PrObject.elmStyleString(elm) || '';
-        return  [
-                '<div class="pr-object" style="' + elmStyle + '">',
-            elm.innerHTML,
-            '</div>'
-        ].join('');
+        return elm.outerHTML;
     };
 
     /**

@@ -22,7 +22,7 @@ module.exports = {
     data: {
         overview: pkg.description,
         name: 'parari',
-        requires: ['fabric.js', 'one-color.js'],
+        requires: ['fabric.js'],
         version: pkg.version,
         files: fs.readdirSync(__dirname)
             .filter(filtering.patternAcceptFilter(/\.js$/))
@@ -31,14 +31,18 @@ module.exports = {
                 return fs.readFileSync(filename).toString()
                     .split(os.EOL).join(os.EOL + '\t');
             }),
-        libraries: fs.readdirSync(thirdPartyDir)
-            .filter(filtering.patternAcceptFilter(/\.min\.js$/))
-            .map(mapping.pathResolveMap(thirdPartyDir))
-            .map(function (filename) {
-                return {
-                    name: path.basename(filename),
-                    contents: fs.readFileSync(filename).toString()
-                };
-            })
+        get libraries() {
+            return this.requires
+                .map(function (require) {
+                    var basename = path.basename(require, path.extname(require));
+                    return path.join(thirdPartyDir, basename) + '.min.js';
+                })
+                .map(function (filename) {
+                    return {
+                        name: path.basename(filename),
+                        contents: fs.readFileSync(filename).toString()
+                    }
+                });
+        }
     }
 };

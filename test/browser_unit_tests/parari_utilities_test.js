@@ -65,5 +65,9 @@ describe('pr.utilities', function () {
     });
     it('rgba2string', function () {
         expect(u.rgba2string(200, 100, 300)).toEqual('rgba(200,100,300,1)');
-    })
+    });
+
+    it('getChildElements', function () {
+        expect(u.getChildElements(document.body)).toBeDefined();
+    });
 });

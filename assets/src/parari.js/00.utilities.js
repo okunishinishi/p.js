@@ -141,6 +141,22 @@
                 .join(';');
         },
         /**
+         * Get child elements of a element.
+         * @param {HTMLElement} elm
+         * @returns {Array}
+         */
+        getChildElements: function (elm) {
+            var childElements = [],
+                nodes = elm.childNodes;
+            for (var i = 0; i < nodes.length; i++) {
+                var isElement = nodes[i].nodeType === 1;
+                if (isElement) {
+                    childElements.push(nodes[i]);
+                }
+            }
+            return childElements;
+        },
+        /**
          * Get offset from window.
          * @param {HTMLElement} elm
          * @returns {{top: number, left: number}}

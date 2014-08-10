@@ -2,8 +2,9 @@
  * Screen element.
  * @memberof parari
  * @constructor Screen
+ * @requires fabric
  */
-(function (pr, document) {
+(function (pr, document, f) {
     "use strict";
 
     var u = pr.utilities;
@@ -15,12 +16,17 @@
      */
     function Screen(canvas) {
         var s = this;
-        s.canvas = canvas;
-        s.objects = [];
-        s.wrapCanvas(s.canvas);
-        s.canvas.addEventListener('click', function (e) {
+        s.wrapCanvas(canvas);
+        canvas.id = Screen.newCanvasId();
+        canvas.addEventListener('click', function (e) {
             s.onclick(e);
         }, false);
+
+        s.canvas = new f.Canvas(canvas.id);
+
+        s.objects = [];
+
+
     };
 
     Screen.prototype = {
@@ -41,7 +47,7 @@
             var s = this,
                 ctx = s._ctx;
             if (!ctx) {
-                ctx = s._ctx = s.canvas.getContext('2d');
+                ctx = s._ctx = s.canvas.getElement().getContext('2d');
             }
             return ctx;
         },
@@ -72,7 +78,7 @@
                 return;
             }
             object.load(function () {
-                var center = u.centerPoint(s.canvas);
+                var center = u.centerPoint(s.canvas.getElement());
                 object.dx = object.x - center.x;
                 object.dy = object.y - center.y;
                 s.objects.push(object);
@@ -103,7 +109,7 @@
             obj.image = img;
             obj.z = 10;
             obj.load = function (callback) {
-                var center = u.centerPoint(s.canvas);
+                var center = u.centerPoint(s.canvas.getElement());
                 obj.dx = obj.x - center.x;
                 obj.dy = obj.y - center.y;
                 s.objects.push(obj);
@@ -142,8 +148,9 @@
          */
         draw: function (scrollX, scrollY) {
             var s = this,
-                ctx = s.getContext();
-            ctx.clearRect(0, 0, s.canvas.width, s.canvas.height);
+                ctx = s.getContext(),
+                canvas = s.canvas.getElement();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (var i = 0, len = s.objects.length; i < len; i++) {
                 s.objects[i].draw(ctx, scrollX, scrollY);
@@ -155,10 +162,13 @@
          * @param {number} h - Screen height.
          */
         size: function (w, h) {
-            var s = this;
-            s.canvas.width = w;
-            s.canvas.height = h;
-            u.optimizeCanvasRatio(s.canvas, s.getContext());
+            var s = this,
+                canvas = s.canvas.getElement();
+            s.canvas.setWidth(w);
+            s.canvas.setHeight(h);
+            canvas.width = w;
+            canvas.height = h;
+            u.optimizeCanvasRatio(canvas, s.getContext());
             for (var i = 0; i < s.objects.length; i++) {
                 s.objects[i].setBounds(0, 0, w, h);
             }
@@ -206,6 +216,10 @@
 
     Screen._className = pr.prefixed('screen');
 
+    Screen.newCanvasId = function () {
+        return pr.prefixed(['canvas', new Date().getTime()].join('-'));
+    }
+
     pr.Screen = Screen;
 
-})(window.parari = window.parari || {}, document);
+})(window.parari = window.parari || {}, document, window.fabric);

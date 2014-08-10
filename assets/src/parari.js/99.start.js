@@ -55,7 +55,7 @@
         screen.loadObjects(objects, function () {
             resize();
             redraw();
-            screen.canvas.classList.add(pr.prefixed('canvas-ready'));
+            screen.canvas.getElement().classList.add(pr.prefixed('canvas-ready'));
             screen.resort();
         });
 

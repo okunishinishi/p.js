@@ -14,6 +14,7 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'assets/.third_party/*.min.js',
             'assets/src/parari.js/*.js',
             'test/browser_unit_tests/**/*_test.js'
         ],
