@@ -37,13 +37,19 @@
             });
 
         var redraw = screen.redraw.bind(screen),
-            resize = screen.resize.bind(screen);
+            resize = screen.resize.bind(screen),
+            reload = function () {
+                var drawables = src.getDrawables();
+                screen.addAll(drawables);
+                redraw();
+                resize();
+            };
 
         window.addEventListener('scroll', redraw, false);
         window.addEventListener('resize', resize, false);
 
-        redraw();
-        resize();
+
+        reload();
     };
 
 

@@ -20,7 +20,9 @@
             SRC: prefixed('src'),
             SCREEN: prefixed('screen'),
             SCREEN_CONTAINER: prefixed('screen-container'),
-        }
+            OBJECT: prefixed('object')
+        },
+        OBJECT_SELECOTR: '[data-' + prefixed('object') + ']'
     };
 
     pr.constants = c;

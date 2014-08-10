@@ -28,6 +28,7 @@
         container.appendChild(elm);
 
         s.canvas = new f.Canvas(canvasId);
+        s.drawables = [];
 
     }
 
@@ -38,6 +39,11 @@
          */
         canvas: null,
         /**
+         * Drawable object.
+         * @type {parari.Drawables}
+         */
+        drawables: null,
+        /**
          * Element to fit size with.
          */
         sizer: null,
@@ -45,6 +51,25 @@
          * Element to scroll with.
          */
         scroller: null,
+        /**
+         * Add a drawable object.
+         * @param {parari.Drawable} drawable - Drawable.
+         */
+        add: function (drawable) {
+            var s = this;
+            s.drawables.push(drawable);
+            s.canvas.add(drawable);
+        },
+        /**
+         * Add drawable objects.
+         * @param {parari.Drawable[]} drawables - Drawables.
+         */
+        addAll: function (drawables) {
+            var s = this;
+            [].concat(drawables).forEach(function (drawable) {
+                s.add(drawable);
+            });
+        },
         /**
          * Draw screen.
          */
@@ -70,6 +95,14 @@
                 canvas = s.canvas;
             canvas.setWidth(w);
             canvas.setHeight(h);
+
+            var rect = new pr.Rect.ofElement(canvas.getElement());
+
+            for (var i = 0; i < s.drawables.length; i++) {
+                var drawable = s.drawables[i];
+                drawable.bounds = rect;
+            }
+            s.invalidate();
             s.redraw();
         },
         /**
@@ -79,6 +112,16 @@
             var s = this,
                 rect = Screen._visibleRect(s.sizer);
             s.size(rect.width, rect.height);
+        },
+        /**
+         * Invalidate drawables.
+         */
+        invalidate: function () {
+            var s = this;
+            for (var i = 0; i < s.drawables.length; i++) {
+                var drawable = s.drawables[i];
+                drawable.invalidate();
+            }
         }
     };
 

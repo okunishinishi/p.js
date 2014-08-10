@@ -52,6 +52,21 @@ describe('pr.rect', function () {
         expect(clpped.right).toEqual(30);
         expect(clpped.top).toEqual(50);
         expect(clpped.bottom).toEqual(90);
-
     });
+
+    it('ofElement', function () {
+        var rect = Rect.ofElement(document.body);
+        expect(rect).toBeDefined();
+    });
+
+    it('Relative', function () {
+        var rect = new Rect(100, 100, 200, 200),
+            bounds = new Rect(100, 100, 300, 300);
+        var relative = rect.relative(bounds);
+        expect(relative).toBeDefined();
+        expect(relative.left).toEqual(0);
+        expect(relative.right).toEqual(200);
+        expect(relative.top).toEqual(0);
+        expect(relative.bottom).toEqual(200);
+    })
 });

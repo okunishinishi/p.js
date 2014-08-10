@@ -83,12 +83,44 @@
                 bottom = u.min(s.bottom, bounds.bottom);
             var w = right - left, h = bottom - top;
             return new Rect(left, top, w, h);
+        },
+        /**
+         * Create a relative rect.
+         * @param {Rect} bounds - Bounds rect.
+         */
+        relative: function (bounds) {
+            var s = this;
+            var left = s.left - bounds.left,
+                top = s.top - bounds.top,
+                w = s.width,
+                h = s.height;
+            return new Rect(left, top, w, h);
+
         }
     };
 
 
     pr.Rect = Rect;
 
+    /**
+     * Rect for an element.
+     * @param {HTMLElement} elm - Element.
+     */
+    pr.Rect.ofElement = function (elm, bounds) {
+        var offset = u.offsetSum(elm),
+            left = offset.left,
+            top = offset.top,
+            w = elm.offsetWidth,
+            h = elm.offsetHeight;
+        var rect = new Rect(left, top, w, h);
+        return bounds ? rect.relative(bounds) : rect;
+    };
+
+    /**
+     * Zero rect.
+     * @returns {Rect}
+     * @constructor
+     */
     pr.Rect.RectZero = function () {
         return new Rect(0, 0, 0, 0);
     }
