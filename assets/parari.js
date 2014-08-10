@@ -36,6 +36,16 @@ window.parari = (function (parari) {
 	    "use strict";
 	    var u = {
 	        /**
+	         * Extract number from text.
+	         * @param {string} text - Text to extract from.
+	         * @returns {number} - Extracted number.
+	         * @example extractNumber('20px')
+	         */
+	        extractNumber: function (text) {
+	            return Number(text.replace(/[^\d]/g, ''));
+	        },
+	
+	        /**
 	         * Copy object.
 	         * @param {object} src - Object to copy from.
 	         * @param {object} dest - Object to copy to.
@@ -417,7 +427,8 @@ window.parari = (function (parari) {
 	
 	            s.refs.text = new f.Text(elm.textContent, {
 	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
-	                fill: style.color
+	                fill: style.color,
+	                textAlign: style.textAlign
 	            });
 	
 	            Object.keys(s.refs).forEach(function (name) {
@@ -444,7 +455,7 @@ window.parari = (function (parari) {
 	                height: h,
 	                x: center.x,
 	                y: center.y
-	            })
+	            });
 	
 	            var background = s.refs.background;
 	            background.set({
@@ -454,14 +465,14 @@ window.parari = (function (parari) {
 	                top: -h / 2,
 	            });
 	
-	            console.log(w, h, elm.offsetHeight, elm.offsetWidth);
+	            console.log(w, h, center);
 	
 	            var text = s.refs.text;
 	            text.set({
 	                width: w,
 	                height: h,
-	                left: -w / 2,
-	                top: -h / 2,
+	                left: center.x - w,
+	                top: center.y - h
 	            });
 	
 	            return result;
@@ -483,6 +494,73 @@ window.parari = (function (parari) {
 	
 	
 	    pr.Drawable = Drawable;
+	
+	})(
+	    window.parari = window.parari || {},
+	    window.fabric,
+	    document
+	);
+
+    /**
+	 * Parari fragment.
+	 * @memberof parari
+	 * @constructor Fragment
+	 * @param {HTMLElement} elm - Html element.
+	 * @requires fabric
+	 */
+	(function (pr, f, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        c = pr.constants;
+	
+	    /** @lends Fragment */
+	    function Fragment(elm) {
+	        var s = this;
+	        s.drawable = new f.Group([], {});
+	        s.load(elm);
+	    };
+	
+	    Fragment.prototype = {
+	        /**
+	         * Drawable object.
+	         * @type fabric.Object
+	         */
+	        drawable: null,
+	        /**
+	         * Load a element
+	         * @param {HTMLElement} elm
+	         */
+	        load: function (elm) {
+	            var s = this;
+	            s.parts = Fragment.parseElement(elm);
+	        },
+	        /**
+	         * Bounds of the element.
+	         */
+	        bounds: pr.Rect.RectZero()
+	    };
+	
+	    /**
+	     * Parse elment into fabric object.
+	     * @param {HTMLElement} elm - Element to parse.
+	     * @returns {{}}
+	     */
+	    Fragment.parseElement = function (elm) {
+	        var style = window.getComputedStyle(elm, '');
+	        return {
+	            background: new f.Rect({
+	                fill: style.backgroundColor
+	            }),
+	            text: new f.Text(elm.textContent, {
+	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
+	                fill: style.color,
+	                textAlign: style.textAlign
+	            })
+	        }
+	    };
+	
+	    pr.Fragment = Fragment;
 	
 	})(
 	    window.parari = window.parari || {},
@@ -522,14 +600,14 @@ window.parari = (function (parari) {
 	            return u.toArray(elements);
 	        },
 	        /**
-	         * Get drawables with in the source.
-	         * @returns {pr.Drawable}
+	         * Create fragments from src.
+	         * @returns {pr.Fragment[]}
 	         */
-	        getDrawables: function () {
+	        createFragments: function () {
 	            var s = this;
 	            return s._findObjectElements()
 	                .map(function (elm) {
-	                    return pr.Drawable.fromElement(elm);
+	                    return new pr.Fragment(elm);
 	                });
 	        }
 	    }
@@ -568,7 +646,7 @@ window.parari = (function (parari) {
 	        container.appendChild(elm);
 	
 	        s.canvas = new f.Canvas(canvasId);
-	        s.drawables = [];
+	        s.fragments = [];
 	
 	    }
 	
@@ -579,10 +657,10 @@ window.parari = (function (parari) {
 	         */
 	        canvas: null,
 	        /**
-	         * Drawable object.
-	         * @type {parari.Drawables}
+	         * Fragment objects.
+	         * @type {parari.Fragment[]}
 	         */
-	        drawables: null,
+	        fragments: null,
 	        /**
 	         * Element to fit size with.
 	         */
@@ -592,22 +670,22 @@ window.parari = (function (parari) {
 	         */
 	        scroller: null,
 	        /**
-	         * Add a drawable object.
-	         * @param {parari.Drawable} drawable - Drawable.
+	         * Add a fragment object.
+	         * @param {parari.Fragment} fragment - Fragment.
 	         */
-	        add: function (drawable) {
+	        add: function (fragment) {
 	            var s = this;
-	            s.drawables.push(drawable);
-	            s.canvas.add(drawable);
+	            s.fragments.push(fragment);
+	            s.canvas.add(fragment.drawable);
 	        },
 	        /**
-	         * Add drawable objects.
-	         * @param {parari.Drawable[]} drawables - Drawables.
+	         * Add fragment objects.
+	         * @param {parari.Fragment[]} fragments - Fragments.
 	         */
-	        addAll: function (drawables) {
+	        addAll: function (fragments) {
 	            var s = this;
-	            [].concat(drawables).forEach(function (drawable) {
-	                s.add(drawable);
+	            [].concat(fragments).forEach(function (fragment) {
+	                s.add(fragment);
 	            });
 	        },
 	        /**
@@ -638,9 +716,9 @@ window.parari = (function (parari) {
 	
 	            var rect = new pr.Rect.ofElement(canvas.getElement());
 	
-	            for (var i = 0; i < s.drawables.length; i++) {
-	                var drawable = s.drawables[i];
-	                drawable.bounds = rect;
+	            for (var i = 0; i < s.fragments.length; i++) {
+	                var fragment = s.fragments[i];
+	                fragment.bounds = rect;
 	            }
 	            s.invalidate();
 	            s.redraw();
@@ -654,13 +732,13 @@ window.parari = (function (parari) {
 	            s.size(rect.width, rect.height);
 	        },
 	        /**
-	         * Invalidate drawables.
+	         * Invalidate fragments.
 	         */
 	        invalidate: function () {
 	            var s = this;
-	            for (var i = 0; i < s.drawables.length; i++) {
-	                var drawable = s.drawables[i];
-	                drawable.invalidate();
+	            for (var i = 0; i < s.fragments.length; i++) {
+	                var fragment = s.fragments[i];
+	                fragment.invalidate();
 	            }
 	        }
 	    };
@@ -777,8 +855,8 @@ window.parari = (function (parari) {
 	        var redraw = screen.redraw.bind(screen),
 	            resize = screen.resize.bind(screen),
 	            reload = function () {
-	                var drawables = src.getDrawables();
-	                screen.addAll(drawables);
+	                var fragments = src.createFragments();
+	                screen.addAll(fragments);
 	                redraw();
 	                resize();
 	            };

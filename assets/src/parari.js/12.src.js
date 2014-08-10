@@ -30,14 +30,14 @@
             return u.toArray(elements);
         },
         /**
-         * Get drawables with in the source.
-         * @returns {pr.Drawable}
+         * Create fragments from src.
+         * @returns {pr.Fragment[]}
          */
-        getDrawables: function () {
+        createFragments: function () {
             var s = this;
             return s._findObjectElements()
                 .map(function (elm) {
-                    return pr.Drawable.fromElement(elm);
+                    return new pr.Fragment(elm);
                 });
         }
     }

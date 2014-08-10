@@ -30,18 +30,22 @@ describe('pr.utilities', function () {
     });
 
     it('toArray.', function () {
-        var array = u.toArray(['a','b','c']);
+        var array = u.toArray(['a', 'b', 'c']);
         expect(array).toBeDefined();
         expect(array[0]).toEqual('a');
         expect(array[1]).toEqual('b');
         expect(array[2]).toEqual('c');
     });
 
-    it('Get min.', function(){
-        expect(u.min(2,5,1)).toEqual(1);
+    it('Get min.', function () {
+        expect(u.min(2, 5, 1)).toEqual(1);
     });
-    it('Get max.', function(){
-        expect(u.max(2,5,1)).toEqual(5);
+    it('Get max.', function () {
+        expect(u.max(2, 5, 1)).toEqual(5);
+    });
+
+    it('extractNumber', function () {
+        expect(u.extractNumber('20px')).toEqual(20);
     });
 
 

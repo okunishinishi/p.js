@@ -15,8 +15,8 @@ describe('pr.src', function () {
         expect(src).toBeDefined();
         expect(div.className).toEqual('pr-src');
 
-        var drawables = src.getDrawables();
-        expect(drawables).toBeDefined();
+        var fragments = src.createFragments();
+        expect(fragments).toBeDefined();
     });
 
 });

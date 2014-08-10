@@ -23,12 +23,12 @@
 
         u.copy(options || {}, s);
 
-        var canvasId = Screen._newCanvasId();
-        var elm = Screen._newScreenElement(canvasId);
+        var canvasId = Screen._newCanvasId(),
+            elm = Screen._newScreenElement(canvasId);
         container.appendChild(elm);
 
         s.canvas = new f.Canvas(canvasId);
-        s.drawables = [];
+        s.fragments = [];
 
     }
 
@@ -39,10 +39,10 @@
          */
         canvas: null,
         /**
-         * Drawable object.
-         * @type {parari.Drawables}
+         * Fragment objects.
+         * @type {parari.Fragment[]}
          */
-        drawables: null,
+        fragments: null,
         /**
          * Element to fit size with.
          */
@@ -52,22 +52,22 @@
          */
         scroller: null,
         /**
-         * Add a drawable object.
-         * @param {parari.Drawable} drawable - Drawable.
+         * Register a fragment object.
+         * @param {parari.Fragment} fragment - Fragment.
          */
-        add: function (drawable) {
+        register: function (fragment) {
             var s = this;
-            s.drawables.push(drawable);
-            s.canvas.add(drawable);
+            s.fragments.push(fragment);
+            s.canvas.add(fragment.drawable);
         },
         /**
-         * Add drawable objects.
-         * @param {parari.Drawable[]} drawables - Drawables.
+         * Register fragment objects.
+         * @param {parari.Fragment[]} fragments - Fragments.
          */
-        addAll: function (drawables) {
+        registerAll: function (fragments) {
             var s = this;
-            [].concat(drawables).forEach(function (drawable) {
-                s.add(drawable);
+            [].concat(fragments).forEach(function (fragment) {
+                s.register(fragment);
             });
         },
         /**
@@ -83,6 +83,7 @@
          */
         redraw: function () {
             var s = this;
+            s.invalidateAll();
             s.draw();
         },
         /**
@@ -98,11 +99,10 @@
 
             var rect = new pr.Rect.ofElement(canvas.getElement());
 
-            for (var i = 0; i < s.drawables.length; i++) {
-                var drawable = s.drawables[i];
-                drawable.bounds = rect;
+            for (var i = 0; i < s.fragments.length; i++) {
+                var fragment = s.fragments[i];
+                fragment.bounds = rect;
             }
-            s.invalidate();
             s.redraw();
         },
         /**
@@ -114,13 +114,13 @@
             s.size(rect.width, rect.height);
         },
         /**
-         * Invalidate drawables.
+         * Invalidate fragments.
          */
-        invalidate: function () {
+        invalidateAll: function () {
             var s = this;
-            for (var i = 0; i < s.drawables.length; i++) {
-                var drawable = s.drawables[i];
-                drawable.invalidate();
+            for (var i = 0; i < s.fragments.length; i++) {
+                var fragment = s.fragments[i];
+                fragment.invalidate();
             }
         }
     };

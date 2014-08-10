@@ -7,6 +7,16 @@
     "use strict";
     var u = {
         /**
+         * Extract number from text.
+         * @param {string} text - Text to extract from.
+         * @returns {number} - Extracted number.
+         * @example extractNumber('20px')
+         */
+        extractNumber: function (text) {
+            return Number(text.replace(/[^\d]/g, ''));
+        },
+
+        /**
          * Copy object.
          * @param {object} src - Object to copy from.
          * @param {object} dest - Object to copy to.
