@@ -67,19 +67,15 @@
                 y: y
             });
 
-            s.parts.background.set({
-                width: w,
-                height: h,
-                left: -w / 2,
-                top: -h / 2,
-            });
-
-            s.parts.text.set({
+            var bounds = {
                 width: w,
                 height: h,
                 left: x - w,
-                top: y - h
-            });
+                top: y - h,
+            };
+
+            s.parts.background.set(bounds);
+            s.parts.text.set(bounds);
         },
         /**
          * Move to point.
@@ -93,6 +89,13 @@
             var center = frame.center,
                 w = frame.width,
                 h = frame.height;
+
+            var v = s.velocity;
+            console.log('frame, bounds, scroll',
+                    s.frame && s.frame.center.y,
+                    s.bounds && s.bounds.center.y,
+                y);
+
             s._updateDrawable(center.x, center.y, w, h);
         },
         /**
@@ -102,11 +105,13 @@
         sync: function (bounds) {
             var s = this;
             s.frame = pr.Rect.ofElement(s.elm, bounds);
+            s.bounds = bounds;
         },
         /**
          * Frame of the element.
          */
         frame: pr.Rect.RectZero(),
+        velocity: 1
     };
 
     /**
