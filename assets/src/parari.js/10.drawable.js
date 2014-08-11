@@ -40,10 +40,18 @@
                 originX: 'center',
                 originY: 'center'
             };
+
+            var baseOffset = u.offsetSum(s.elm);
             s.getObjects().forEach(function (object) {
-                object.set(bounds);
                 if (object.layoutDrawableContents) {
+                    var offset = u.offsetSum(object.elm);
+                    object.set({
+                        top: offset.top - baseOffset.top,
+                        left: offset.left - baseOffset.left
+                    })
                     object.layoutDrawableContents();
+                } else {
+                    object.set(bounds);
                 }
             });
         },
@@ -99,7 +107,6 @@
                     fontFamily: style.fontFamily,
                     fontStyle: style.fontStyle,
                     fontWeight: style.fontWeight,
-                    textBackgroundColor: 'rgb(0,200,0)',
                     textAlign: Drawable._styleDictionary.textAlign[style.textAlign],
                 });
             },

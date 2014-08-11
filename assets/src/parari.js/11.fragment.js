@@ -56,20 +56,14 @@
          * @param {number} scrollY - Y position.
          */
         move: function (scrollX, scrollY) {
-            var s = this,
-                frame = s.frame;
+            var s = this;
 
-            var center = frame.center,
-                w = frame.width,
-                h = frame.height;
+            var w = s.frame.width,
+                h = s.frame.height;
 
-            var v = s.velocity;
-
-            var dx = s.hLock ? 0 : s.dx * (1 - v),
-                dy = s.vLock ? 0 : s.dy * (1 - v);
-
-            var x = center.x - scrollX * v - dx,
-                y = center.y - scrollY * v - dy;
+            var amount = s._moveAmount(scrollX, scrollY),
+                x = amount.x,
+                y = amount.y;
 
             s.drawable.set({
                 width: w,
@@ -77,7 +71,25 @@
                 left: x - w,
                 top: y - h
             });
+        },
+        /**
+         * Get move amount.
+         * @param {number} scrollX - Horizontal Scroll amount.
+         * @param {number} scrollY - Vertical scroll amount.
+         * @returns {{x: number, y: number}}
+         * @private
+         */
+        _moveAmount: function (scrollX, scrollY) {
+            var s = this,
+                center = s.frame.center,
+                v = s.velocity;
 
+            var dx = s.hLock ? 0 : s.dx * (1 - v),
+                dy = s.vLock ? 0 : s.dy * (1 - v);
+            return {
+                x: center.x - scrollX * v - dx,
+                y: center.y - scrollY * v - dy
+            }
         },
         /**
          * Synchorize with source element.

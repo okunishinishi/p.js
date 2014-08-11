@@ -36,13 +36,26 @@ window.parari = (function (parari) {
 	    "use strict";
 	    var u = {
 	        /**
+	         * Reduce function to concat. Should be passed to Array.prototype.reduce.
+	         * @param {*} prev - Previous entry.
+	         * @param {*} cur - Current entry.
+	         * @returns {*}
+	         */
+	        concatReduce:function(prev, cur){
+	            return prev.concat(cur);
+	        },
+	        /**
+	         * Device pixel ratio.
+	         */
+	        devicePixelRatio: window.devicePixelRatio || 1,
+	        /**
 	         * Extract number from text.
 	         * @param {string} text - Text to extract from.
 	         * @returns {number} - Extracted number.
 	         * @example extractNumber('20px')
 	         */
 	        extractNumber: function (text) {
-	            return Number(text.replace(/[^\d]/g, ''));
+	            return Number(text.replace(/[^\d\.]/g, ''));
 	        },
 	
 	        /**
@@ -104,7 +117,6 @@ window.parari = (function (parari) {
 	            }
 	            var w = canvas.width,
 	                h = canvas.height;
-	            console.log(w, h);
 	            canvas.width = w * ratio;
 	            canvas.height = h * ratio;
 	            canvas.getContext('2d').scale(ratio, ratio);
@@ -237,8 +249,8 @@ window.parari = (function (parari) {
 	        get center() {
 	            var s = this;
 	            return {
-	                x: (s.left + s.right) / 2,
-	                y: (s.top + s.bottom) / 2
+	                x: s.left + s.width / 2,
+	                y: s.top + s.height / 2
 	            }
 	        },
 	        /**
@@ -361,34 +373,160 @@ window.parari = (function (parari) {
 	        c = pr.constants;
 	
 	    /** @lends Drawable */
-	    function Drawable() {
+	    function Drawable(elm) {
+	        var s = this,
+	            style = window.getComputedStyle(elm, '');
+	        s.__proto__ = u.copy(Drawable.prototype, new f.Group());
+	        s.addAll([
+	            Drawable.background(style),
+	            Drawable.text(Drawable.textValue(elm), style),
+	        ].concat(Drawable.children(elm)));
+	        s.elm = elm;
 	    };
 	
-	    var Prototype = f.Group;
-	    Drawable.prototype = u.copy(
-	        /** @lends Drawable.prototype */
+	    Drawable.prototype = {
+	        /**
+	         * Resize drawable contents.
+	         */
+	        layoutDrawableContents: function () {
+	            var s = this,
+	                w = s.elm.offsetWidth,
+	                h = s.elm.offsetHeight;
+	
+	            var bounds = {
+	                width: w,
+	                height: h,
+	                left: w / 2,
+	                top: h / 2,
+	                originX: 'center',
+	                originY: 'center'
+	            };
+	
+	            var baseOffset = u.offsetSum(s.elm);
+	            s.getObjects().forEach(function (object) {
+	                if (object.layoutDrawableContents) {
+	                    var offset = u.offsetSum(object.elm);
+	                    object.set({
+	                        top: offset.top - baseOffset.top,
+	                        left: offset.left - baseOffset.left
+	                    })
+	                    object.layoutDrawableContents();
+	                } else {
+	                    object.set(bounds);
+	                }
+	            });
+	        },
+	        /**
+	         * Add all objects.
+	         * @param {fabric.Object[]} objects - Objects add.
+	         */
+	        addAll: function (objects) {
+	            var s = this;
+	            objects = [].concat(objects).forEach(function (object) {
+	                s.add(object);
+	            });
+	        },
+	        /**
+	         * Remove all objects.
+	         * @returns {fabric.Object[]} - Removed objects.
+	         */
+	        removeAll: function () {
+	            var s = this,
+	                removed = [];
+	            var obj;
+	            while (obj = s.remove()) {
+	                removed.push(obj);
+	            }
+	            return removed;
+	        },
+	
+	    };
+	
+	    u.copy(
+	        /** @lends Drawable */
 	        {
-	            addAll: function (objects) {
-	                var s = this;
-	                objects = [].concat(objects).forEach(function (object) {
-	                    s.add(object);
+	            /**
+	             * Create a background.
+	             * @param {CSSStyleDeclaration} style - Style object.
+	             * @returns {fabric.Rect} - Rect object.
+	             */
+	            background: function (style) {
+	                return new f.Rect({
+	                    fill: style.backgroundColor
 	                });
 	            },
 	            /**
-	             * Remove all objects.
+	             * Create a text.
+	             * @param {string} text - Text
+	             * @param {CSSStyleDeclaration} style - Style object.
+	             * @returns {fabric.Text} - Rect object.
 	             */
-	            removeAll: function () {
-	                var s = this,
-	                    removed = [];
-	                var obj;
-	                while (obj = s.remove()) {
-	                    removed.push(obj);
-	                }
-	                return removed;
+	            text: function (text, style) {
+	                return new f.Text(text, {
+	                    fontSize: u.extractNumber(style.fontSize),
+	                    fill: style.color,
+	                    fontFamily: style.fontFamily,
+	                    fontStyle: style.fontStyle,
+	                    fontWeight: style.fontWeight,
+	                    textAlign: Drawable._styleDictionary.textAlign[style.textAlign],
+	                });
 	            },
-	        },
-	        new Prototype([], {})
-	    );
+	            /**
+	             * Style dictionary.
+	             * Some of css style values is not supported in fabric.js and
+	             * needs to be altenated with another value.
+	             */
+	            _styleDictionary: {
+	                textAlign: {
+	                    start: 'left',
+	                    left: 'left',
+	                    center: 'center',
+	                    right: 'right',
+	                    justify: 'center',
+	                    initial: 'left',
+	                    inherit: 'left'
+	                }
+	            },
+	            /**
+	             * Create children.
+	             * @param {HTMLElement} elm - Elmeent
+	             * @returns {*}
+	             */
+	            children: function (elm) {
+	                return u.toArray(elm.childNodes)
+	                    .filter(Drawable._filters.elementFilter)
+	                    .map(Drawable._maps.drawableMap)
+	                    .reduce(u.concatReduce, []);
+	            },
+	            /**
+	             * Get text value of a elmenet.
+	             * @param {HTMLElement} elm - An html element.
+	             * @returns {string} - Elment text value.
+	             */
+	            textValue: function (elm) {
+	                return u.toArray(elm.childNodes)
+	                    .filter(Drawable._filters.textNodeFileter)
+	                    .map(Drawable._maps.nodeValueMap)
+	                    .join('');
+	            },
+	            _filters: {
+	                elementFilter: function (elm) {
+	                    return elm.nodeType === 1;
+	                },
+	                textNodeFileter: function (node) {
+	                    return node.nodeType === 3;
+	                }
+	            },
+	            _maps: {
+	                drawableMap: function (elm) {
+	                    return new Drawable(elm);
+	                },
+	                nodeValueMap: function (node) {
+	                    return node.nodeValue;
+	                }
+	            }
+	        }, Drawable);
+	
 	
 	    pr.Drawable = Drawable;
 	
@@ -434,12 +572,8 @@ window.parari = (function (parari) {
 	         */
 	        load: function (elm) {
 	            var s = this;
-	            s.parts = Fragment.parseElement(elm);
-	            s.drawable = new pr.Drawable([], {});
-	            s.drawable.addAll([
-	                s.parts.background,
-	                s.parts.text
-	            ]);
+	
+	            s.drawable = new pr.Drawable(elm);
 	
 	            var properties = Fragment.fromDataset(elm.dataset);
 	            u.copy(properties, s);
@@ -455,42 +589,19 @@ window.parari = (function (parari) {
 	            s.load(s.elm);
 	        },
 	        /**
-	         * Layout parts.
-	         * @param {pr.Rect} rect - Frame rectangle.
+	         * Move to point.
+	         * @param {number} scrollX - X position.
+	         * @param {number} scrollY - Y position.
 	         */
-	        layout: function (frame) {
-	            var s = this,
-	                w = frame.width,
-	                h = frame.height;
-	
-	            var bounds = {
-	                width: w,
-	                height: h,
-	                left: w / 2,
-	                top: h / 2,
-	                originX: 'center',
-	                originY: 'center'
-	            };
-	
-	            s.parts.background.set(bounds);
-	            s.parts.text.set(bounds);
-	        },
-	        /**
-	         * Re layout.
-	         */
-	        relayout: function () {
+	        move: function (scrollX, scrollY) {
 	            var s = this;
-	            s.layout(s.frame);
-	        },
-	        /**
-	         * Update drwable frame.
-	         * @param {number} x - X position.
-	         * @param {number} y - Y position.
-	         * @param {number} w - Horizontal size.
-	         * @param {number} h - Vertical size.
-	         */
-	        _updateDrawable: function (x, y, w, h) {
-	            var s = this;
+	
+	            var w = s.frame.width,
+	                h = s.frame.height;
+	
+	            var amount = s._moveAmount(scrollX, scrollY),
+	                x = amount.x,
+	                y = amount.y;
 	
 	            s.drawable.set({
 	                width: w,
@@ -498,30 +609,25 @@ window.parari = (function (parari) {
 	                left: x - w,
 	                top: y - h
 	            });
-	
-	
 	        },
 	        /**
-	         * Move to point.
-	         * @param {number} scrollX - X position.
-	         * @param {number} scrollY - Y position.
+	         * Get move amount.
+	         * @param {number} scrollX - Horizontal Scroll amount.
+	         * @param {number} scrollY - Vertical scroll amount.
+	         * @returns {{x: number, y: number}}
+	         * @private
 	         */
-	        move: function (scrollX, scrollY) {
+	        _moveAmount: function (scrollX, scrollY) {
 	            var s = this,
-	                frame = s.frame;
-	
-	            var center = frame.center,
-	                w = frame.width,
-	                h = frame.height;
-	
-	            var v = s.velocity;
+	                center = s.frame.center,
+	                v = s.velocity;
 	
 	            var dx = s.hLock ? 0 : s.dx * (1 - v),
 	                dy = s.vLock ? 0 : s.dy * (1 - v);
-	
-	            var x = center.x - scrollX * v - dx,
-	                y = center.y - scrollY * v - dy;
-	            s._updateDrawable(x, y, w, h);
+	            return {
+	                x: center.x - scrollX * v - dx,
+	                y: center.y - scrollY * v - dy
+	            }
 	        },
 	        /**
 	         * Synchorize with source element.
@@ -530,11 +636,10 @@ window.parari = (function (parari) {
 	        sync: function (bounds) {
 	            var s = this;
 	            var frame = pr.Rect.ofElement(s.elm, bounds);
-	
 	            s.dx = frame.center.x - bounds.width / 2;
 	            s.dy = frame.center.y - bounds.height / 2;
 	            s.frame = frame;
-	            s.relayout();
+	            s.drawable.layoutDrawableContents();
 	        },
 	        /**
 	         * Frame of the element.
@@ -551,27 +656,6 @@ window.parari = (function (parari) {
 	        vLock: false
 	    };
 	
-	    /**
-	     * Parse elment into fabric object.
-	     * @param {HTMLElement} elm - Element to parse.
-	     * @returns {{}}
-	     */
-	    Fragment.parseElement = function (elm) {
-	        var style = window.getComputedStyle(elm, '');
-	        return {
-	            background: new f.Rect({
-	                fill: style.backgroundColor
-	            }),
-	            text: new f.Text(elm.textContent, {
-	                fill: style.color,
-	                fontSize: Number(style.fontSize.replace(/[^\d]/g, '')),
-	                textBackgroundColor: 'rgb(0,200,0)',
-	                fontFamily: style.fontFamily,
-	                fontWeight: style.fontWeight,
-	                textAlign: style.textAlign
-	            })
-	        }
-	    };
 	
 	    /**
 	     * Get proeprty data from dataset.
@@ -761,7 +845,10 @@ window.parari = (function (parari) {
 	            canvas.setWidth(w);
 	            canvas.setHeight(h);
 	
-	            var bounds = new pr.Rect.ofElement(canvas.getElement());
+	            var canvasElement = canvas.getElement();
+	            u.optimizeCanvasRatio(canvasElement);
+	
+	            var bounds = new pr.Rect.ofElement(canvasElement);
 	            s.syncAll(bounds);
 	            s.redraw();
 	        },
@@ -806,7 +893,6 @@ window.parari = (function (parari) {
 	        var div = document.createElement('div');
 	        div.classList.add(c.classNames.SCREEN);
 	        var canvas = document.createElement('canvas');
-	        u.optimizeCanvasRatio(canvas);
 	        canvas.id = canvasId;
 	        div.appendChild(canvas);
 	        return div;
