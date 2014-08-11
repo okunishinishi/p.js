@@ -16,11 +16,21 @@
         var s = this,
             style = window.getComputedStyle(elm, '');
         s.__proto__ = u.copy(Drawable.prototype, new f.Group());
-        s.addAll([
-            Drawable.background(style),
-            Drawable.text(Drawable.textValue(elm), style),
-        ].concat(Drawable.children(elm)));
+        s.addAll(
+            [
+                Drawable.background(style),
+                Drawable.text(Drawable.textValue(elm), style),
+            ]
+                .filter(Drawable._filters.emptyRejecter)
+                .concat(Drawable.children(elm))
+        );
         s.elm = elm;
+        if (elm.src) {
+            f.Image.fromURL(elm.src, function (image) {
+                s.add(image);
+                s.layoutDrawableContents();
+            });
+        }
     };
 
     Drawable.prototype = {
@@ -61,9 +71,10 @@
          */
         addAll: function (objects) {
             var s = this;
-            objects = [].concat(objects).forEach(function (object) {
-                s.add(object);
-            });
+            objects = [].concat(objects)
+                .forEach(function (object) {
+                    s.add(object);
+                });
         },
         /**
          * Remove all objects.
@@ -111,6 +122,19 @@
                 });
             },
             /**
+             * Create an image.
+             * @param {string} src - Source string.
+             * @returns {fabric.Image} - Image object.
+             */
+            image: function (elm) {
+                if (!elm.src) {
+                    return null;
+                }
+                return new f.Image(elm, {
+
+                });
+            },
+            /**
              * Style dictionary.
              * Some of css style values is not supported in fabric.js and
              * needs to be altenated with another value.
@@ -149,6 +173,9 @@
                     .join('');
             },
             _filters: {
+                emptyRejecter: function (value) {
+                    return !!value;
+                },
                 elementFilter: function (elm) {
                     return elm.nodeType === 1;
                 },
