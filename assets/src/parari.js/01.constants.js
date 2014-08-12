@@ -16,6 +16,7 @@
      */
     var c = {
         PREFIX: prefix,
+        PREFIX_PATTERN: new RegExp("^" + prefix),
         classNames: {
             SRC: prefixed('src'),
             SCREEN: prefixed('screen'),

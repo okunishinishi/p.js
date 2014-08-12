@@ -41,21 +41,8 @@ window.parari = (function (parari) {
 	         * @param {*} cur - Current entry.
 	         * @returns {*}
 	         */
-	        concatReduce:function(prev, cur){
+	        concatReduce: function (prev, cur) {
 	            return prev.concat(cur);
-	        },
-	        /**
-	         * Device pixel ratio.
-	         */
-	        devicePixelRatio: window.devicePixelRatio || 1,
-	        /**
-	         * Extract number from text.
-	         * @param {string} text - Text to extract from.
-	         * @returns {number} - Extracted number.
-	         * @example extractNumber('20px')
-	         */
-	        extractNumber: function (text) {
-	            return Number(text.replace(/[^\d\.]/g, ''));
 	        },
 	
 	        /**
@@ -72,6 +59,20 @@ window.parari = (function (parari) {
 	            }
 	            return dest;
 	        },
+	        /**
+	         * Device pixel ratio.
+	         */
+	        devicePixelRatio: window.devicePixelRatio || 1,
+	        /**
+	         * Extract number from text.
+	         * @param {string} text - Text to extract from.
+	         * @returns {number} - Extracted number.
+	         * @example extractNumber('20px')
+	         */
+	        extractNumber: function (text) {
+	            return Number(text.replace(/[^\d\.]/g, ''));
+	        },
+	
 	        /**
 	         * Get max value.
 	         * @param {number...} values - Values to compare.
@@ -142,6 +143,23 @@ window.parari = (function (parari) {
 	            }
 	            return elm;
 	        },
+	        /**
+	         * Trigger a event.
+	         * @param {HTMLElement} elm - A html element.
+	         * @param {string} eventName - Evenet name.
+	         */
+	        triggerEvent: function (elm, eventName) {
+	            var event;
+	            if (document.createEvent) {
+	                event = document.createEvent("HTMLEvents");
+	                event.initEvent(eventName, true, true);
+	                elm.dispatchEvent(event);
+	            } else {
+	                event = document.createEventObject();
+	                event.eventType = eventName;
+	                elm.fireEvent('on' + eventName, event);
+	            }
+	        }
 	    }
 	    pr.utilities = u;
 	
@@ -165,6 +183,7 @@ window.parari = (function (parari) {
 	     */
 	    var c = {
 	        PREFIX: prefix,
+	        PREFIX_PATTERN: new RegExp("^" + prefix),
 	        classNames: {
 	            SRC: prefixed('src'),
 	            SCREEN: prefixed('screen'),
@@ -181,8 +200,9 @@ window.parari = (function (parari) {
 
     /**
 	 * Append prefix.
-	 * @membrerof para
+	 * @membrerof parari
 	 * @function prefixed
+	 * @param {string} value - String value to add prefix.
 	 */
 	(function (pr) {
 	    "use strict";
@@ -196,6 +216,29 @@ window.parari = (function (parari) {
 	    }
 	
 	    pr.prefixed = prefixed;
+	
+	
+	})(window.parari = window.parari || {});
+
+    /**
+	 * Remove prefix.
+	 * @membrerof parari
+	 * @function unprefixed
+	 * @param {string} value - String value to remove prefix.
+	 */
+	(function (pr) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        c = pr.constants;
+	
+	    /** @lends unprefixed */
+	    function unprefixed(name) {
+	        name = name.replace(c.PREFIX_PATTERN, '').replace(/^\-/, '');
+	        return  name.substr(0, 1).toLowerCase() + name.substr(1);
+	    }
+	
+	    pr.unprefixed = unprefixed;
 	
 	
 	})(window.parari = window.parari || {});
@@ -377,18 +420,30 @@ window.parari = (function (parari) {
 	        var s = this,
 	            style = window.getComputedStyle(elm, '');
 	        s.__proto__ = u.copy(Drawable.prototype, new f.Group());
-	        s.addAll([
-	            Drawable.background(style),
-	            Drawable.text(Drawable.textValue(elm), style),
-	        ].concat(Drawable.children(elm)));
+	        s.__isPrDrawable = true;
+	        s.addAll(
+	            [
+	                Drawable.background(style),
+	                Drawable.text(Drawable.textValue(elm), style),
+	            ]
+	                .filter(Drawable._filters.emptyRejecter)
+	                .concat(Drawable.children(elm))
+	        );
 	        s.elm = elm;
+	        if (elm.src) {
+	            f.Image.fromURL(elm.src, function (image) {
+	                s.add(image);
+	                s.layout();
+	                u.triggerEvent(elm, 'pr-img-load');
+	            });
+	        }
 	    };
 	
 	    Drawable.prototype = {
 	        /**
-	         * Resize drawable contents.
+	         * Layout drawable contents.
 	         */
-	        layoutDrawableContents: function () {
+	        layout: function () {
 	            var s = this,
 	                w = s.elm.offsetWidth,
 	                h = s.elm.offsetHeight;
@@ -404,13 +459,14 @@ window.parari = (function (parari) {
 	
 	            var baseOffset = u.offsetSum(s.elm);
 	            s.getObjects().forEach(function (object) {
-	                if (object.layoutDrawableContents) {
+	                var isDrawable = object.__isPrDrawable;
+	                if (isDrawable) {
 	                    var offset = u.offsetSum(object.elm);
 	                    object.set({
 	                        top: offset.top - baseOffset.top,
 	                        left: offset.left - baseOffset.left
-	                    })
-	                    object.layoutDrawableContents();
+	                    });
+	                    object.layout();
 	                } else {
 	                    object.set(bounds);
 	                }
@@ -422,9 +478,10 @@ window.parari = (function (parari) {
 	         */
 	        addAll: function (objects) {
 	            var s = this;
-	            objects = [].concat(objects).forEach(function (object) {
-	                s.add(object);
-	            });
+	            objects = [].concat(objects)
+	                .forEach(function (object) {
+	                    s.add(object);
+	                });
 	        },
 	        /**
 	         * Remove all objects.
@@ -510,6 +567,9 @@ window.parari = (function (parari) {
 	                    .join('');
 	            },
 	            _filters: {
+	                emptyRejecter: function (value) {
+	                    return !!value;
+	                },
 	                elementFilter: function (elm) {
 	                    return elm.nodeType === 1;
 	                },
@@ -551,12 +611,10 @@ window.parari = (function (parari) {
 	
 	    /** @lends Fragment */
 	    function Fragment(elm) {
-	        var s = this;
-	        s.elm = elm;
-	
 	        elm.classList.add(c.classNames.FRAGMENT);
 	
-	        s.reload();
+	        var s = this;
+	        s.load(elm);
 	    };
 	
 	    Fragment.prototype = {
@@ -567,26 +625,70 @@ window.parari = (function (parari) {
 	         */
 	        drawable: null,
 	        /**
-	         * Load a element
+	         * Load data from fragment elment.
 	         * @param {HTMLElement} elm
 	         */
 	        load: function (elm) {
 	            var s = this;
 	
+	            s.elm = elm;
+	            s.elm.addEventListener('pr-img-load', function () {
+	                s.invalidate();
+	                setTimeout(function () {
+	                    s.refresh();
+	                }, 10);
+	            });
+	
 	            s.drawable = new pr.Drawable(elm);
 	
 	            var properties = Fragment.fromDataset(elm.dataset);
 	            u.copy(properties, s);
+	
+	
+	        },
+	        /**
+	         *  Unload fragment element data.
+	         */
+	        unload: function () {
+	            var s = this;
+	            if (s.drawable) {
+	                s.drawable.removeAll();
+	                s.drawable = null;
+	            }
+	            if (s.elm) {
+	                s.elm.removeEventListener('pr-img-load');
+	                s.elm = null;
+	            }
 	        },
 	        /**
 	         * Reload element.
 	         */
 	        reload: function () {
 	            var s = this;
-	            if (s.drawable) {
-	                s.drawable.removeAll();
-	            }
+	            s.unload();
 	            s.load(s.elm);
+	        },
+	        /**
+	         * Invalidate this fragment.
+	         */
+	        invalidate: function () {
+	            var s = this;
+	            s._needsSync = true;
+	            s._needsLayout = true;
+	        },
+	        /**
+	         * Refresh fragments.
+	         */
+	        refresh: function () {
+	            var s = this;
+	            if (s._needsSync) {
+	                s.resync();
+	                s._needsSync = false;
+	            }
+	            if (s._needsLayout) {
+	                s.drawable.layout();
+	                s._needsLayout = false;
+	            }
 	        },
 	        /**
 	         * Move to point.
@@ -609,6 +711,7 @@ window.parari = (function (parari) {
 	                left: x - w,
 	                top: y - h
 	            });
+	            s.refresh();
 	        },
 	        /**
 	         * Get move amount.
@@ -639,7 +742,12 @@ window.parari = (function (parari) {
 	            s.dx = frame.center.x - bounds.width / 2;
 	            s.dy = frame.center.y - bounds.height / 2;
 	            s.frame = frame;
-	            s.drawable.layoutDrawableContents();
+	            s.bounds = bounds;
+	            s.drawable.layout();
+	        },
+	        resync: function () {
+	            var s = this;
+	            s.sync(s.bounds);
 	        },
 	        /**
 	         * Frame of the element.
@@ -663,24 +771,16 @@ window.parari = (function (parari) {
 	     * @returns {object} - Parari property values.
 	     */
 	    Fragment.fromDataset = function (dataset) {
-	        var pattern = Fragment.fromDataset._prefixPattern;
-	        var values = {};
-	        for (var key in dataset) {
-	            if (dataset.hasOwnProperty(key)) {
-	                var matches = key.match(pattern);
-	                if (matches) {
-	                    var unPrefixedKey = Fragment.fromDataset._unPrefix(key)
-	                    values[unPrefixedKey] = dataset[key];
-	                }
-	            }
+	        var values = {},
+	            keys = Object.keys(dataset).filter(Fragment.fromDataset._keyFilter);
+	        for (var i = 0; i < keys.length; i++) {
+	            var key = keys[i];
+	            values[pr.unprefixed(key)] = dataset[key];
 	        }
 	        return values;
 	    };
-	    Fragment.fromDataset._prefixPattern = new RegExp("^" + pr.constants.PREFIX);
-	    Fragment.fromDataset._unPrefix = function (key) {
-	        var pattern = Fragment.fromDataset._prefixPattern;
-	        key = key.replace(pattern, '');
-	        return  key.substr(0, 1).toLowerCase() + key.substr(1);
+	    Fragment.fromDataset._keyFilter = function (key) {
+	        return !!key.match(c.PREFIX_PATTERN);
 	    }
 	
 	
@@ -994,7 +1094,6 @@ window.parari = (function (parari) {
 	
 	        window.addEventListener('scroll', redraw, false);
 	        window.addEventListener('resize', resize, false);
-	
 	
 	        reload();
 	    };

@@ -58,4 +58,8 @@ describe('pr.utilities', function () {
         expect(reduced).toEqual('abc');
     });
 
+    it('Trigger an event.', function(){
+        u.triggerEvent(document.body, 'parari-event');
+    });
+
 });

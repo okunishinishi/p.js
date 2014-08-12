@@ -16,6 +16,7 @@
         var s = this,
             style = window.getComputedStyle(elm, '');
         s.__proto__ = u.copy(Drawable.prototype, new f.Group());
+        s.__isPrDrawable = true;
         s.addAll(
             [
                 Drawable.background(style),
@@ -28,16 +29,17 @@
         if (elm.src) {
             f.Image.fromURL(elm.src, function (image) {
                 s.add(image);
-                s.layoutDrawableContents();
+                s.layout();
+                u.triggerEvent(elm, 'pr-img-load');
             });
         }
     };
 
     Drawable.prototype = {
         /**
-         * Resize drawable contents.
+         * Layout drawable contents.
          */
-        layoutDrawableContents: function () {
+        layout: function () {
             var s = this,
                 w = s.elm.offsetWidth,
                 h = s.elm.offsetHeight;
@@ -53,13 +55,14 @@
 
             var baseOffset = u.offsetSum(s.elm);
             s.getObjects().forEach(function (object) {
-                if (object.layoutDrawableContents) {
+                var isDrawable = object.__isPrDrawable;
+                if (isDrawable) {
                     var offset = u.offsetSum(object.elm);
                     object.set({
                         top: offset.top - baseOffset.top,
                         left: offset.left - baseOffset.left
-                    })
-                    object.layoutDrawableContents();
+                    });
+                    object.layout();
                 } else {
                     object.set(bounds);
                 }
@@ -119,19 +122,6 @@
                     fontStyle: style.fontStyle,
                     fontWeight: style.fontWeight,
                     textAlign: Drawable._styleDictionary.textAlign[style.textAlign],
-                });
-            },
-            /**
-             * Create an image.
-             * @param {string} src - Source string.
-             * @returns {fabric.Image} - Image object.
-             */
-            image: function (elm) {
-                if (!elm.src) {
-                    return null;
-                }
-                return new f.Image(elm, {
-
                 });
             },
             /**

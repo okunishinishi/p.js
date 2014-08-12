@@ -13,12 +13,10 @@
 
     /** @lends Fragment */
     function Fragment(elm) {
-        var s = this;
-        s.elm = elm;
-
         elm.classList.add(c.classNames.FRAGMENT);
 
-        s.reload();
+        var s = this;
+        s.load(elm);
     };
 
     Fragment.prototype = {
@@ -29,26 +27,70 @@
          */
         drawable: null,
         /**
-         * Load a element
+         * Load data from fragment elment.
          * @param {HTMLElement} elm
          */
         load: function (elm) {
             var s = this;
 
+            s.elm = elm;
+            s.elm.addEventListener('pr-img-load', function () {
+                s.invalidate();
+                setTimeout(function () {
+                    s.refresh();
+                }, 10);
+            });
+
             s.drawable = new pr.Drawable(elm);
 
             var properties = Fragment.fromDataset(elm.dataset);
             u.copy(properties, s);
+
+
+        },
+        /**
+         *  Unload fragment element data.
+         */
+        unload: function () {
+            var s = this;
+            if (s.drawable) {
+                s.drawable.removeAll();
+                s.drawable = null;
+            }
+            if (s.elm) {
+                s.elm.removeEventListener('pr-img-load');
+                s.elm = null;
+            }
         },
         /**
          * Reload element.
          */
         reload: function () {
             var s = this;
-            if (s.drawable) {
-                s.drawable.removeAll();
-            }
+            s.unload();
             s.load(s.elm);
+        },
+        /**
+         * Invalidate this fragment.
+         */
+        invalidate: function () {
+            var s = this;
+            s._needsSync = true;
+            s._needsLayout = true;
+        },
+        /**
+         * Refresh fragments.
+         */
+        refresh: function () {
+            var s = this;
+            if (s._needsSync) {
+                s.resync();
+                s._needsSync = false;
+            }
+            if (s._needsLayout) {
+                s.drawable.layout();
+                s._needsLayout = false;
+            }
         },
         /**
          * Move to point.
@@ -71,6 +113,7 @@
                 left: x - w,
                 top: y - h
             });
+            s.refresh();
         },
         /**
          * Get move amount.
@@ -101,7 +144,12 @@
             s.dx = frame.center.x - bounds.width / 2;
             s.dy = frame.center.y - bounds.height / 2;
             s.frame = frame;
-            s.drawable.layoutDrawableContents();
+            s.bounds = bounds;
+            s.drawable.layout();
+        },
+        resync: function () {
+            var s = this;
+            s.sync(s.bounds);
         },
         /**
          * Frame of the element.
@@ -125,24 +173,16 @@
      * @returns {object} - Parari property values.
      */
     Fragment.fromDataset = function (dataset) {
-        var pattern = Fragment.fromDataset._prefixPattern;
-        var values = {};
-        for (var key in dataset) {
-            if (dataset.hasOwnProperty(key)) {
-                var matches = key.match(pattern);
-                if (matches) {
-                    var unPrefixedKey = Fragment.fromDataset._unPrefix(key)
-                    values[unPrefixedKey] = dataset[key];
-                }
-            }
+        var values = {},
+            keys = Object.keys(dataset).filter(Fragment.fromDataset._keyFilter);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            values[pr.unprefixed(key)] = dataset[key];
         }
         return values;
     };
-    Fragment.fromDataset._prefixPattern = new RegExp("^" + pr.constants.PREFIX);
-    Fragment.fromDataset._unPrefix = function (key) {
-        var pattern = Fragment.fromDataset._prefixPattern;
-        key = key.replace(pattern, '');
-        return  key.substr(0, 1).toLowerCase() + key.substr(1);
+    Fragment.fromDataset._keyFilter = function (key) {
+        return !!key.match(c.PREFIX_PATTERN);
     }
 
 

@@ -12,21 +12,8 @@
          * @param {*} cur - Current entry.
          * @returns {*}
          */
-        concatReduce:function(prev, cur){
+        concatReduce: function (prev, cur) {
             return prev.concat(cur);
-        },
-        /**
-         * Device pixel ratio.
-         */
-        devicePixelRatio: window.devicePixelRatio || 1,
-        /**
-         * Extract number from text.
-         * @param {string} text - Text to extract from.
-         * @returns {number} - Extracted number.
-         * @example extractNumber('20px')
-         */
-        extractNumber: function (text) {
-            return Number(text.replace(/[^\d\.]/g, ''));
         },
 
         /**
@@ -43,6 +30,20 @@
             }
             return dest;
         },
+        /**
+         * Device pixel ratio.
+         */
+        devicePixelRatio: window.devicePixelRatio || 1,
+        /**
+         * Extract number from text.
+         * @param {string} text - Text to extract from.
+         * @returns {number} - Extracted number.
+         * @example extractNumber('20px')
+         */
+        extractNumber: function (text) {
+            return Number(text.replace(/[^\d\.]/g, ''));
+        },
+
         /**
          * Get max value.
          * @param {number...} values - Values to compare.
@@ -113,6 +114,23 @@
             }
             return elm;
         },
+        /**
+         * Trigger a event.
+         * @param {HTMLElement} elm - A html element.
+         * @param {string} eventName - Evenet name.
+         */
+        triggerEvent: function (elm, eventName) {
+            var event;
+            if (document.createEvent) {
+                event = document.createEvent("HTMLEvents");
+                event.initEvent(eventName, true, true);
+                elm.dispatchEvent(event);
+            } else {
+                event = document.createEventObject();
+                event.eventType = eventName;
+                elm.fireEvent('on' + eventName, event);
+            }
+        }
     }
     pr.utilities = u;
 

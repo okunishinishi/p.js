@@ -1,7 +1,8 @@
 /**
  * Append prefix.
- * @membrerof para
+ * @membrerof parari
  * @function prefixed
+ * @param {string} value - String value to add prefix.
  */
 (function (pr) {
     "use strict";

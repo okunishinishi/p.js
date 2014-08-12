@@ -48,7 +48,6 @@
         window.addEventListener('scroll', redraw, false);
         window.addEventListener('resize', resize, false);
 
-
         reload();
     };
 
