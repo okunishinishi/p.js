@@ -13,8 +13,7 @@
     /** @lends Src */
     function Src(elm) {
         var s = this;
-        elm.classList.add(c.classNames.SRC);
-        s.elm = elm;
+        s.loadElement(elm);
     };
 
     Src.prototype = {
@@ -22,7 +21,15 @@
          * Source element.
          */
         elm: null,
-
+        /**
+         * Load element.
+         * @param {HTMLElement} elm - Element to load.
+         */
+        loadElement: function (elm) {
+            var s = this;
+            elm.classList.add(c.classNames.SRC);
+            s.elm = elm;
+        },
         _findObjectElements: function () {
             var s = this,
                 selector = c.FRAGMENT_SELECOTR,

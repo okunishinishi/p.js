@@ -58,8 +58,17 @@ describe('pr.utilities', function () {
         expect(reduced).toEqual('abc');
     });
 
-    it('Trigger an event.', function(){
+    it('Trigger an event.', function () {
         u.triggerEvent(document.body, 'parari-event');
     });
 
+    it('Is a extNode.', function () {
+        expect(u.isTextNode(document)).toBe(false);
+        expect(u.isTextNode(null)).toBe(false);
+    });
+    it('Is an element node.', function () {
+        expect(u.isElement(document)).toBe(false);
+        expect(u.isElement(document.body)).toBe(true);
+        expect(u.isElement(null)).toBe(false);
+    });
 });

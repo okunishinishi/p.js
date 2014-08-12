@@ -43,7 +43,22 @@
         extractNumber: function (text) {
             return Number(text.replace(/[^\d\.]/g, ''));
         },
-
+        /**
+         * Detect textNode or not.
+         * @param {HTMLNode} node - A node to detect.
+         * @returns {boolean} - Is a text node or not.
+         */
+        isTextNode: function (node) {
+            return !!node && (node.nodeType === Node.TEXT_NODE);
+        },
+        /**
+         * Detect elementNode or not.
+         * @param {HTMLNode} node - A node to detect.
+         * @returns {boolean} - Is an element node or not.
+         */
+        isElement: function (node) {
+            return !!node && (node.nodeType === Node.ELEMENT_NODE);
+        },
         /**
          * Get max value.
          * @param {number...} values - Values to compare.

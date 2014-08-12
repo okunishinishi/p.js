@@ -159,7 +159,7 @@
             textValue: function (elm) {
                 return u.toArray(elm.childNodes)
                     .map(function (node) {
-                        var isText = (node.nodeType === 3),
+                        var isText = u.isTextNode(node),
                             nodeValue = node.nodeValue || node.textContent || ''
                         if (isText) {
                             return nodeValue;
@@ -169,25 +169,15 @@
                     })
                     .join('');
             },
-            _getTextValueWorkSpan: function () {
-                var id = 'pr-drawable-text-value-woking-span';
-                var span = document.getElementById(id);
-                if (!span) {
-                    span = document.createElement('span');
-                    span.id = id;
-                    document.body.appendChild(span);
-                }
-                return span;
-            },
             _filters: {
                 emptyRejecter: function (value) {
                     return !!value;
                 },
                 elementFilter: function (elm) {
-                    return elm.nodeType === 1;
+                    return u.isElement(elm);
                 },
                 textNodeFileter: function (node) {
-                    return node.nodeType === 3;
+                    return u.isTextNode(node);
                 }
             },
             _maps: {
