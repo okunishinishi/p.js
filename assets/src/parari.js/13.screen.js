@@ -30,9 +30,15 @@
         s.canvas = new f.Canvas(canvasId);
         s.fragments = [];
 
+        s._renderTimer = setInterval(function () {
+            s.canvas.renderAll()
+        }, s._renderInterval);
+
     }
 
     Screen.prototype = {
+        _renderInterval: 1000,
+        _renderTimer: null,
         /**
          * Fabirc canvas.
          * @type fabric.Canvas

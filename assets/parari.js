@@ -742,12 +742,12 @@ window.parari = (function (parari) {
 	            s.dx = frame.center.x - bounds.width / 2;
 	            s.dy = frame.center.y - bounds.height / 2;
 	            s.frame = frame;
-	            s.bounds = bounds;
+	            s._bounds = bounds;
 	            s.drawable.layout();
 	        },
 	        resync: function () {
 	            var s = this;
-	            s.sync(s.bounds);
+	            s.sync(s._bounds);
 	        },
 	        /**
 	         * Frame of the element.
@@ -872,9 +872,15 @@ window.parari = (function (parari) {
 	        s.canvas = new f.Canvas(canvasId);
 	        s.fragments = [];
 	
+	        s._renderTimer = setInterval(function () {
+	            s.canvas.renderAll()
+	        }, s._renderInterval);
+	
 	    }
 	
 	    Screen.prototype = {
+	        _renderInterval: 1000,
+	        _renderTimer: null,
 	        /**
 	         * Fabirc canvas.
 	         * @type fabric.Canvas
