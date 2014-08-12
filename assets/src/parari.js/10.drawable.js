@@ -158,9 +158,26 @@
              */
             textValue: function (elm) {
                 return u.toArray(elm.childNodes)
-                    .filter(Drawable._filters.textNodeFileter)
-                    .map(Drawable._maps.nodeValueMap)
+                    .map(function (node) {
+                        var isText = (node.nodeType === 3),
+                            nodeValue = node.nodeValue || node.textContent || ''
+                        if (isText) {
+                            return nodeValue;
+                        } else {
+                            return node.textContent.replace(/./g, " ");
+                        }
+                    })
                     .join('');
+            },
+            _getTextValueWorkSpan: function () {
+                var id = 'pr-drawable-text-value-woking-span';
+                var span = document.getElementById(id);
+                if (!span) {
+                    span = document.createElement('span');
+                    span.id = id;
+                    document.body.appendChild(span);
+                }
+                return span;
             },
             _filters: {
                 emptyRejecter: function (value) {
