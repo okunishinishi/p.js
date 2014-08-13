@@ -13,32 +13,51 @@
 
     /** @lends Drawable */
     function Drawable(elm) {
-        var s = this,
-            style = u.getComputedStyle(elm);
+        var s = this;
+
         s.__proto__ = u.copy(Drawable.prototype, new f.Group([], {
             selectable: false,
             hasRotatingPoint: false,
         }));
         s.__isPrDrawable = true;
-        s.addAll(
-            [
-                Drawable.background(style),
-                Drawable.text(Drawable.textValue(elm), style),
-            ]
-                .filter(Drawable._filters.emptyRejecter)
-                .concat(Drawable.children(elm))
-        );
-        s.elm = elm;
-        if (elm.src) {
-            f.Image.fromURL(elm.src, function (image) {
-                s.add(image);
-                s.layout();
-                u.triggerEvent(elm, 'pr-img-load');
-            });
-        }
+
+        s.loadElement(elm);
+
+
     };
 
     Drawable.prototype = {
+        /**
+         * Load html element.
+         * @param {HTMLElement} elm - An element to load.
+         */
+        loadElement: function (elm) {
+            var s = this,
+                style = u.getComputedStyle(elm);
+            s.addAll(
+                [
+                    Drawable.background(style),
+                    Drawable.text(Drawable.textValue(elm), style),
+                ]
+                    .filter(Drawable._filters.emptyRejecter)
+                    .concat(Drawable.children(elm))
+            );
+            if (elm.src) {
+                f.Image.fromURL(elm.src, function (image) {
+                    s.add(image);
+                    s.layout();
+                    u.triggerEvent(elm, 'pr-img-load');
+                });
+            }
+            if (elm.href) {
+                s._highlightable = true;
+                s.onclick = function () {
+                    elm.click();
+                    return true;
+                }
+            }
+            s.elm = elm;
+        },
         /**
          * Layout drawable contents.
          */
@@ -46,14 +65,18 @@
             var s = this,
                 w = s.elm.offsetWidth,
                 h = s.elm.offsetHeight;
-
+            s.set({
+                width: w,
+                height: h,
+                originX: 'center',
+                originY: 'center'
+            });
             var bounds = {
                 width: u.round(w),
                 height: u.round(h),
                 left: 0,
                 top: 0,
             };
-
             var baseOffset = u.offsetSum(s.elm);
             s.getObjects().forEach(function (object) {
                 var isDrawable = Drawable.isDrawable(object);
@@ -61,7 +84,7 @@
                     var offset = u.offsetSum(object.elm);
                     object.set({
                         top: u.round(offset.top - baseOffset.top),
-                        left: u.round(offset.left - baseOffset.left),
+                        left: u.round(offset.left - baseOffset.left)
                     });
                     object.layout();
                 } else {
@@ -115,8 +138,10 @@
          */
         handleEvent: function (e) {
             var s = this;
-
             var child = s._hitChild(e);
+            if (child) {
+                return child.handleEvent(e);
+            }
             var handler = 'on' + e.type;
             if (s[handler]) {
                 return s[handler](e);
@@ -129,7 +154,11 @@
                 y = u.eventOffsetY(e) - s.getTop(),
                 children = s.getDrawableChildren();
             for (var i = children.length - 1; i >= 0; i--) {
-                var child = children[i];
+                var child = children[i],
+                    hit = child.getFrame().contains(x, y);
+                if (hit) {
+                    return child;
+                }
             }
             return null;
         },
@@ -147,7 +176,7 @@
          */
         onmousedown: function (e) {
             var s = this;
-            s.setOpacity(0.9);
+            s.toggleHighlighted(true);
             return true;
         },
         /**
@@ -156,8 +185,19 @@
          */
         onmouseup: function (e) {
             var s = this;
-            s.setOpacity(1);
+            s.toggleHighlighted(false);
             return true;
+        },
+        /**
+         * Toggle highlighted state.
+         * @param {boolean} highlighted
+         */
+        toggleHighlighted: function (highlighted) {
+            var s = this;
+            if (s._highlightable) {
+                var opacity = Drawable.getHighlightOpacity(highlighted);
+                s.setOpacity(opacity);
+            }
         },
         /**
          * Handle click event.
@@ -165,8 +205,8 @@
          */
         onclick: function (e) {
             var s = this;
+            s.toggleHighlighted(false);
             return true;
-
         }
 
     };
@@ -275,8 +315,15 @@
              */
             isDrawable: function (object) {
                 return !!(object && object.__isPrDrawable);
+            },
+            /**
+             * Get highligted opacity
+             * @param {boolean} highlighted - Highlighted or not.
+             * @returns {number} - Highlight opacity.
+             */
+            getHighlightOpacity: function (highlighted) {
+                return highlighted ? 0.75 : 1;
             }
-
         }, Drawable);
 
 
