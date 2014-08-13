@@ -107,11 +107,12 @@
                 x = amount.x,
                 y = amount.y;
 
+            var round = Math.round;
             s.drawable.set({
-                width: w,
-                height: h,
-                left: x - w,
-                top: y - h
+                width: round(w),
+                height: round(h),
+                left: round(x - w),
+                top: round(y - h)
             });
             s.refresh();
         },

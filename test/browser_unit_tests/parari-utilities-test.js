@@ -67,8 +67,8 @@ describe('pr.utilities', function () {
         expect(u.isTextNode(null)).toBe(false);
     });
     it('Is an element node.', function () {
-        expect(u.isElement(document)).toBe(false);
-        expect(u.isElement(document.body)).toBe(true);
-        expect(u.isElement(null)).toBe(false);
+        expect(u.isElementNode(document)).toBe(false);
+        expect(u.isElementNode(document.body)).toBe(true);
+        expect(u.isElementNode(null)).toBe(false);
     });
 });

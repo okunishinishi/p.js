@@ -44,11 +44,12 @@
                 w = s.elm.offsetWidth,
                 h = s.elm.offsetHeight;
 
+            var round = Math.round;
             var bounds = {
-                width: w,
-                height: h,
-                left: w / 2,
-                top: h / 2,
+                width: round(w),
+                height: round(h),
+                left: round(w / 2),
+                top: round(h / 2),
                 originX: 'center',
                 originY: 'center'
             };
@@ -59,8 +60,8 @@
                 if (isDrawable) {
                     var offset = u.offsetSum(object.elm);
                     object.set({
-                        top: offset.top - baseOffset.top,
-                        left: offset.left - baseOffset.left
+                        top: round(offset.top - baseOffset.top),
+                        left: round(offset.left - baseOffset.left)
                     });
                     object.layout();
                 } else {
@@ -116,7 +117,7 @@
              */
             text: function (text, style) {
                 return new f.Text(text, {
-                    fontSize: u.extractNumber(style.fontSize),
+                    fontSize: Math.round(u.extractNumber(style.fontSize)),
                     fill: style.color,
                     fontFamily: style.fontFamily,
                     fontStyle: style.fontStyle,
@@ -174,7 +175,7 @@
                     return !!value;
                 },
                 elementFilter: function (elm) {
-                    return u.isElement(elm);
+                    return u.isElementNode(elm);
                 },
                 textNodeFileter: function (node) {
                     return u.isTextNode(node);

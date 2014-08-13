@@ -19,4 +19,8 @@ describe('pr.src', function () {
         expect(fragments).toBeDefined();
     });
 
+    it('_convertTextNode', function () {
+        expect(pr.Src._convertTextNode(document.createTextNode('\n\t foo\n'))).toBeDefined();
+    });
+
 });

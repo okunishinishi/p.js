@@ -56,7 +56,7 @@
          * @param {HTMLNode} node - A node to detect.
          * @returns {boolean} - Is an element node or not.
          */
-        isElement: function (node) {
+        isElementNode: function (node) {
             return !!node && (node.nodeType === Node.ELEMENT_NODE);
         },
         /**
