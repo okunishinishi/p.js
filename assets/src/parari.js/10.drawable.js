@@ -47,14 +47,11 @@
                 w = s.elm.offsetWidth,
                 h = s.elm.offsetHeight;
 
-            var round = Math.round;
             var bounds = {
-                width: round(w),
-                height: round(h),
-                left: round(w / 2),
-                top: round(h / 2),
-                originX: 'center',
-                originY: 'center'
+                width: u.round(w),
+                height: u.round(h),
+                left: 0,
+                top: 0,
             };
 
             var baseOffset = u.offsetSum(s.elm);
@@ -63,8 +60,8 @@
                 if (isDrawable) {
                     var offset = u.offsetSum(object.elm);
                     object.set({
-                        top: round(offset.top - baseOffset.top),
-                        left: round(offset.left - baseOffset.left)
+                        top: u.round(offset.top - baseOffset.top),
+                        left: u.round(offset.left - baseOffset.left),
                     });
                     object.layout();
                 } else {
@@ -112,6 +109,31 @@
             return rect;
         },
         /**
+         * Handle an event.
+         * @param {event} e - Event to handle.
+         * @returns {boolean} - Consumed or not.
+         */
+        handleEvent: function (e) {
+            var s = this;
+
+            var child = s._hitChild(e);
+            var handler = 'on' + e.type;
+            if (s[handler]) {
+                return s[handler](e);
+            }
+            return false;
+        },
+        _hitChild: function (e) {
+            var s = this,
+                x = u.eventOffsetX(e) - s.getLeft(),
+                y = u.eventOffsetY(e) - s.getTop(),
+                children = s.getDrawableChildren();
+            for (var i = children.length - 1; i >= 0; i--) {
+                var child = children[i];
+            }
+            return null;
+        },
+        /**
          * Get drawable children.
          * @returns {Drawable[]} - Children.
          */
@@ -126,6 +148,7 @@
         onmousedown: function (e) {
             var s = this;
             s.setOpacity(0.9);
+            return true;
         },
         /**
          * Handle mouse up event.
@@ -134,6 +157,7 @@
         onmouseup: function (e) {
             var s = this;
             s.setOpacity(1);
+            return true;
         },
         /**
          * Handle click event.
@@ -141,6 +165,7 @@
          */
         onclick: function (e) {
             var s = this;
+            return true;
 
         }
 

@@ -65,8 +65,8 @@
         },
         captureEvent: function (e) {
             var s = this,
-                x = (e.offsetX == undefined) ? e.layerX : e.offsetX,
-                y = (e.offsetY == undefined) ? e.layerY : e.offsetY,
+                x = u.eventOffsetX(e),
+                y = u.eventOffsetY(e),
                 fragment = s._hitFragment(x, y);
             if (fragment) {
                 var shouldRender = fragment.handleEvent(e);

@@ -89,6 +89,22 @@ window.parari = (function (parari) {
 	            return Number(text.replace(/[^\d\.]/g, ''));
 	        },
 	        /**
+	         * Get offset x for an event.
+	         * @param {Event} e - Event
+	         * @returns {Number} - Offset x value.
+	         */
+	        eventOffsetX: function (e) {
+	            return (e.offsetX == undefined) ? e.layerX : e.offsetX;
+	        },
+	        /**
+	         * Get offset y for an event.
+	         * @param {Event} e - Event
+	         * @returns {Number} - Offset y value.
+	         */
+	        eventOffsetY: function (e) {
+	            return (e.offsetY == undefined) ? e.layerY : e.offsetY;
+	        },
+	        /**
 	         * Get style of an element.
 	         * @param {HTMLElement} elm - Element
 	         * @returns {CSSStyleDeclaration|*}
@@ -178,6 +194,12 @@ window.parari = (function (parari) {
 	            canvas.style.width = w + 'px';
 	            canvas.style.height = h + 'px';
 	        },
+	        /**
+	         * Round a value.
+	         * @param {number} value - Value to round.
+	         * @returns {number} - Rounded value.
+	         */
+	        round: Math.round.bind(Math),
 	        /**
 	         * Detect canvas supports.
 	         * @param {HTMLDocument} document - Document to work with.
@@ -595,14 +617,11 @@ window.parari = (function (parari) {
 	                w = s.elm.offsetWidth,
 	                h = s.elm.offsetHeight;
 	
-	            var round = Math.round;
 	            var bounds = {
-	                width: round(w),
-	                height: round(h),
-	                left: round(w / 2),
-	                top: round(h / 2),
-	                originX: 'center',
-	                originY: 'center'
+	                width: u.round(w),
+	                height: u.round(h),
+	                left: 0,
+	                top: 0,
 	            };
 	
 	            var baseOffset = u.offsetSum(s.elm);
@@ -611,8 +630,8 @@ window.parari = (function (parari) {
 	                if (isDrawable) {
 	                    var offset = u.offsetSum(object.elm);
 	                    object.set({
-	                        top: round(offset.top - baseOffset.top),
-	                        left: round(offset.left - baseOffset.left)
+	                        top: u.round(offset.top - baseOffset.top),
+	                        left: u.round(offset.left - baseOffset.left),
 	                    });
 	                    object.layout();
 	                } else {
@@ -660,6 +679,31 @@ window.parari = (function (parari) {
 	            return rect;
 	        },
 	        /**
+	         * Handle an event.
+	         * @param {event} e - Event to handle.
+	         * @returns {boolean} - Consumed or not.
+	         */
+	        handleEvent: function (e) {
+	            var s = this;
+	
+	            var child = s._hitChild(e);
+	            var handler = 'on' + e.type;
+	            if (s[handler]) {
+	                return s[handler](e);
+	            }
+	            return false;
+	        },
+	        _hitChild: function (e) {
+	            var s = this,
+	                x = u.eventOffsetX(e) - s.getLeft(),
+	                y = u.eventOffsetY(e) - s.getTop(),
+	                children = s.getDrawableChildren();
+	            for (var i = children.length - 1; i >= 0; i--) {
+	                var child = children[i];
+	            }
+	            return null;
+	        },
+	        /**
 	         * Get drawable children.
 	         * @returns {Drawable[]} - Children.
 	         */
@@ -674,6 +718,7 @@ window.parari = (function (parari) {
 	        onmousedown: function (e) {
 	            var s = this;
 	            s.setOpacity(0.9);
+	            return true;
 	        },
 	        /**
 	         * Handle mouse up event.
@@ -682,6 +727,7 @@ window.parari = (function (parari) {
 	        onmouseup: function (e) {
 	            var s = this;
 	            s.setOpacity(1);
+	            return true;
 	        },
 	        /**
 	         * Handle click event.
@@ -689,6 +735,7 @@ window.parari = (function (parari) {
 	         */
 	        onclick: function (e) {
 	            var s = this;
+	            return true;
 	
 	        }
 	
@@ -827,8 +874,6 @@ window.parari = (function (parari) {
 	    /** @lends Fragment */
 	    function Fragment(elm) {
 	        elm.classList.add(c.classNames.FRAGMENT);
-	
-	
 	        var s = this;
 	        s.load(elm);
 	    };
@@ -890,21 +935,15 @@ window.parari = (function (parari) {
 	         * @param {number} scrollY - Y position.
 	         */
 	        move: function (scrollX, scrollY) {
-	            var s = this;
-	
-	            var w = s.frame.width,
-	                h = s.frame.height;
-	
-	            var amount = s._moveAmount(scrollX, scrollY),
-	                x = amount.x,
-	                y = amount.y;
-	
-	            var round = Math.round;
+	            var s = this,
+	                amount = s._moveAmount(scrollX, scrollY);
+	            var frame = s.frame,
+	                w = frame.width, h = frame.height;
 	            s.drawable.set({
-	                width: round(w),
-	                height: round(h),
-	                left: round(x - w / 2),
-	                top: round(y - h / 2),
+	                width: u.round(w),
+	                height: u.round(h),
+	                left: frame.left + u.round(amount.x - w / 2),
+	                top: frame.top + u.round(amount.y - h / 2),
 	            });
 	
 	            s.refresh();
@@ -922,8 +961,8 @@ window.parari = (function (parari) {
 	            var dx = s.hLock ? 0 : s.dx * (1 - v),
 	                dy = s.vLock ? 0 : s.dy * (1 - v);
 	            return {
-	                x: s.frame.left - scrollX * v - dx,
-	                y: s.frame.top - scrollY * v - dy
+	                x: -scrollX * v - dx,
+	                y: -scrollY * v - dy
 	            }
 	        },
 	        /**
@@ -938,10 +977,6 @@ window.parari = (function (parari) {
 	            s.frame = frame;
 	            s._bounds = bounds;
 	            s.drawable.layout();
-	        },
-	        resync: function () {
-	            var s = this;
-	            s.sync(s._bounds);
 	        },
 	        isVisible: function (bounds) {
 	            var s = this;
@@ -976,21 +1011,11 @@ window.parari = (function (parari) {
 	        /**
 	         * Handle an event.
 	         * @param {event} e - Event to handle.
-	         * @returns {boolean} - Should render or not.
+	         * @returns {boolean} - Consumed or not.
 	         */
 	        handleEvent: function (e) {
 	            var s = this;
-	            switch (e.type) {
-	                case 'mousedown':
-	                    s.drawable.onmousedown(e);
-	                    return true;
-	                case 'mouseup':
-	                    s.drawable.onmouseup(e);
-	                    return true;
-	                case 'cick':
-	                    s.drawable.onclick(e);
-	                    return false;
-	            }
+	            return s.drawable.handleEvent(e);
 	        },
 	        /**
 	         * Toggle drawable visibility.
@@ -1222,8 +1247,8 @@ window.parari = (function (parari) {
 	        },
 	        captureEvent: function (e) {
 	            var s = this,
-	                x = (e.offsetX == undefined) ? e.layerX : e.offsetX,
-	                y = (e.offsetY == undefined) ? e.layerY : e.offsetY,
+	                x = u.eventOffsetX(e),
+	                y = u.eventOffsetY(e),
 	                fragment = s._hitFragment(x, y);
 	            if (fragment) {
 	                var shouldRender = fragment.handleEvent(e);

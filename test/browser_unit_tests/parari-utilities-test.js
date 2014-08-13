@@ -87,5 +87,21 @@ describe('pr.utilities', function () {
         expect(u.isIE({all: function () {
         }})).toBe(true);
         expect(u.isIE({})).toBe(false);
-    })
+    });
+
+    it('Get event offset.', function () {
+        var o1 = {
+            x: u.eventOffsetX({offsetX: 100}),
+            y: u.eventOffsetY({offsetY: 200}),
+        }
+        expect(o1.x).toEqual(100);
+        expect(o1.y).toEqual(200);
+
+        var o2 = {
+            x: u.eventOffsetX({offsetX: 300}),
+            y: u.eventOffsetY({offsetY: 400}),
+        }
+        expect(o2.x).toEqual(300);
+        expect(o2.y).toEqual(400);
+    });
 });

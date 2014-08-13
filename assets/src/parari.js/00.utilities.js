@@ -60,6 +60,22 @@
             return Number(text.replace(/[^\d\.]/g, ''));
         },
         /**
+         * Get offset x for an event.
+         * @param {Event} e - Event
+         * @returns {Number} - Offset x value.
+         */
+        eventOffsetX: function (e) {
+            return (e.offsetX == undefined) ? e.layerX : e.offsetX;
+        },
+        /**
+         * Get offset y for an event.
+         * @param {Event} e - Event
+         * @returns {Number} - Offset y value.
+         */
+        eventOffsetY: function (e) {
+            return (e.offsetY == undefined) ? e.layerY : e.offsetY;
+        },
+        /**
          * Get style of an element.
          * @param {HTMLElement} elm - Element
          * @returns {CSSStyleDeclaration|*}
@@ -149,6 +165,12 @@
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
         },
+        /**
+         * Round a value.
+         * @param {number} value - Value to round.
+         * @returns {number} - Rounded value.
+         */
+        round: Math.round.bind(Math),
         /**
          * Detect canvas supports.
          * @param {HTMLDocument} document - Document to work with.

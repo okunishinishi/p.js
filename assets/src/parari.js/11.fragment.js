@@ -14,8 +14,6 @@
     /** @lends Fragment */
     function Fragment(elm) {
         elm.classList.add(c.classNames.FRAGMENT);
-
-
         var s = this;
         s.load(elm);
     };
@@ -77,21 +75,15 @@
          * @param {number} scrollY - Y position.
          */
         move: function (scrollX, scrollY) {
-            var s = this;
-
-            var w = s.frame.width,
-                h = s.frame.height;
-
-            var amount = s._moveAmount(scrollX, scrollY),
-                x = amount.x,
-                y = amount.y;
-
-            var round = Math.round;
+            var s = this,
+                amount = s._moveAmount(scrollX, scrollY);
+            var frame = s.frame,
+                w = frame.width, h = frame.height;
             s.drawable.set({
-                width: round(w),
-                height: round(h),
-                left: round(x - w / 2),
-                top: round(y - h / 2),
+                width: u.round(w),
+                height: u.round(h),
+                left: frame.left + u.round(amount.x - w / 2),
+                top: frame.top + u.round(amount.y - h / 2),
             });
 
             s.refresh();
@@ -109,8 +101,8 @@
             var dx = s.hLock ? 0 : s.dx * (1 - v),
                 dy = s.vLock ? 0 : s.dy * (1 - v);
             return {
-                x: s.frame.left - scrollX * v - dx,
-                y: s.frame.top - scrollY * v - dy
+                x: -scrollX * v - dx,
+                y: -scrollY * v - dy
             }
         },
         /**
@@ -125,10 +117,6 @@
             s.frame = frame;
             s._bounds = bounds;
             s.drawable.layout();
-        },
-        resync: function () {
-            var s = this;
-            s.sync(s._bounds);
         },
         isVisible: function (bounds) {
             var s = this;
@@ -163,21 +151,11 @@
         /**
          * Handle an event.
          * @param {event} e - Event to handle.
-         * @returns {boolean} - Should render or not.
+         * @returns {boolean} - Consumed or not.
          */
         handleEvent: function (e) {
             var s = this;
-            switch (e.type) {
-                case 'mousedown':
-                    s.drawable.onmousedown(e);
-                    return true;
-                case 'mouseup':
-                    s.drawable.onmouseup(e);
-                    return true;
-                case 'cick':
-                    s.drawable.onclick(e);
-                    return false;
-            }
+            return s.drawable.handleEvent(e);
         },
         /**
          * Toggle drawable visibility.
