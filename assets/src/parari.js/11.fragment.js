@@ -15,6 +15,7 @@
     function Fragment(elm) {
         elm.classList.add(c.classNames.FRAGMENT);
 
+
         var s = this;
         s.load(elm);
     };
@@ -34,19 +35,12 @@
             var s = this;
 
             s.elm = elm;
-            s.elm.addEventListener('pr-img-load', function () {
-                s.invalidate();
-                setTimeout(function () {
-                    s.refresh();
-                }, 10);
-            });
-
             s.drawable = new pr.Drawable(elm);
 
             var properties = Fragment.fromDataset(elm.dataset);
             u.copy(properties, s);
 
-
+            s.refresh();
         },
         /**
          *  Unload fragment element data.
@@ -71,26 +65,11 @@
             s.load(s.elm);
         },
         /**
-         * Invalidate this fragment.
-         */
-        invalidate: function () {
-            var s = this;
-            s._needsSync = true;
-            s._needsLayout = true;
-        },
-        /**
          * Refresh fragments.
          */
         refresh: function () {
             var s = this;
-            if (s._needsSync) {
-                s.resync();
-                s._needsSync = false;
-            }
-            if (s._needsLayout) {
-                s.drawable.layout();
-                s._needsLayout = false;
-            }
+            s.toggleVisibility(s.isVisible());
         },
         /**
          * Move to point.
@@ -111,9 +90,10 @@
             s.drawable.set({
                 width: round(w),
                 height: round(h),
-                left: round(x - w),
-                top: round(y - h)
+                left: round(x - w / 2),
+                top: round(y - h / 2),
             });
+
             s.refresh();
         },
         /**
@@ -125,14 +105,12 @@
          */
         _moveAmount: function (scrollX, scrollY) {
             var s = this,
-                center = s.frame.center,
                 v = s.velocity;
-
             var dx = s.hLock ? 0 : s.dx * (1 - v),
                 dy = s.vLock ? 0 : s.dy * (1 - v);
             return {
-                x: center.x - scrollX * v - dx,
-                y: center.y - scrollY * v - dy
+                x: s.frame.left - scrollX * v - dx,
+                y: s.frame.top - scrollY * v - dy
             }
         },
         /**
@@ -151,6 +129,91 @@
         resync: function () {
             var s = this;
             s.sync(s._bounds);
+        },
+        isVisible: function (bounds) {
+            var s = this;
+            return s.isVisibleInBounds(s._bounds);
+        },
+        /**
+         * Detect that the drawable visible or not.
+         * @param {parari.Rect} bounds - Bounds to work with.
+         */
+        isVisibleInBounds: function (bounds) {
+            if (!bounds) {
+                return false;
+            }
+            var s = this,
+                f = s.drawable.getFrame();
+            return   (bounds.top < f.bottom)
+                && (f.top < bounds.bottom)
+                && (bounds.left < f.right)
+                && (f.left < bounds.right);
+        },
+        /**
+         * Hits a point or not.
+         * @param {number} x
+         * @param {number} y
+         * @param {boolean} - Hit or not.
+         */
+        hits: function (x, y) {
+            var s = this,
+                f = s.drawable.getFrame();
+            return f.contains(x, y);
+        },
+        /**
+         * Handle an event.
+         * @param {event} e - Event to handle.
+         * @returns {boolean} - Should render or not.
+         */
+        handleEvent: function (e) {
+            var s = this;
+            switch (e.type) {
+                case 'mousedown':
+                    s.onmousedown(e);
+                    return true;
+                case 'mouseup':
+                    s.onmouseup(e);
+                    return true;
+                case 'cick':
+                    s.onclick(e);
+                    return false;
+            }
+        },
+        /**
+         * Handle mouse down event.
+         * @param {Event} e - Mousedown event.
+         */
+        onmousedown: function (e) {
+            var s = this;
+            s.drawable.setOpacity(0.9);
+        },
+        /**
+         * Handle mouse up event.
+         * @param {Event} e - Mouseup event.
+         */
+        onmouseup: function (e) {
+            var s = this;
+            s.drawable.setOpacity(1);
+        },
+        /**
+         * Handle click event.
+         * @param {Event} e - Click event.
+         */
+        onclick: function (e) {
+            var s = this;
+
+        },
+        /**
+         * Toggle drawable visibility.
+         * @param {boolean} visible - Is visible or not.
+         */
+        toggleVisibility: function (visible) {
+            var s = this,
+                d = s.drawable;
+            var needsChange = d.getVisible() !== visible;
+            if (needsChange) {
+                d.setVisible(visible);
+            }
         },
         /**
          * Frame of the element.

@@ -71,4 +71,16 @@ describe('pr.utilities', function () {
         expect(u.isElementNode(document.body)).toBe(true);
         expect(u.isElementNode(null)).toBe(false);
     });
+
+    it('Composite actions.', function () {
+        var composited = u.composite(function (val) {
+            return ['foo', val].join('-');
+        }, function (val) {
+            return ['bar', val].join('-');
+        });
+        var result = composited('one');
+        expect(result[0]).toEqual('foo-one');
+        expect(result[1]).toEqual('bar-one');
+
+    });
 });

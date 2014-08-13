@@ -1,6 +1,6 @@
 /**
  * Object to get body scroll amount.
- * @membrerof para
+ * @membrerof parari
  * @member bodyScroller
  * @property {number} scrollLeft - Scroll left position.
  * @property {number} scrollTop - Scroll top position.

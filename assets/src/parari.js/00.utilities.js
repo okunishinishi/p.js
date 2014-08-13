@@ -15,7 +15,23 @@
         concatReduce: function (prev, cur) {
             return prev.concat(cur);
         },
-
+        /**
+         * Composite functions.
+         * @param {...function} actions - Functions to compositse.
+         * @returns {function} - Composited function.
+         */
+        composite: function () {
+            var actions = u.toArray(arguments);
+            return function () {
+                var s = this, args = arguments,
+                    results = [];
+                for (var i = 0; i < actions.length; i++) {
+                    var result = actions[i].apply(s, args);
+                    results.push(result);
+                }
+                return results;
+            }
+        },
         /**
          * Copy object.
          * @param {object} src - Object to copy from.

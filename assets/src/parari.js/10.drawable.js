@@ -15,7 +15,10 @@
     function Drawable(elm) {
         var s = this,
             style = window.getComputedStyle(elm, '');
-        s.__proto__ = u.copy(Drawable.prototype, new f.Group());
+        s.__proto__ = u.copy(Drawable.prototype, new f.Group([], {
+            selectable: false,
+            hasRotatingPoint: false,
+        }));
         s.__isPrDrawable = true;
         s.addAll(
             [
@@ -93,6 +96,21 @@
             }
             return removed;
         },
+        _frameRect: null,
+        getFrame: function () {
+            var s = this,
+                rect = s._frameRect;
+            if (!rect) {
+                rect = s._frameRect = pr.Rect.RectZero();//Reuse rect instance for performance reason.
+            }
+            var h = s.getHeight(),
+                w = s.getWidth();
+            rect.top = s.getTop() + h / 2;
+            rect.left = s.getLeft() + w / 2;
+            rect.width = w;
+            rect.height = h;
+            return rect;
+        }
 
     };
 
@@ -106,6 +124,8 @@
              */
             background: function (style) {
                 return new f.Rect({
+                    selectable: false,
+                    hasRotatingPoint: false,
                     fill: style.backgroundColor
                 });
             },
@@ -117,6 +137,8 @@
              */
             text: function (text, style) {
                 return new f.Text(text, {
+                    selectable: false,
+                    hasRotatingPoint: false,
                     fontSize: Math.round(u.extractNumber(style.fontSize)),
                     fill: style.color,
                     fontFamily: style.fontFamily,

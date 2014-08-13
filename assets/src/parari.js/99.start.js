@@ -38,15 +38,17 @@
 
         var redraw = screen.redraw.bind(screen),
             resize = screen.resize.bind(screen),
-            reload = function () {
-                var fragments = src.createFragments();
-                screen.registerAll(fragments);
-                redraw();
-                resize();
-            };
+            reload = u.composite(redraw, resize);
 
         window.addEventListener('scroll', redraw, false);
         window.addEventListener('resize', resize, false);
+        window.addEventListener('pr-img-load', function () {
+            screen.reserve('reload', reload, 200);
+        });
+
+
+        var fragments = src.createFragments();
+        screen.registerAll(fragments);
 
         reload();
     };

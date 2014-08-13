@@ -72,8 +72,8 @@ li {
     max-width: 960px;
     margin: 0 auto;
     display: block;
-    width:auto;
-    height:auto;
+    width: auto;
+    height: auto;
 }
 
 .pr-screen {
@@ -84,10 +84,9 @@ li {
     height: 100%;
     box-sizing: border-box;
     background-color: rgb(70, 70, 70);
-    opacity: 0.9;//FIXME
 }
 
-.pr-screen .canvas-container{
+.pr-screen .canvas-container {
     opacity: 0.1;
     -webkit-transition: opacity 300ms ease;
     -moz-transition: opacity 300ms ease;
@@ -95,7 +94,13 @@ li {
     -o-transition: opacity 300ms ease;
     transition: opacity 300ms ease;
 
-    background-color: white;//FIXME
+    background-color: white;
+/ / FIXME
+}
+
+.pr-screen .lower-canvas {
+    display: block;
+    margin: 0 auto;
 }
 
 .pr-screen .canvas-container {
