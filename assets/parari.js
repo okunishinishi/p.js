@@ -607,7 +607,7 @@ window.parari = (function (parari) {
 	
 	            var baseOffset = u.offsetSum(s.elm);
 	            s.getObjects().forEach(function (object) {
-	                var isDrawable = object.__isPrDrawable;
+	                var isDrawable = Drawable.isDrawable(object);
 	                if (isDrawable) {
 	                    var offset = u.offsetSum(object.elm);
 	                    object.set({
@@ -658,6 +658,38 @@ window.parari = (function (parari) {
 	            rect.width = w;
 	            rect.height = h;
 	            return rect;
+	        },
+	        /**
+	         * Get drawable children.
+	         * @returns {Drawable[]} - Children.
+	         */
+	        getDrawableChildren: function () {
+	            var s = this;
+	            return s.getObjects().filter(Drawable.isDrawable);
+	        },
+	        /**
+	         * Handle mouse down event.
+	         * @param {Event} e - Mousedown event.
+	         */
+	        onmousedown: function (e) {
+	            var s = this;
+	            s.setOpacity(0.9);
+	        },
+	        /**
+	         * Handle mouse up event.
+	         * @param {Event} e - Mouseup event.
+	         */
+	        onmouseup: function (e) {
+	            var s = this;
+	            s.setOpacity(1);
+	        },
+	        /**
+	         * Handle click event.
+	         * @param {Event} e - Click event.
+	         */
+	        onclick: function (e) {
+	            var s = this;
+	
 	        }
 	
 	    };
@@ -758,7 +790,16 @@ window.parari = (function (parari) {
 	                nodeValueMap: function (node) {
 	                    return node.nodeValue;
 	                }
+	            },
+	            /**
+	             * Is drawable or not.
+	             * @param object
+	             * @returns {boolean} - Is a drawable or not.
+	             */
+	            isDrawable: function (object) {
+	                return !!(object && object.__isPrDrawable);
 	            }
+	
 	        }, Drawable);
 	
 	
@@ -941,39 +982,15 @@ window.parari = (function (parari) {
 	            var s = this;
 	            switch (e.type) {
 	                case 'mousedown':
-	                    s.onmousedown(e);
+	                    s.drawable.onmousedown(e);
 	                    return true;
 	                case 'mouseup':
-	                    s.onmouseup(e);
+	                    s.drawable.onmouseup(e);
 	                    return true;
 	                case 'cick':
-	                    s.onclick(e);
+	                    s.drawable.onclick(e);
 	                    return false;
 	            }
-	        },
-	        /**
-	         * Handle mouse down event.
-	         * @param {Event} e - Mousedown event.
-	         */
-	        onmousedown: function (e) {
-	            var s = this;
-	            s.drawable.setOpacity(0.9);
-	        },
-	        /**
-	         * Handle mouse up event.
-	         * @param {Event} e - Mouseup event.
-	         */
-	        onmouseup: function (e) {
-	            var s = this;
-	            s.drawable.setOpacity(1);
-	        },
-	        /**
-	         * Handle click event.
-	         * @param {Event} e - Click event.
-	         */
-	        onclick: function (e) {
-	            var s = this;
-	
 	        },
 	        /**
 	         * Toggle drawable visibility.

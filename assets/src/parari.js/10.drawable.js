@@ -59,7 +59,7 @@
 
             var baseOffset = u.offsetSum(s.elm);
             s.getObjects().forEach(function (object) {
-                var isDrawable = object.__isPrDrawable;
+                var isDrawable = Drawable.isDrawable(object);
                 if (isDrawable) {
                     var offset = u.offsetSum(object.elm);
                     object.set({
@@ -110,6 +110,38 @@
             rect.width = w;
             rect.height = h;
             return rect;
+        },
+        /**
+         * Get drawable children.
+         * @returns {Drawable[]} - Children.
+         */
+        getDrawableChildren: function () {
+            var s = this;
+            return s.getObjects().filter(Drawable.isDrawable);
+        },
+        /**
+         * Handle mouse down event.
+         * @param {Event} e - Mousedown event.
+         */
+        onmousedown: function (e) {
+            var s = this;
+            s.setOpacity(0.9);
+        },
+        /**
+         * Handle mouse up event.
+         * @param {Event} e - Mouseup event.
+         */
+        onmouseup: function (e) {
+            var s = this;
+            s.setOpacity(1);
+        },
+        /**
+         * Handle click event.
+         * @param {Event} e - Click event.
+         */
+        onclick: function (e) {
+            var s = this;
+
         }
 
     };
@@ -210,7 +242,16 @@
                 nodeValueMap: function (node) {
                     return node.nodeValue;
                 }
+            },
+            /**
+             * Is drawable or not.
+             * @param object
+             * @returns {boolean} - Is a drawable or not.
+             */
+            isDrawable: function (object) {
+                return !!(object && object.__isPrDrawable);
             }
+
         }, Drawable);
 
 
