@@ -77,13 +77,14 @@
         move: function (scrollX, scrollY) {
             var s = this,
                 amount = s._moveAmount(scrollX, scrollY);
-            var frame = s.frame,
-                w = frame.width, h = frame.height;
+            var frame = s.frame;
             s.drawable.set({
-                width: u.round(w),
-                height: u.round(h),
-                left: frame.left + u.round(amount.x - w / 2),
-                top: frame.top + u.round(amount.y - h / 2),
+                width: u.round(frame.width),
+                height: u.round(frame.height),
+                left: u.round(frame.left + amount.x),
+                top: u.round(frame.top + amount.y),
+                originX: 'center',
+                originY: 'center'
             });
 
             s.refresh();
@@ -97,12 +98,12 @@
          */
         _moveAmount: function (scrollX, scrollY) {
             var s = this,
-                v = s.velocity;
-            var dx = s.hLock ? 0 : s.dx * (1 - v),
-                dy = s.vLock ? 0 : s.dy * (1 - v);
+                v = Number(s.velocity);
+            var dx = u.round(s.hLock ? 0 : s.dx * (1 - v)),
+                dy = u.round(s.vLock ? 0 : s.dy * (1 - v));
             return {
-                x: -scrollX * v - dx,
-                y: -scrollY * v - dy
+                x: -(scrollX * v + dx),
+                y: -(scrollY * v + dy)
             }
         },
         /**
@@ -112,8 +113,8 @@
         sync: function (bounds) {
             var s = this;
             var frame = pr.Rect.ofElement(s.elm, bounds);
-            s.dx = frame.center.x - bounds.width / 2;
-            s.dy = frame.center.y - bounds.height / 2;
+            s.dx = u.round(frame.center.x - bounds.width / 2);
+            s.dy = u.round(frame.center.y - bounds.height / 2);
             s.frame = frame;
             s._bounds = bounds;
             s.drawable.layout();

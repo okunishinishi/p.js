@@ -102,8 +102,8 @@
             }
             var h = s.getHeight(),
                 w = s.getWidth();
-            rect.top = s.getTop() + h / 2;
-            rect.left = s.getLeft() + w / 2;
+            rect.top = s.getTop();
+            rect.left = s.getLeft();
             rect.width = w;
             rect.height = h;
             return rect;
