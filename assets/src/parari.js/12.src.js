@@ -39,13 +39,14 @@
         },
         /**
          * Create fragments from src.
+         * @param {object} properties - Fragment properties.
          * @returns {pr.Fragment[]}
          */
-        createFragments: function () {
+        createFragments: function (properties) {
             var s = this;
             return s._findObjectElements()
                 .map(function (elm) {
-                    return new pr.Fragment(elm);
+                    return new pr.Fragment(elm,properties);
                 });
         }
     }

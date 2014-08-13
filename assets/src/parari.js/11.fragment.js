@@ -12,9 +12,10 @@
         c = pr.constants;
 
     /** @lends Fragment */
-    function Fragment(elm) {
+    function Fragment(elm, properties) {
         elm.classList.add(c.classNames.FRAGMENT);
         var s = this;
+        u.copy(properties || {}, s);
         s.load(elm);
     };
 

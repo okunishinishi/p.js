@@ -36,6 +36,7 @@
         s.canvas = Screen.newCanvas(canvasId);
 
         s.fragments = [];
+        s.layers = [];
 
         s.startLooping(s._renderInterval);
 
@@ -86,6 +87,11 @@
          */
         fragments: null,
         /**
+         * Layers.
+         * @type {parari.layers.Layer}
+         */
+        layers: null,
+        /**
          * Element to fit size with.
          */
         sizer: null,
@@ -97,19 +103,38 @@
          * Register a fragment object.
          * @param {parari.Fragment} fragment - Fragment.
          */
-        register: function (fragment) {
+        registerFragment: function (fragment) {
             var s = this;
             s.fragments.push(fragment);
             s.canvas.add(fragment.drawable);
         },
         /**
-         * Register fragment objects.
-         * @param {parari.Fragment[]} fragments - Fragments.
+         * Register a layer object.
+         * @param layer
          */
-        registerAll: function (fragments) {
+        registerLayer: function (layer) {
+            var s = this;
+            s.layers.push(layer);
+            s.canvas.add(layer);
+        },
+        /**
+         * Register fragment objects.
+         * @param {parari.Fragment[]} fragments - Fragments to register.
+         */
+        registerFragments: function (fragments) {
             var s = this;
             [].concat(fragments).forEach(function (fragment) {
-                s.register(fragment);
+                s.registerFragment(fragment);
+            });
+        },
+        /**
+         * Register layers.
+         * @param {parari.layers.Layer[]} layers - Layers to register.
+         */
+        registerLayers: function (layers) {
+            var s = this;
+            [].concat(layers).forEach(function (layer) {
+                s.registerLayer(layer);
             });
         },
         /**
@@ -122,6 +147,10 @@
             for (var i = 0, len = s.fragments.length; i < len; i++) {
                 var fragment = s.fragments[i];
                 fragment.move(scrollX, scrollY);
+            }
+            for (var j = 0; j < s.layers.length; j++) {
+                var layer = s.layers[j];
+                layer.move(scrollX, scrollY);
             }
             canvas.renderAll();
         },
@@ -149,7 +178,8 @@
             u.optimizeCanvasRatio(canvasElement);
 
             var bounds = new pr.Rect.ofElement(canvasElement);
-            s.syncAll(bounds);
+            s.syncFragments(bounds);
+            s.syncLayers(bounds);
             s.redraw();
         },
         /**
@@ -164,11 +194,18 @@
          * @param {pr.Rect} bounds - Canvas bounds.
          * Sync all elements.
          */
-        syncAll: function (bounds) {
+        syncFragments: function (bounds) {
             var s = this;
-            for (var i = 0; i < s.fragments.length; i++) {
+            for (var i = 0, len = s.fragments.length; i < len; i++) {
                 var fragment = s.fragments[i];
                 fragment.sync(bounds);
+            }
+        },
+        syncLayers: function (bounds) {
+            var s = this;
+            for (var i = 0, len = s.layers.length; i < len; i++) {
+                var layer = s.layers[i];
+                layer.sync(bounds);
             }
         },
         /**

@@ -1,7 +1,7 @@
 /**
  * Parari layers.
  * @memberof parari
- * @constructor layers
+ * @member layers
  */
 (function (pr, document) {
     "use strict";
@@ -10,7 +10,10 @@
     pr.layers = {
         /** Short names for layers. */
         get _layerNameMap() {
-            return {};
+            return {
+			    resolve: pr.layers.ResolveLayer,
+			    starFlow: pr.layers.StarFlowLayer
+			};
         }
     };
 

@@ -20,6 +20,7 @@
     var u = pr.utilities,
         c = pr.constants;
 
+
     /** @lends start */
     pr.start = function (root, options) {
         root = u.toElement(root);
@@ -40,7 +41,8 @@
                 hLock: false,
                 scroller: pr.bodyScroller,
                 sizer: root,
-                screenContainer: body
+                screenContainer: body,
+                layers: []
             });
 
         var src = new pr.Src(root),
@@ -60,10 +62,45 @@
         });
 
 
-        var fragments = src.createFragments();
-        screen.registerAll(fragments);
+        var fragments = src.createFragments({
+            vLock: o.vLock,
+            hLock: o.hLock
+        });
+        screen.registerFragments(fragments);
+
+        var layers = pr.start._createLayers(o.layers, {
+            vLock: o.vLock,
+            hLock: o.hLock
+        });
+        screen.registerLayers(layers);
 
         reload();
+    };
+
+    /**
+     * Create layers.
+     * @param {object} layers - Layer data.
+     * @param {object} defaultOptions - Layer defaultOptions.
+     * @returns {parari.layers.Layer} - Layers.
+     * @private
+     */
+    pr.start._createLayers = function (layers, defaultOptions) {
+        return Object.keys(layers)
+            .map(function (name) {
+                var Layer = pr.resolveLayer(name);
+                if (!Layer) {
+//                throw new Error('Invalid layer: ' + name);
+                    return []; //FIXME
+                }
+                return [].concat(layers[name]).map(function (option) {
+                    option = u.copy(option, u.copy(defaultOptions, {}))
+                    return  new Layer(option);
+                });
+            })
+            .reduce(function (prev, cur) {
+                return prev.concat(cur);
+            }, []);
+
     };
 
 
