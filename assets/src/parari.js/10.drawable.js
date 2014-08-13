@@ -14,7 +14,7 @@
     /** @lends Drawable */
     function Drawable(elm) {
         var s = this,
-            style = window.getComputedStyle(elm, '');
+            style = u.getComputedStyle(elm);
         s.__proto__ = u.copy(Drawable.prototype, new f.Group([], {
             selectable: false,
             hasRotatingPoint: false,

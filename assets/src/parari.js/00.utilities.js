@@ -60,6 +60,29 @@
             return Number(text.replace(/[^\d\.]/g, ''));
         },
         /**
+         * Get style of an element.
+         * @param {HTMLElement} elm - Element
+         * @returns {CSSStyleDeclaration|*}
+         */
+        getComputedStyle: function (elm) {
+            return window.getComputedStyle(elm, '');
+        },
+        /**
+         * Is Internet Explorer or not.
+         * @param {HTMLDocument} document - Document to detect.
+         */
+        isIE: function (document) {
+            return !!document.all;
+        },
+        /**
+         * Detecit if ie8 or older.
+         * @param {HTMLDocument} document - Document to detect.
+         * @returns {boolean}
+         */
+        isIE8orOlder: function (document) {
+            return isIE(document) && !document.addEventListener;
+        },
+        /**
          * Detect textNode or not.
          * @param {HTMLNode} node - A node to detect.
          * @returns {boolean} - Is a text node or not.
@@ -125,6 +148,22 @@
             canvas.getContext('2d').scale(ratio, ratio);
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
+        },
+        /**
+         * Detect canvas supports.
+         * @param {HTMLDocument} document - Document to work with.
+         * @returns {boolean} - Supports or not.
+         */
+        supportsCanvas: function (document) {
+            return !!document.createElement('canvas').getContext;
+        },
+        /**
+         * Detect property defining supports.
+         * @param {window} Window - Window.
+         * @returns {boolean}
+         */
+        supportsPropertyDefining: function (window) {
+            return !!window.Object.defineProperty;
         },
         /**
          * Convert an iteratable object to array.

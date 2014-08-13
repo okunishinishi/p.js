@@ -13,7 +13,12 @@
 
 (function (pr, document, window) {
     "use strict";
-    var u = pr.utilities;
+
+    var isSupported = pr.isSupported(window);
+
+
+    var u = pr.utilities,
+        c = pr.constants;
 
     /** @lends start */
     pr.start = function (root, options) {
@@ -21,6 +26,14 @@
         if (!root) {
             throw new Error('Root not found: "' + root + '"');
         }
+        root.classList.add(c.classNames.ROOT);
+
+        if (!isSupported) {
+            pr.presentNotSupported(root);
+            return;
+        }
+
+
         var body = document.body,
             o = u.copy(options || {}, {
                 vLock: false,

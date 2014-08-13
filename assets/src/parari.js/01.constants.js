@@ -21,7 +21,8 @@
             SRC: prefixed('src'),
             SCREEN: prefixed('screen'),
             SCREEN_CONTAINER: prefixed('screen-container'),
-            FRAGMENT: prefixed('fragment')
+            FRAGMENT: prefixed('fragment'),
+            ROOT: prefixed('root')
         },
         FRAGMENT_SELECOTR: '[data-' + prefixed('fragment') + ']'
     };

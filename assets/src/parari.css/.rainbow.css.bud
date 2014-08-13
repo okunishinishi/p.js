@@ -27,7 +27,7 @@ module.exports = {
 
         function prSelector(selector) {
             return [
-                '.pr-src', selector
+                '.pr-root', selector
             ].join(' ');
         }
 

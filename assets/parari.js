@@ -89,6 +89,29 @@ window.parari = (function (parari) {
 	            return Number(text.replace(/[^\d\.]/g, ''));
 	        },
 	        /**
+	         * Get style of an element.
+	         * @param {HTMLElement} elm - Element
+	         * @returns {CSSStyleDeclaration|*}
+	         */
+	        getComputedStyle: function (elm) {
+	            return window.getComputedStyle(elm, '');
+	        },
+	        /**
+	         * Is Internet Explorer or not.
+	         * @param {HTMLDocument} document - Document to detect.
+	         */
+	        isIE: function (document) {
+	            return !!document.all;
+	        },
+	        /**
+	         * Detecit if ie8 or older.
+	         * @param {HTMLDocument} document - Document to detect.
+	         * @returns {boolean}
+	         */
+	        isIE8orOlder: function (document) {
+	            return isIE(document) && !document.addEventListener;
+	        },
+	        /**
 	         * Detect textNode or not.
 	         * @param {HTMLNode} node - A node to detect.
 	         * @returns {boolean} - Is a text node or not.
@@ -156,6 +179,22 @@ window.parari = (function (parari) {
 	            canvas.style.height = h + 'px';
 	        },
 	        /**
+	         * Detect canvas supports.
+	         * @param {HTMLDocument} document - Document to work with.
+	         * @returns {boolean} - Supports or not.
+	         */
+	        supportsCanvas: function (document) {
+	            return !!document.createElement('canvas').getContext;
+	        },
+	        /**
+	         * Detect property defining supports.
+	         * @param {window} Window - Window.
+	         * @returns {boolean}
+	         */
+	        supportsPropertyDefining: function (window) {
+	            return !!window.Object.defineProperty;
+	        },
+	        /**
 	         * Convert an iteratable object to array.
 	         * @param iteratable
 	         * @returns {Array}
@@ -219,7 +258,8 @@ window.parari = (function (parari) {
 	            SRC: prefixed('src'),
 	            SCREEN: prefixed('screen'),
 	            SCREEN_CONTAINER: prefixed('screen-container'),
-	            FRAGMENT: prefixed('fragment')
+	            FRAGMENT: prefixed('fragment'),
+	            ROOT: prefixed('root')
 	        },
 	        FRAGMENT_SELECOTR: '[data-' + prefixed('fragment') + ']'
 	    };
@@ -434,6 +474,79 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {});
 
     /**
+	 * Detect browser support.
+	 * @member parari
+	 * @function isSupported
+	 * @param {Window} window
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities;
+	
+	    /** @lends isSupported */
+	    function isSupported(window) {
+	        var document = window.document;
+	
+	        var isIE = u.isIE(document);
+	        if (isIE) {
+	            var isIE8orOlder = u.isIE8orOlder(document);
+	            if (isIE8orOlder) {
+	                return false;
+	            }
+	        }
+	
+	        return u.supportsCanvas(document)
+	            && u.supportsPropertyDefining(window);
+	    }
+	
+	
+	    pr.isSupported = isSupported;
+	
+	})(
+	    window.parari = window.parari || {},
+	    document);
+
+    /**
+	 * Present not supported message.
+	 * @function presentNotSupported
+	 * @param {HTMLElement} - Root element
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    /** @lends presentNotSupported */
+	    function presentNotSupported(root) {
+	        var lang = 'en';
+	        var div = presentNotSupported._createMessageDiv(lang);
+	        if (root.firstChild) {
+	            root.insertBefore(div, root.firstChild);
+	        } else {
+	            root.append(div);
+	        }
+	    }
+	
+	    presentNotSupported._createMessageDiv = function (lang) {
+	        var div = document.createElement('div');
+	        div.className = pr.prefixed('message-div');
+	        div.innerHTML = presentNotSupported._msg[lang || 'en'];
+	        return div;
+	    };
+	
+	    presentNotSupported._msg = {
+	        'en': [
+	            '<span class="pr-caution">&#9888;</span>Your browser is not supported!.',
+	            'Please try modern browser like <a href="https://www.google.com/intl/en/chrome/browser/"><i>chrome</i></a>.'
+	        ].join('<br />')
+	    };
+	
+	    pr.presentNotSupported = presentNotSupported;
+	})(
+	    window.parari = window.parari || {},
+	    document);
+	
+
+    /**
 	 * Parari drawable.
 	 * @memberof parari
 	 * @constructor Drawable
@@ -449,7 +562,7 @@ window.parari = (function (parari) {
 	    /** @lends Drawable */
 	    function Drawable(elm) {
 	        var s = this,
-	            style = window.getComputedStyle(elm, '');
+	            style = u.getComputedStyle(elm);
 	        s.__proto__ = u.copy(Drawable.prototype, new f.Group([], {
 	            selectable: false,
 	            hasRotatingPoint: false,
@@ -1341,7 +1454,12 @@ window.parari = (function (parari) {
 	
 	(function (pr, document, window) {
 	    "use strict";
-	    var u = pr.utilities;
+	
+	    var isSupported = pr.isSupported(window);
+	
+	
+	    var u = pr.utilities,
+	        c = pr.constants;
 	
 	    /** @lends start */
 	    pr.start = function (root, options) {
@@ -1349,6 +1467,14 @@ window.parari = (function (parari) {
 	        if (!root) {
 	            throw new Error('Root not found: "' + root + '"');
 	        }
+	        root.classList.add(c.classNames.ROOT);
+	
+	        if (!isSupported) {
+	            pr.presentNotSupported(root);
+	            return;
+	        }
+	
+	
 	        var body = document.body,
 	            o = u.copy(options || {}, {
 	                vLock: false,

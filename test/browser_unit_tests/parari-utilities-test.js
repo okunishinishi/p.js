@@ -81,6 +81,11 @@ describe('pr.utilities', function () {
         var result = composited('one');
         expect(result[0]).toEqual('foo-one');
         expect(result[1]).toEqual('bar-one');
-
     });
+
+    it('Is IE.', function () {
+        expect(u.isIE({all: function () {
+        }})).toBe(true);
+        expect(u.isIE({})).toBe(false);
+    })
 });
