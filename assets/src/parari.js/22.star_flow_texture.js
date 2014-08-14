@@ -19,7 +19,14 @@
     StarFlowTexture.prototype = u.copy(
         /** @lends StarFlowTexture.prototype */
         {
+            /**
+             * Render texture.
+             * @param {number} scrollX
+             * @param {number} scrollY
+             */
+            render: function (scrollX, scrollY) {
 
+            }
         },
         new Texture({})
     );
@@ -32,6 +39,6 @@
         },
         StarFlowTexture);
 
-    pr.StarFlowTexture = StarFlowTexture;
+    pr.textures.StarFlowTexture = StarFlowTexture;
 
 })(window.parari = window.parari || {}, document);

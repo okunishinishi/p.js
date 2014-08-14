@@ -153,7 +153,7 @@
 
             for (var j = 0; j < s.textures.length; j++) {
                 var texture = s.textures[j];
-                texture.draw(scrollX, scrollY);
+                texture.render(scrollX, scrollY);
             }
             canvas.renderAll();
         },

@@ -118,13 +118,12 @@
             s.dx = u.round(frame.center.x - bounds.width / 2);
             s.dy = u.round(frame.center.y - bounds.height / 2);
             s.frame = frame;
-            s._bounds = bounds;
+            s.bounds = bounds;
             s.drawable.layout();
         },
         isVisible: function (bounds) {
             var s = this;
-//            return s.isVisibleInBounds(s._bounds);
-            return true; //FIXME
+            return s.isVisibleInBounds(s.bounds);
         },
         /**
          * Detect that the drawable visible or not.
@@ -136,6 +135,7 @@
             }
             var s = this,
                 f = s.drawable.getFrame();
+            console.log(bounds.left, f.left)
             return   (bounds.top < f.bottom)
                 && (f.top < bounds.bottom)
                 && (bounds.left < f.right)

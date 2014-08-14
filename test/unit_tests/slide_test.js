@@ -77,7 +77,7 @@ exports['Slide.'] = function (test) {
 };
 
 exports['Layer data.'] = function (test) {
-    var data = slide._layerData({
+    var data = slide._texturesData({
         layers: {
             foo: 'bar',
             baz: 0,
