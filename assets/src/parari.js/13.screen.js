@@ -141,21 +141,39 @@
         },
         /**
          * Draw screen.
+         * @param {number} scrollX
+         * @param {number} scrollY
          */
         draw: function (scrollX, scrollY) {
+            var s = this;
+            s.drawTextures(scrollX, scrollY);
+            s.drawFragments(scrollX, scrollY);
+        },
+        /**
+         * Draw textures.
+         * @param {number} scrollX
+         * @param {number} scrollY
+         */
+        drawTextures: function (scrollX, scrollY) {
             var s = this,
-                canvas = s.fragmentsCanvas;
-
+                ctx = s.textureCanvas.getContext();
+            for (var j = 0; j < s.textures.length; j++) {
+                var texture = s.textures[j];
+                texture.render(ctx, scrollX, scrollY);
+            }
+        },
+        /**
+         * Draw fragmens.
+         * @param {number} scrollX
+         * @param {number} scrollY
+         */
+        drawFragments: function (scrollX, scrollY) {
+            var s = this;
             for (var i = 0, len = s.fragments.length; i < len; i++) {
                 var fragment = s.fragments[i];
                 fragment.move(scrollX, scrollY);
             }
-
-            for (var j = 0; j < s.textures.length; j++) {
-                var texture = s.textures[j];
-                texture.render(scrollX, scrollY);
-            }
-            canvas.renderAll();
+            s.fragmentsCanvas.renderAll();
         },
         /**
          * Redraw screen.

@@ -16,12 +16,17 @@
     Texture.prototype = {
         /**
          * Render texture.
+         * @param {CanvasRenderingContext2D} ctx
          * @param {number} scrollX
          * @param {number} scrollY
          */
-        render: function (scrollX, scrollY) {
+        render: function (ctx,scrollX, scrollY) {
 
         },
+        /**
+         * Sync texture.
+         * @param {parari.Rect} canvasBounds - Bounds of the canvas.
+         */
         sync: function (canvasBounds) {
             var s = this,
                 w = canvasBounds.width,

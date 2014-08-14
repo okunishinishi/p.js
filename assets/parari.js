@@ -1078,13 +1078,12 @@ window.parari = (function (parari) {
 	            s.dx = u.round(frame.center.x - bounds.width / 2);
 	            s.dy = u.round(frame.center.y - bounds.height / 2);
 	            s.frame = frame;
-	            s._bounds = bounds;
+	            s.bounds = bounds;
 	            s.drawable.layout();
 	        },
 	        isVisible: function (bounds) {
 	            var s = this;
-	//            return s.isVisibleInBounds(s._bounds);
-	            return true; //FIXME
+	            return s.isVisibleInBounds(s.bounds);
 	        },
 	        /**
 	         * Detect that the drawable visible or not.
@@ -1096,6 +1095,7 @@ window.parari = (function (parari) {
 	            }
 	            var s = this,
 	                f = s.drawable.getFrame();
+	            console.log(bounds.left, f.left)
 	            return   (bounds.top < f.bottom)
 	                && (f.top < bounds.bottom)
 	                && (bounds.left < f.right)
@@ -1428,21 +1428,39 @@ window.parari = (function (parari) {
 	        },
 	        /**
 	         * Draw screen.
+	         * @param {number} scrollX
+	         * @param {number} scrollY
 	         */
 	        draw: function (scrollX, scrollY) {
+	            var s = this;
+	            s.drawTextures(scrollX, scrollY);
+	            s.drawFragments(scrollX, scrollY);
+	        },
+	        /**
+	         * Draw textures.
+	         * @param {number} scrollX
+	         * @param {number} scrollY
+	         */
+	        drawTextures: function (scrollX, scrollY) {
 	            var s = this,
-	                canvas = s.fragmentsCanvas;
-	
+	                ctx = s.textureCanvas.getContext();
+	            for (var j = 0; j < s.textures.length; j++) {
+	                var texture = s.textures[j];
+	                texture.render(ctx, scrollX, scrollY);
+	            }
+	        },
+	        /**
+	         * Draw fragmens.
+	         * @param {number} scrollX
+	         * @param {number} scrollY
+	         */
+	        drawFragments: function (scrollX, scrollY) {
+	            var s = this;
 	            for (var i = 0, len = s.fragments.length; i < len; i++) {
 	                var fragment = s.fragments[i];
 	                fragment.move(scrollX, scrollY);
 	            }
-	
-	            for (var j = 0; j < s.textures.length; j++) {
-	                var texture = s.textures[j];
-	                texture.draw(scrollX, scrollY);
-	            }
-	            canvas.renderAll();
+	            s.fragmentsCanvas.renderAll();
 	        },
 	        /**
 	         * Redraw screen.
@@ -1695,7 +1713,26 @@ window.parari = (function (parari) {
 	    }
 	
 	    Texture.prototype = {
+	        /**
+	         * Render texture.
+	         * @param {CanvasRenderingContext2D} ctx
+	         * @param {number} scrollX
+	         * @param {number} scrollY
+	         */
+	        render: function (ctx,scrollX, scrollY) {
 	
+	        },
+	        /**
+	         * Sync texture.
+	         * @param {parari.Rect} canvasBounds - Bounds of the canvas.
+	         */
+	        sync: function (canvasBounds) {
+	            var s = this,
+	                w = canvasBounds.width,
+	                h = canvasBounds.height;
+	            s.bounds = new pr.Rect(0, 0, w, h);
+	            console.log('bounds', s.bounds);
+	        }
 	    };
 	
 	    u.copy(
@@ -1730,7 +1767,14 @@ window.parari = (function (parari) {
 	    StarFlowTexture.prototype = u.copy(
 	        /** @lends StarFlowTexture.prototype */
 	        {
+	            /**
+	             * Render texture.
+	             * @param {number} scrollX
+	             * @param {number} scrollY
+	             */
+	            render: function (scrollX, scrollY) {
 	
+	            }
 	        },
 	        new Texture({})
 	    );
@@ -1743,7 +1787,7 @@ window.parari = (function (parari) {
 	        },
 	        StarFlowTexture);
 	
-	    pr.StarFlowTexture = StarFlowTexture;
+	    pr.textures.StarFlowTexture = StarFlowTexture;
 	
 	})(window.parari = window.parari || {}, document);
 
