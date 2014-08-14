@@ -1,0 +1,45 @@
+/**
+ * Parari texture
+ * @memberof parari
+ * @augments Texture
+ * @constructore {{name}}Texture
+ */
+(function (pr, document) {
+    "use strict";
+
+    var u = pr.utilities,
+        Texture = pr.textures.Texture;
+
+    /** @lends {{name}}Texture */
+    function {{name}}Texture() {
+
+    }
+
+
+    {name}}Texture.prototype = u.copy(
+        /** @lends {name}}Texture.prototype */
+        {
+            /**
+             * Render texture.
+             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+             * @param {number} scrollX
+             * @param {number} scrollY
+             */
+            render: function (scrollX, scrollY) {
+
+            }
+        },
+        new Texture({})
+    );
+
+    u.copy(Texture, {{name}}Texture);
+    u.copy(
+        /** @lends {{name}}Texture */
+        {
+
+        },
+        {{name}}Texture);
+
+    pr.textures.{name}}Texture = {{name}}Texture;
+
+})(window.parari = window.parari || {}, document);

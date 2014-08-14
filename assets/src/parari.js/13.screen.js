@@ -156,7 +156,9 @@
          */
         drawTextures: function (scrollX, scrollY) {
             var s = this,
-                ctx = s.textureCanvas.getContext();
+                canvas = s.textureCanvas,
+                ctx = canvas.getContext();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (var j = 0; j < s.textures.length; j++) {
                 var texture = s.textures[j];
                 texture.render(ctx, scrollX, scrollY);

@@ -114,4 +114,11 @@ describe('pr.utilities', function () {
             expect(u.uuid()).not.toEqual(u.uuid());
         }
     });
+
+    it('Get random int.', function () {
+        for (var i = 0; i < 100; i++) {
+            expect(u.randomInt(10, 20) <= 20).toBe(true);
+            expect(u.randomInt(10, 20) >= 10).toBe(true);
+        }
+    });
 });

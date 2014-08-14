@@ -14,4 +14,11 @@ describe('pr.texture', function () {
         var texture = new Texture({});
         expect(texture).toBeDefined();
     });
+
+    it('Create a canvas.', function () {
+        var canvas = Texture.newCanvas(100, 200);
+        expect(canvas).toBeDefined();
+        expect(canvas.style.width).toEqual(100 + 'px');
+        expect(canvas.style.height).toEqual(200 + 'px');
+    });
 });

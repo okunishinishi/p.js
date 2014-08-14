@@ -10,8 +10,27 @@
             ]
         },
         "starFlow": {
-            "saturation": 10,
-            "z": -10
+            "backgroundColor": "#38E",
+            "layers": [
+                {
+                    "patternSize": 400,
+                    "countPerPattern": 20,
+                    "radius": 1,
+                    "velocity": 0.3
+                },
+                {
+                    "patternSize": 300,
+                    "countPerPattern": 30,
+                    "radius": 0.6,
+                    "velocity": 0.2
+                },
+                {
+                    "patternSize": 200,
+                    "countPerPattern": 40,
+                    "radius": 0.4,
+                    "velocity": 0.1
+                }
+            ]
         }
     }
 }

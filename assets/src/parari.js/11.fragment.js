@@ -135,7 +135,6 @@
             }
             var s = this,
                 f = s.drawable.getFrame();
-            console.log(bounds.left, f.left)
             return   (bounds.top < f.bottom)
                 && (f.top < bounds.bottom)
                 && (bounds.left < f.right)
