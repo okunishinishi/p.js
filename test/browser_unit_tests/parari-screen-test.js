@@ -7,24 +7,30 @@
 
 describe('pr.screen', function () {
 
-    var pr = window.parari;
+    var pr = window.parari,
+        Screen = pr.Screen;
 
     it('pr.screen', function () {
         expect(function () {
-            new pr.Screen(null);
+            new Screen(null);
         }).toThrow();
     });
 
-    it('Create a screen element.', function () {
-        var elm = pr.Screen._newScreenElement('foo-id');
-        expect(elm).toBeDefined();
-        var canvas = elm.querySelector('canvas');
+    it('Create a canvas element.', function () {
+        var canvas = Screen._newCanvasElement();
         expect(canvas).toBeDefined();
-        expect(canvas.id).toEqual('foo-id');
+        var canvas2 = Screen._newCanvasElement();
+        expect(canvas.id).not.toEqual(canvas2.id);
     });
 
-    it('Create a new canvas id.', function () {
-        var id = pr.Screen._newCanvasId();
-        expect(id).toBeDefined();
+    it('Create a screen element.', function () {
+        var elm = Screen._newScreenElement([]);
+        expect(elm).toBeDefined();
     });
+
+    it('newFabricCanvas', function () {
+        var canvas = Screen.newFabricCanvas('foo', 'bar');
+        expect(canvas).toBeDefined();
+    });
+
 });

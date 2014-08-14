@@ -24,16 +24,19 @@
 
         u.copy(options || {}, s);
 
-        var canvasId = Screen._newCanvasId(),
-            elm = Screen._newScreenElement(canvasId);
-        container.appendChild(elm);
 
+        var canvases = Screen.createCanvaseElements(2);
+
+        var elm = Screen._newScreenElement(canvases);
+        container.appendChild(elm);
 
         'click,mousedown,mouseup'.split(',').forEach(function (eventName) {
             elm.addEventListener(eventName, s.captureEvent.bind(s), false);
-        })
+        });
 
-        s.fragmentsCanvas = Screen.newCanvas(canvasId);
+
+        s.textureCanvas = Screen.newFabricCanvas(canvases[0].id, 'texture');
+        s.fragmentsCanvas = Screen.newFabricCanvas(canvases[1].id, 'fragment');
 
         s.fragments = [];
         s.textures = [];
@@ -169,18 +172,23 @@
          * @param {number} h - Screen height.
          */
         size: function (w, h) {
-            var s = this,
-                canvas = s.fragmentsCanvas;
-            canvas.setWidth(w);
-            canvas.setHeight(h);
+            var s = this;
+            Screen.changeCanvasSize(s.fragmentsCanvas, w, h);
+            Screen.changeCanvasSize(s.textureCanvas, w, h);
 
-            var canvasElement = canvas.getElement();
-            u.optimizeCanvasRatio(canvasElement);
-
-            var bounds = new pr.Rect.ofElement(canvasElement);
+            var bounds = s.getCanvasBounds();
             s.syncFragments(bounds);
             s.syncTextures(bounds);
             s.redraw();
+        },
+        /**
+         * Get canvas bounds.
+         * @returns {parari.Rect}
+         */
+        getCanvasBounds: function () {
+            var s = this,
+                elm = s.fragmentsCanvas.getElement();
+            return new pr.Rect.ofElement(elm);
         },
         /**
          * Resize screen.
@@ -191,8 +199,8 @@
             s.size(rect.width, rect.height);
         },
         /**
+         * Sync all fragments.
          * @param {pr.Rect} bounds - Canvas bounds.
-         * Sync all elements.
          */
         syncFragments: function (bounds) {
             var s = this;
@@ -201,6 +209,10 @@
                 fragment.sync(bounds);
             }
         },
+        /**
+         * Sync textures.
+         * @param {pr.Rect} bounds - Canvas bounds.
+         */
         syncTextures: function (bounds) {
             var s = this;
             for (var i = 0, len = s.textures.length; i < len; i++) {
@@ -252,29 +264,48 @@
         {
 
             /**
-             * New canvas id.
-             * @returns {string} - Canvas id string.
+             * Create multipe canvases.
+             * @param {number} count - Number of canvases.
+             * @returns {HTMLCanvasElemnt[]} - Canvas elementes.
+             */
+            createCanvaseElements: function (count) {
+                var result = [];
+                for (var i = 0; i < count; i++) {
+                    var canvas = Screen._newCanvasElement();
+                    result.push(canvas);
+                }
+                return result;
+            },
+            /**
+             * Create a new canva element.
+             * @returns {HTMLCanvasElement} - A canvas element.
              * @private
              */
-            _newCanvasId: function () {
-                return pr.prefixed('canvas-' + new Date().getTime());
+            _newCanvasElement: function () {
+                var id = ['canvas' , u.uuid().replace(/\-/g, '')].join('-'),
+                    canvas = document.createElement('canvas');
+                canvas.id = pr.prefixed(id);
+                return canvas;
             },
-
             /**
              * Create a new screen element.
-             * @param {string} canvasId - Id for canvas.
+             * @param {HTMLCanvasElements[]} canvasElements - Canvas elements.
              * @returns {HTMLElement} - A screen element.
              * @private
              */
-            _newScreenElement: function (canvasId) {
+            _newScreenElement: function (canvasElements) {
                 var div = document.createElement('div');
                 div.classList.add(c.classNames.SCREEN);
-                var canvas = document.createElement('canvas');
-                canvas.id = canvasId;
-                div.appendChild(canvas);
+
+                var canvasContainer = document.createElement('div');
+                canvasContainer.classList.add(c.classNames.CANVAS_CONTINER);
+                div.appendChild(canvasContainer);
+
+                for (var i = 0; i < canvasElements.length; i++) {
+                    canvasContainer.appendChild(canvasElements[i]);
+                }
                 return div;
             },
-
             /**
              * Get visible rect
              * @param {HTMLElement} elm - Elemnt to work with.
@@ -296,14 +327,36 @@
             },
             /**
              * Create a new canvas.
-             * @param canvasId
+             * @param {string} canvasId - Canvas element id.
+             * @param {string} name - Canvas name.
              * @returns {fabric.StaticCanvas}
              */
-            newCanvas: function (canvasId) {
-                return new f.StaticCanvas(canvasId, {
+            newFabricCanvas: function (canvasId, name) {
+                var canvas = new f.StaticCanvas(canvasId, {
                     renderOnAddRemove: false,
                     selection: false,
                 });
+                var elm = canvas.getElement();
+                var className = pr.prefixed([name, 'canvas'].join('-'));
+                elm.classList.add(className);
+                return  canvas;
+            },
+            /**
+             * Change canvas size.
+             * @param {fabric.Canvas} canvas - Canvas to change.
+             * @param {number} w - Canvas width.
+             * @param {number} h - Canvas height.
+             */
+            changeCanvasSize: function (canvas, w, h) {
+                canvas.setWidth(w);
+                canvas.setHeight(h);
+
+                var elm = canvas.getElement();
+                u.optimizeCanvasRatio(elm);
+
+                var container = elm.parentNode;
+                container.style.width = w + 'px';
+                container.style.height = h + 'px';
             }
         },
         Screen

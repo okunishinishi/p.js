@@ -19,6 +19,7 @@
         PREFIX_PATTERN: new RegExp("^" + prefix),
         classNames: {
             SRC: prefixed('src'),
+            CANVAS_CONTINER:prefixed('canvas-container'),
             SCREEN: prefixed('screen'),
             SCREEN_CONTAINER: prefixed('screen-container'),
             FRAGMENT: prefixed('fragment'),

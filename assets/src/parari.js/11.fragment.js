@@ -12,10 +12,9 @@
         c = pr.constants;
 
     /** @lends Fragment */
-    function Fragment(elm, properties) {
+    function Fragment(elm) {
         elm.classList.add(c.classNames.FRAGMENT);
         var s = this;
-        u.copy(properties || {}, s);
         s.load(elm);
     };
 
@@ -78,10 +77,12 @@
         move: function (scrollX, scrollY) {
             var s = this,
                 amount = s._moveAmount(scrollX, scrollY);
-            var frame = s.frame;
+            var frame = s.frame,
+                w = frame.width, h = frame.height;
+
             s.drawable.set({
-                width: u.round(frame.width),
-                height: u.round(frame.height),
+                width: u.round(w),
+                height: u.round(h),
                 left: u.round(frame.left + amount.x),
                 top: u.round(frame.top + amount.y),
                 originX: 'center',
@@ -117,12 +118,13 @@
             s.dx = u.round(frame.center.x - bounds.width / 2);
             s.dy = u.round(frame.center.y - bounds.height / 2);
             s.frame = frame;
-            s.bounds = bounds;
+            s._bounds = bounds;
             s.drawable.layout();
         },
         isVisible: function (bounds) {
             var s = this;
-            return s.isVisibleInBounds(s.bounds);
+//            return s.isVisibleInBounds(s._bounds);
+            return true; //FIXME
         },
         /**
          * Detect that the drawable visible or not.

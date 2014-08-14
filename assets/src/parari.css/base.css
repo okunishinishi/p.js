@@ -60,9 +60,9 @@ li {
 }
 
 .pr-root,
-.pr-screen .canvas-container {
-    background-color: #DDD;
+.pr-canvas-container {
     max-width: 960px;
+    background-color: #DDD;
     margin: 0 auto;
     display: block;
     width: auto;
@@ -77,17 +77,17 @@ li {
     height: 100%;
     box-sizing: border-box;
     background-color: rgb(70, 70, 70);
+    opacity: 0.9; /** FIXME*/
 }
 
-.pr-screen .canvas-container {
-    opacity: 0.1;
-    -webkit-transition: opacity 300ms ease;
-    -moz-transition: opacity 300ms ease;
-    -ms-transition: opacity 300ms ease;
-    -o-transition: opacity 300ms ease;
-    transition: opacity 300ms ease;
-
-    background-color: white;
+.pr-canvas-container canvas {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: transparent;
 }
 
 .pr-screen .lower-canvas {

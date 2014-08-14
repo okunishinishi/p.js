@@ -108,4 +108,10 @@ describe('pr.utilities', function () {
     it('Camelize', function () {
         expect(u.camelize('Foo-barBaz')).toEqual('fooBarBaz');
     });
+
+    it('Generate uuid.', function () {
+        for (var i = 0; i < 100; i++) {
+            expect(u.uuid()).not.toEqual(u.uuid());
+        }
+    });
 });
