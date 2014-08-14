@@ -1306,10 +1306,10 @@ window.parari = (function (parari) {
 	            elm.addEventListener(eventName, s.captureEvent.bind(s), false);
 	        })
 	
-	        s.canvas = Screen.newCanvas(canvasId);
+	        s.fragmentsCanvas = Screen.newCanvas(canvasId);
 	
 	        s.fragments = [];
-	        s.layers = [];
+	        s.textures = [];
 	
 	        s.startLooping(s._renderInterval);
 	
@@ -1345,7 +1345,7 @@ window.parari = (function (parari) {
 	            if (fragment) {
 	                var shouldRender = fragment.handleEvent(e);
 	                if (shouldRender) {
-	                    s.canvas.renderAll();
+	                    s.fragmentsCanvas.renderAll();
 	                }
 	            }
 	        },
@@ -1353,17 +1353,17 @@ window.parari = (function (parari) {
 	         * Fabirc canvas.
 	         * @type fabric.Canvas
 	         */
-	        canvas: null,
+	        fragmentsCanvas: null,
 	        /**
 	         * Fragment objects.
 	         * @type {parari.Fragment[]}
 	         */
 	        fragments: null,
 	        /**
-	         * Layers.
-	         * @type {parari.layers.Layer}
+	         * Textures.
+	         * @type {parari.textures.Texture}
 	         */
-	        layers: null,
+	        textures: null,
 	        /**
 	         * Element to fit size with.
 	         */
@@ -1374,21 +1374,20 @@ window.parari = (function (parari) {
 	        scroller: null,
 	        /**
 	         * Register a fragment object.
-	         * @param {parari.Fragment} fragment - Fragment.
+	         * @param {parari.Fragment} fragment - Fragment to register.
 	         */
 	        registerFragment: function (fragment) {
 	            var s = this;
 	            s.fragments.push(fragment);
-	            s.canvas.add(fragment.drawable);
+	            s.fragmentsCanvas.add(fragment.drawable);
 	        },
 	        /**
-	         * Register a layer object.
-	         * @param layer
+	         * Register a texture object.
+	         * @param {parari.textures.Texture} texture - Texture to register.
 	         */
-	        registerLayer: function (layer) {
+	        registerTexture: function (texture) {
 	            var s = this;
-	            s.layers.push(layer);
-	            s.canvas.add(layer);
+	            s.textures.push(texture);
 	        },
 	        /**
 	         * Register fragment objects.
@@ -1401,13 +1400,13 @@ window.parari = (function (parari) {
 	            });
 	        },
 	        /**
-	         * Register layers.
-	         * @param {parari.layers.Layer[]} layers - Layers to register.
+	         * Register textures.
+	         * @param {parari.textures.Texture[]} textures - Textures to register.
 	         */
-	        registerLayers: function (layers) {
+	        registerTextures: function (textures) {
 	            var s = this;
-	            [].concat(layers).forEach(function (layer) {
-	                s.registerLayer(layer);
+	            [].concat(textures).forEach(function (texture) {
+	                s.registerTexture(texture);
 	            });
 	        },
 	        /**
@@ -1415,16 +1414,16 @@ window.parari = (function (parari) {
 	         */
 	        draw: function (scrollX, scrollY) {
 	            var s = this,
-	                canvas = s.canvas;
+	                canvas = s.fragmentsCanvas;
 	
 	            for (var i = 0, len = s.fragments.length; i < len; i++) {
 	                var fragment = s.fragments[i];
 	                fragment.move(scrollX, scrollY);
 	            }
-	            for (var j = 0; j < s.layers.length; j++) {
-	                var layer = s.layers[j];
 	
-	                layer.move(scrollX, scrollY);
+	            for (var j = 0; j < s.textures.length; j++) {
+	                var texture = s.textures[j];
+	                texture.draw(scrollX, scrollY);
 	            }
 	            canvas.renderAll();
 	        },
@@ -1444,7 +1443,7 @@ window.parari = (function (parari) {
 	         */
 	        size: function (w, h) {
 	            var s = this,
-	                canvas = s.canvas;
+	                canvas = s.fragmentsCanvas;
 	            canvas.setWidth(w);
 	            canvas.setHeight(h);
 	
@@ -1453,7 +1452,7 @@ window.parari = (function (parari) {
 	
 	            var bounds = new pr.Rect.ofElement(canvasElement);
 	            s.syncFragments(bounds);
-	            s.syncLayers(bounds);
+	            s.syncTextures(bounds);
 	            s.redraw();
 	        },
 	        /**
@@ -1475,11 +1474,11 @@ window.parari = (function (parari) {
 	                fragment.sync(bounds);
 	            }
 	        },
-	        syncLayers: function (bounds) {
+	        syncTextures: function (bounds) {
 	            var s = this;
-	            for (var i = 0, len = s.layers.length; i < len; i++) {
-	                var layer = s.layers[i];
-	                layer.sync(bounds);
+	            for (var i = 0, len = s.textures.length; i < len; i++) {
+	                var texture = s.textures[i];
+	                texture.sync(bounds);
 	            }
 	        },
 	        /**
@@ -1490,7 +1489,7 @@ window.parari = (function (parari) {
 	            var s = this;
 	            s.stopLooping();
 	            s._renderTimer = setInterval(function () {
-	                s.canvas.renderAll()
+	                s.fragmentsCanvas.renderAll()
 	            }, interval);
 	        },
 	        /**
