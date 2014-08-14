@@ -13,7 +13,8 @@
             return {
 			    resolve: pr.textures.ResolveTexture,
 			    starFlow: pr.textures.StarFlowTexture,
-			    rainbowColor: pr.textures.RainbowColorTexture
+			    rainbowColor: pr.textures.RainbowColorTexture,
+			    circleLight: pr.textures.CircleLightTexture
 			};
         }
     };

@@ -39,8 +39,8 @@
                 if (!bounds) {
                     return;
                 }
-                var v = Number(s.velocity);
-                var xFactor = (scrollX * v) / bounds.width,
+                var v = Number(s.velocity),
+                    xFactor = (scrollX * v) / bounds.width,
                     yFactor = (scrollY * v) / bounds.height,
                     factor = u.average(xFactor, yFactor);
 
@@ -51,6 +51,7 @@
                 ctx.fillStyle = s.fillColor(factor);
                 ctx.fill();
                 ctx.closePath();
+
 
                 ctx.restore();
             },
