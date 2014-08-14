@@ -42,7 +42,7 @@
                 scroller: pr.bodyScroller,
                 sizer: root,
                 screenContainer: body,
-                layers: []
+                textures: []
             });
 
         var src = new pr.Src(root),
@@ -68,33 +68,33 @@
         });
         screen.registerFragments(fragments);
 
-        var layers = pr.start._createLayers(o.layers, {
+        var textures = pr.start._createTextures(o.textures, {
             vLock: o.vLock,
             hLock: o.hLock
         });
-        screen.registerLayers(layers);
+        screen.registerTextures(textures);
 
         reload();
     };
 
     /**
-     * Create layers.
-     * @param {object} layers - Layer data.
-     * @param {object} defaultOptions - Layer defaultOptions.
-     * @returns {parari.layers.Layer} - Layers.
+     * Create textures.
+     * @param {object} textures - Texture data.
+     * @param {object} defaultOptions - Texture defaultOptions.
+     * @returns {parari.textures.Texture} - Textures.
      * @private
      */
-    pr.start._createLayers = function (layers, defaultOptions) {
-        return Object.keys(layers)
+    pr.start._createTextures = function (textures, defaultOptions) {
+        return Object.keys(textures)
             .map(function (name) {
-                var Layer = pr.resolveLayer(name);
-                if (!Layer) {
-//                throw new Error('Invalid layer: ' + name);
+                var Texture = pr.resolveTexture(name);
+                if (!Texture) {
+//                throw new Error('Invalid texture: ' + name);
                     return []; //FIXME
                 }
-                return [].concat(layers[name]).map(function (option) {
+                return [].concat(textures[name]).map(function (option) {
                     option = u.copy(option, u.copy(defaultOptions, {}))
-                    return  new Layer(option);
+                    return  new Texture(option);
                 });
             })
             .reduce(function (prev, cur) {

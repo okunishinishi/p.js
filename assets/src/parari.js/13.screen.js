@@ -150,6 +150,7 @@
             }
             for (var j = 0; j < s.layers.length; j++) {
                 var layer = s.layers[j];
+
                 layer.move(scrollX, scrollY);
             }
             canvas.renderAll();

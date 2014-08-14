@@ -1,5 +1,5 @@
 {
-    "layers": {
+    "textures": {
         "sunLight": {
             "z": -11,
             "velocity": 0.2,

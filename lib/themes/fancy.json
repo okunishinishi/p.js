@@ -1,5 +1,5 @@
 {
-    "layers": {
+    "textures": {
         "rainbowColor": {
             "velocity": 0.015,
             "hue": 120,

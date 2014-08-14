@@ -35,8 +35,8 @@
 parari.start('parari-slide-root', {
     vLock:false,
     hLock:true,
-    layers: {
-        {{#each layers}}{{name}}: [
+    textures: {
+        {{#each textures}}{{name}}: [
             {{#each options}}{
             {{#each this}}    {{key}}:{{{val}}}{{#if @last}}{{else}},
             {{/if}}{{/each}}

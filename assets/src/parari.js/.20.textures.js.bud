@@ -15,26 +15,29 @@ function toJson(data, intend) {
     for (var i = 0; i < intend; i++) {
         EOL += "\t";
     }
-    return JSON.stringify(data, null, 4).replace(/\n/g, EOL).replace(/"/g,'');
+    return JSON.stringify(data, null, 4).replace(/\n/g, EOL).replace(/"/g, '');
 };
 
+var namespace = 'textures';
 module.exports = {
     mode: '444',
     force: true,
     data: {
-        get layerNameMap() {
+        memberof: 'parari',
+        member: namespace,
+        get textureNameMap() {
             var map = {};
             var names = fs.readdirSync(__dirname)
                 .filter(function (name) {
-                    return name.match(/_layer\.js$/);
+                    return name.match(/_texture\.js$/);
                 })
                 .map(function (name) {
                     return  string.pascalString(path.basename(name, '.js').split('.').pop());
                 })
                 .forEach(function (name) {
-                    var alias = name.replace(/Layer$/, '');
+                    var alias = name.replace(/Texture$/, '');
                     alias = alias[0].toLowerCase() + alias.substr(1);
-                    map[alias] = ['pr', 'layers', name].join('.')
+                    map[alias] = ['pr', namespace, name].join('.')
                 })
             return toJson(map, 3);
 

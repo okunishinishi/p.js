@@ -12,7 +12,7 @@
         }
 
     /**
-     * @lends para.constants
+     * @lends constants
      */
     var c = {
         PREFIX: prefix,

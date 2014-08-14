@@ -104,4 +104,8 @@ describe('pr.utilities', function () {
         expect(o2.x).toEqual(300);
         expect(o2.y).toEqual(400);
     });
+
+    it('Camelize', function () {
+        expect(u.camelize('Foo-barBaz')).toEqual('fooBarBaz');
+    });
 });

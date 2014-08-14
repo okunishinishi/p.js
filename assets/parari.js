@@ -45,6 +45,19 @@ window.parari = (function (parari) {
 	            return prev.concat(cur);
 	        },
 	        /**
+	         * Camelize a string.
+	         * @param {string} string - String to camelize.
+	         * @returns {string} - Camlized string.
+	         */
+	        camelize: function (string) {
+	            string = string.replace(/(?:^|[-_])(\w)/g, u._camlizeReplace);
+	            string = string.substr(0, 1).toLowerCase() + string.substr(1);
+	            return string;
+	        },
+	        _camlizeReplace: function (_, letter) {
+	            return letter ? letter.toUpperCase() : '';
+	        },
+	        /**
 	         * Composite functions.
 	         * @param {...function} actions - Functions to compositse.
 	         * @returns {function} - Composited function.
@@ -195,6 +208,11 @@ window.parari = (function (parari) {
 	            canvas.style.height = h + 'px';
 	        },
 	        /**
+	         * Get random value.
+	         * @returns {number} - Random value.
+	         */
+	        random: Math.random.bind(Math),
+	        /**
 	         * Round a value.
 	         * @param {number} value - Value to round.
 	         * @returns {number} - Rounded value.
@@ -271,7 +289,7 @@ window.parari = (function (parari) {
 	        }
 	
 	    /**
-	     * @lends para.constants
+	     * @lends constants
 	     */
 	    var c = {
 	        PREFIX: prefix,
@@ -569,23 +587,24 @@ window.parari = (function (parari) {
 	
 
     /**
-	 * Resolve a layer by name.
+	 * Resolve a texture by name.
 	 * @membrerof parari
-	 * @function resolveLayer
+	 * @function resolveTexture
 	 * @param {string} name - Name to resolve.
-	 * @returns {parari.layers.Layer} - Resolve layer.
+	 * @returns {parari.textures.Texture} - Resolve texture.
 	 */
 	(function (pr) {
 	    "use strict";
 	
 	    var u = pr.utilities;
 	
-	    /** @lends resolveLayer */
-	    function resolveLayer(name) {
-	        return pr.layers._layerNameMap[name] || pr.layers[name];
+	    /** @lends resolveTexture */
+	    function resolveTexture(name) {
+	        name = u.camelize(name);
+	        return pr.textures._textureNameMap[name] || pr.textures[name];
 	    }
 	
-	    pr.resolveLayer = resolveLayer;
+	    pr.resolveTexture = resolveTexture;
 	
 	})(window.parari = window.parari || {});
 	
@@ -941,9 +960,10 @@ window.parari = (function (parari) {
 	        c = pr.constants;
 	
 	    /** @lends Fragment */
-	    function Fragment(elm) {
+	    function Fragment(elm, properties) {
 	        elm.classList.add(c.classNames.FRAGMENT);
 	        var s = this;
+	        u.copy(properties || {}, s);
 	        s.load(elm);
 	    };
 	
@@ -1183,13 +1203,14 @@ window.parari = (function (parari) {
 	        },
 	        /**
 	         * Create fragments from src.
+	         * @param {object} properties - Fragment properties.
 	         * @returns {pr.Fragment[]}
 	         */
-	        createFragments: function () {
+	        createFragments: function (properties) {
 	            var s = this;
 	            return s._findObjectElements()
 	                .map(function (elm) {
-	                    return new pr.Fragment(elm);
+	                    return new pr.Fragment(elm,properties);
 	                });
 	        }
 	    }
@@ -1402,6 +1423,7 @@ window.parari = (function (parari) {
 	            }
 	            for (var j = 0; j < s.layers.length; j++) {
 	                var layer = s.layers[j];
+	
 	                layer.move(scrollX, scrollY);
 	            }
 	            canvas.renderAll();
@@ -1431,6 +1453,7 @@ window.parari = (function (parari) {
 	
 	            var bounds = new pr.Rect.ofElement(canvasElement);
 	            s.syncFragments(bounds);
+	            s.syncLayers(bounds);
 	            s.redraw();
 	        },
 	        /**
@@ -1447,9 +1470,16 @@ window.parari = (function (parari) {
 	         */
 	        syncFragments: function (bounds) {
 	            var s = this;
-	            for (var i = 0; i < s.fragments.length; i++) {
+	            for (var i = 0, len = s.fragments.length; i < len; i++) {
 	                var fragment = s.fragments[i];
 	                fragment.sync(bounds);
+	            }
+	        },
+	        syncLayers: function (bounds) {
+	            var s = this;
+	            for (var i = 0, len = s.layers.length; i < len; i++) {
+	                var layer = s.layers[i];
+	                layer.sync(bounds);
 	            }
 	        },
 	        /**
@@ -1562,20 +1592,20 @@ window.parari = (function (parari) {
 	);
 
     /**
-	 * Parari layers.
+	 * Parari textures.
 	 * @memberof parari
-	 * @member layers
+	 * @member textures
 	 */
 	(function (pr, document) {
 	    "use strict";
 	
-	    /** @lends layers */
-	    pr.layers = {
-	        /** Short names for layers. */
-	        get _layerNameMap() {
+	    /** @lends textures */
+	    pr.textures = {
+	        /** Short names for textures. */
+	        get _textureNameMap() {
 	            return {
-				    resolve: pr.layers.ResolveLayer,
-				    starFlow: pr.layers.StarFlowLayer
+				    resolve: pr.textures.ResolveTexture,
+				    starFlow: pr.textures.StarFlowTexture
 				};
 	        }
 	    };
@@ -1584,70 +1614,70 @@ window.parari = (function (parari) {
 	})(window.parari = window.parari || {}, document);
 
     /**
-	 * Parari layer.
-	 * @memberof parari.layers
-	 * @constructor Layer
-	 */
-	(function (pr, f, document) {
-	    "use strict";
-	
-	    var u = pr.utilities;
-	
-	    var Drawable = pr.Drawable;
-	
-	    /** @lends Layer */
-	    function Layer() {
-	        var s = this;
-	        s.init.apply(s, arguments);
-	    }
-	
-	
-	    Layer.prototype = {
-	        init: function () {
-	            var s = this;
-	            s.__proto__ = u.copy(Layer.prototype, new f.Group([], {
-	                selectable: false,
-	                hasRotatingPoint: false,
-	            }));
-	            s.__isPrLayer = true;
-	        },
-	        /**
-	         * Move to scroll point.
-	         * @param {number} scrollX - Scroll x position.
-	         * @param {number} scrollY - Scroll y position.
-	         */
-	        move: function (scrollX, scrollY) {
-	            var s = this;
-	        }
-	    };
-	
-	
-	    pr.layers.Layer = Layer;
-	
-	
-	})(window.parari = window.parari || {}, window.fabric, document);
-
-    /**
-	 * Layer with star flow effect.
-	 * @memberof parari.layers
-	 * @constructor StarFlowLayer
+	 * Parari texture
+	 * @memberof parari
+	 * @constructore Texture
 	 */
 	(function (pr, document) {
 	    "use strict";
 	
-	    var Layer = pr.layers.Layer;
+	    var u = pr.utilities;
 	
-	    /** @lends Layer */
-	    function StarFlowLayer() {
-	        var s = this;
-	        s.init.apply(s, arguments);
+	    /** @lends Texture */
+	    function Texture() {
+	
 	    }
 	
-	    StarFlowLayer.prototype = new Layer({});
+	    Texture.prototype = {
+	
+	    };
+	
+	    u.copy(
+	        /** @lends Texture */
+	        {
+	        },
+	        Texture
+	    );
+	
+	    pr.textures.Texture = Texture;
+	
+	})(window.parari = window.parari || {}, document);
+
+    /**
+	 * Parari texture
+	 * @memberof parari
+	 * @augments Texture
+	 * @constructore StarFlowTexture
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Texture = pr.textures.Texture;
+	
+	    /** @lends StarFlowTexture */
+	    function StarFlowTexture() {
+	
+	    }
 	
 	
-	    pr.layers.StarFlowLayer = StarFlowLayer;
+	    StarFlowTexture.prototype = u.copy(
+	        /** @lends StarFlowTexture.prototype */
+	        {
 	
+	        },
+	        new Texture({})
+	    );
+	
+	    u.copy(Texture, StarFlowTexture);
+	    u.copy(
+	        /** @lends StarFlowTexture */
+	        {
+	
+	        },
+	        StarFlowTexture);
+	
+	    pr.StarFlowTexture = StarFlowTexture;
 	
 	})(window.parari = window.parari || {}, document);
 
@@ -1695,7 +1725,7 @@ window.parari = (function (parari) {
 	                scroller: pr.bodyScroller,
 	                sizer: root,
 	                screenContainer: body,
-	                layers: []
+	                textures: []
 	            });
 	
 	        var src = new pr.Src(root),
@@ -1715,31 +1745,39 @@ window.parari = (function (parari) {
 	        });
 	
 	
-	        var fragments = src.createFragments();
+	        var fragments = src.createFragments({
+	            vLock: o.vLock,
+	            hLock: o.hLock
+	        });
 	        screen.registerFragments(fragments);
 	
-	        var layers = pr.start._createLayers(o.layers);
-	        screen.registerLayers(layers);
+	        var textures = pr.start._createTextures(o.textures, {
+	            vLock: o.vLock,
+	            hLock: o.hLock
+	        });
+	        screen.registerTextures(textures);
 	
 	        reload();
 	    };
 	
 	    /**
-	     * Create layers.
-	     * @param {object} layers - Layer data.
-	     * @returns {parari.layers.Layer} - Layers.
+	     * Create textures.
+	     * @param {object} textures - Texture data.
+	     * @param {object} defaultOptions - Texture defaultOptions.
+	     * @returns {parari.textures.Texture} - Textures.
 	     * @private
 	     */
-	    pr.start._createLayers = function (layers) {
-	        return Object.keys(layers)
+	    pr.start._createTextures = function (textures, defaultOptions) {
+	        return Object.keys(textures)
 	            .map(function (name) {
-	                var Layer = pr.resolveLayer(name);
-	                if (!Layer) {
-	//                throw new Error('Invalid layer: ' + name);
+	                var Texture = pr.resolveTexture(name);
+	                if (!Texture) {
+	//                throw new Error('Invalid texture: ' + name);
 	                    return []; //FIXME
 	                }
-	                return [].concat(layers[name]).map(function (option) {
-	                    return new Layer(option);
+	                return [].concat(textures[name]).map(function (option) {
+	                    option = u.copy(option, u.copy(defaultOptions, {}))
+	                    return  new Texture(option);
 	                });
 	            })
 	            .reduce(function (prev, cur) {

@@ -16,6 +16,19 @@
             return prev.concat(cur);
         },
         /**
+         * Camelize a string.
+         * @param {string} string - String to camelize.
+         * @returns {string} - Camlized string.
+         */
+        camelize: function (string) {
+            string = string.replace(/(?:^|[-_])(\w)/g, u._camlizeReplace);
+            string = string.substr(0, 1).toLowerCase() + string.substr(1);
+            return string;
+        },
+        _camlizeReplace: function (_, letter) {
+            return letter ? letter.toUpperCase() : '';
+        },
+        /**
          * Composite functions.
          * @param {...function} actions - Functions to compositse.
          * @returns {function} - Composited function.
@@ -165,6 +178,11 @@
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
         },
+        /**
+         * Get random value.
+         * @returns {number} - Random value.
+         */
+        random: Math.random.bind(Math),
         /**
          * Round a value.
          * @param {number} value - Value to round.
