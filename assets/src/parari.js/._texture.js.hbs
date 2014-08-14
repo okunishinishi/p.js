@@ -1,8 +1,9 @@
 /**
- * Parari texture
+ * Parari texture.
  * @memberof parari
  * @augments Texture
- * @constructore {{name}}Texture
+ * @constructore {{Name}}Texture
+ * @param {object} options - Optional settings.
  */
 (function (pr, document) {
     "use strict";
@@ -10,36 +11,47 @@
     var u = pr.utilities,
         Texture = pr.textures.Texture;
 
-    /** @lends {{name}}Texture */
-    function {{name}}Texture() {
-
+    /** @lends {{Name}}Texture */
+    function {{Name}}Texture(options) {
+        var s = this;
+        u.copy(options || {}, s);
     }
 
 
-    {name}}Texture.prototype = u.copy(
-        /** @lends {name}}Texture.prototype */
+    {{Name}}Texture.prototype = u.copy(
+        /** @lends {{Name}}Texture.prototype */
         {
             /**
              * Render texture.
              * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
              * @param {number} scrollX
              * @param {number} scrollY
              */
-            render: function (scrollX, scrollY) {
+            render: function (ctx, scrollX, scrollY) {
+                var s = this,
+                    bounds = s.bounds;
+                if (!bounds) {
+                    return;
+                }
+                ctx.save();
 
+
+
+                ctx.restore();
             }
         },
         new Texture({})
     );
 
-    u.copy(Texture, {{name}}Texture);
+    u.copy(Texture, {{Name}}Texture);
     u.copy(
-        /** @lends {{name}}Texture */
+        /** @lends {{Name}}Texture */
         {
 
         },
-        {{name}}Texture);
+        {{Name}}Texture);
 
-    pr.textures.{name}}Texture = {{name}}Texture;
+    pr.textures.{{Name}}Texture = {{Name}}Texture;
 
 })(window.parari = window.parari || {}, document);

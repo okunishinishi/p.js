@@ -89,6 +89,7 @@
             .map(function (name) {
                 var Texture = pr.resolveTexture(name);
                 if (!Texture) {
+                    console.log('Texture not found: ' + name);
 //                throw new Error('Invalid texture: ' + name);
                     return []; //FIXME
                 }

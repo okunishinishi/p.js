@@ -36,6 +36,19 @@ window.parari = (function (parari) {
 	    "use strict";
 	    var u = {
 	        /**
+	         * Get average value.
+	         * @param {...number} values - Values.
+	         * @returns {number} - Avarage value.
+	         */
+	        average: function (/* vlaues */) {
+	            var values = u.toArray(arguments),
+	                sum = values.reduce(u._averageSumReduce, 0);
+	            return sum / values.length;
+	        },
+	        _averageSumReduce: function (prev, cur) {
+	            return prev + cur;
+	        },
+	        /**
 	         * Reduce function to concat. Should be passed to Array.prototype.reduce.
 	         * @param {*} prev - Previous entry.
 	         * @param {*} cur - Current entry.
@@ -124,6 +137,49 @@ window.parari = (function (parari) {
 	         */
 	        getComputedStyle: function (elm) {
 	            return window.getComputedStyle(elm, '');
+	        },
+	        /**
+	         * Convert HSV to rgb.
+	         * @param {number} h - Hue , 0 ~ 360
+	         * @param {number} s - Stauration, 0 ~ 100.
+	         * @param {number} v - Value, 0 ~ 100.
+	         * @returns {object} - RGB value object.
+	         */
+	        hsv2rgb: function (h, s, v) {
+	            //r, g, b means  red, blue, green, 0 ~ 255.
+	            //a means alpha, 0.0 ~ 1.0
+	            //h means hue, 0 ~ 360
+	            //s, v means saturation, value of brgitness, 0 ~ 100
+	            var rgb = (function (h, s, v) {
+	                if (s == 0) return ({r: v, g: v, b: v});//gray
+	                h = h % 360;
+	                var i = Math.floor(h / 60);
+	                var f = h / 60 - i;
+	                v = v * 255 / 100;
+	                var m = v * (1 - s / 100);
+	                var n = v * (1 - s / 100 * f);
+	                var k = v * (1 - s / 100 * (1 - f));
+	                switch (i) {
+	                    case 0:
+	                        return {r: v, g: k, b: m};
+	                    case 1:
+	                        return {r: n, g: v, b: m};
+	                    case 2:
+	                        return {r: m, g: v, b: k};
+	                    case 3:
+	                        return {r: m, g: n, b: v};
+	                    case 4:
+	                        return {r: k, g: m, b: v};
+	                    case 5:
+	                        return {r: v, g: m, b: n};
+	                    default:
+	                        return {};
+	                }
+	            })(h, s, v);
+	            rgb.r = parseInt(rgb.r);
+	            rgb.g = parseInt(rgb.g);
+	            rgb.b = parseInt(rgb.b);
+	            return rgb;
 	        },
 	        /**
 	         * Is Internet Explorer or not.
@@ -263,6 +319,18 @@ window.parari = (function (parari) {
 	                return document.getElementById(elm);
 	            }
 	            return elm;
+	        },
+	        /**
+	         * RGBA value to string.
+	         * @param {number} r - Red.
+	         * @param {number} g - Green.
+	         * @param {number} b - Blue.
+	         * @param {number} a - Alpha.
+	         * @returns {string} - RGBA strring.
+	         */
+	        rgba2string: function (r, g, b, a) {
+	            if (!a) a = 1;
+	            return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 	        },
 	        /**
 	         * Trigger a event.
@@ -1435,6 +1503,20 @@ window.parari = (function (parari) {
 	            [].concat(textures).forEach(function (texture) {
 	                s.registerTexture(texture);
 	            });
+	            s.resortTextures();
+	        },
+	        /**
+	         * Resort textures.
+	         */
+	        resortTextures: function () {
+	            var s = this;
+	            s.textures = s.textures.sort(function (a, b) {
+	                return a.z - b.z;
+	            });
+	        },
+	        resort: function () {
+	            var s = this;
+	            s.resortTextures();
 	        },
 	        /**
 	         * Draw screen.
@@ -1701,7 +1783,8 @@ window.parari = (function (parari) {
 	        get _textureNameMap() {
 	            return {
 				    resolve: pr.textures.ResolveTexture,
-				    starFlow: pr.textures.StarFlowTexture
+				    starFlow: pr.textures.StarFlowTexture,
+				    rainbowColor: pr.textures.RainbowColorTexture
 				};
 	        }
 	    };
@@ -1745,7 +1828,8 @@ window.parari = (function (parari) {
 	                w = canvasBounds.width,
 	                h = canvasBounds.height;
 	            s.bounds = new pr.Rect(0, 0, w, h);
-	        }
+	        },
+	        z: 0,
 	    };
 	
 	    u.copy(
@@ -1800,7 +1884,7 @@ window.parari = (function (parari) {
 	        /** @lends StarFlowTexture.prototype */
 	        {
 	            starLayers: null,
-	            backgroundColor: '#AAE',
+	            backgroundColor: '#36A',
 	            /**
 	             * Star pattern image.
 	             */
@@ -1886,7 +1970,7 @@ window.parari = (function (parari) {
 	                    y: 0,
 	                    patternSize: 150,
 	                    countPerPattern: 20,
-	                    radius: 1,
+	                    radius: 0.5,
 	                    color: '#FFF',
 	                    velocity: 1,
 	                    move: function (x, y) {
@@ -1928,6 +2012,90 @@ window.parari = (function (parari) {
 	        StarFlowTexture);
 	
 	    pr.textures.StarFlowTexture = StarFlowTexture;
+	
+	})(window.parari = window.parari || {}, document);
+
+    /**
+	 * Parari texture.
+	 * @memberof parari
+	 * @augments Texture
+	 * @constructore RainbowColorTexture
+	 * @param {object} options - Optional settings.
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Texture = pr.textures.Texture;
+	
+	    /** @lends RainbowColorTexture */
+	    function RainbowColorTexture(options) {
+	        var s = this;
+	        u.copy(options || {}, s);
+	    }
+	
+	
+	    RainbowColorTexture.prototype = u.copy(
+	        /** @lends RainbowColorTexture.prototype */
+	        {
+	            hue: 0,
+	            saturation: 80,
+	            value: 80,
+	            velocity: 0.5,
+	            alpha: 1,
+	            /**
+	             * Render texture.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {number} scrollX
+	             * @param {number} scrollY
+	             */
+	            render: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.bounds;
+	                if (!bounds) {
+	                    return;
+	                }
+	                var v = Number(s.velocity);
+	                var xFactor = (scrollX * v) / bounds.width,
+	                    yFactor = (scrollY * v) / bounds.height,
+	                    factor = u.average(xFactor, yFactor);
+	
+	                ctx.save();
+	
+	                ctx.beginPath();
+	                ctx.rect(bounds.left, bounds.top, bounds.width, bounds.height);
+	                ctx.fillStyle = s.fillColor(factor);
+	                ctx.fill();
+	                ctx.closePath();
+	
+	                ctx.restore();
+	            },
+	            /**
+	             * Get color for facor.
+	             * @param {number} factor - Factor value.
+	             * @returns {string} - Fill color hex string.
+	             */
+	            fillColor: function (factor) {
+	                var s = this,
+	                    hue = (s.hue + (factor / 2 + 1) * 360) % 360;
+	                var rgb = u.hsv2rgb(hue, s.saturation, s.value);
+	                return u.rgba2string(rgb.r, rgb.g, rgb.b, s.alpha);
+	            }
+	
+	        },
+	        new Texture({})
+	    );
+	
+	    u.copy(Texture, RainbowColorTexture);
+	    u.copy(
+	        /** @lends RainbowColorTexture */
+	        {
+	
+	        },
+	        RainbowColorTexture);
+	
+	    pr.textures.RainbowColorTexture = RainbowColorTexture;
 	
 	})(window.parari = window.parari || {}, document);
 
@@ -2022,6 +2190,7 @@ window.parari = (function (parari) {
 	            .map(function (name) {
 	                var Texture = pr.resolveTexture(name);
 	                if (!Texture) {
+	                    console.log('Texture not found: ' + name);
 	//                throw new Error('Invalid texture: ' + name);
 	                    return []; //FIXME
 	                }

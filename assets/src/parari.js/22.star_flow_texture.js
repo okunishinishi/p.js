@@ -26,7 +26,7 @@
         /** @lends StarFlowTexture.prototype */
         {
             starLayers: null,
-            backgroundColor: '#AAE',
+            backgroundColor: '#36A',
             /**
              * Star pattern image.
              */
@@ -112,7 +112,7 @@
                     y: 0,
                     patternSize: 150,
                     countPerPattern: 20,
-                    radius: 1,
+                    radius: 0.5,
                     color: '#FFF',
                     velocity: 1,
                     move: function (x, y) {

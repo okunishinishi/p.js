@@ -138,6 +138,20 @@
             [].concat(textures).forEach(function (texture) {
                 s.registerTexture(texture);
             });
+            s.resortTextures();
+        },
+        /**
+         * Resort textures.
+         */
+        resortTextures: function () {
+            var s = this;
+            s.textures = s.textures.sort(function (a, b) {
+                return a.z - b.z;
+            });
+        },
+        resort: function () {
+            var s = this;
+            s.resortTextures();
         },
         /**
          * Draw screen.

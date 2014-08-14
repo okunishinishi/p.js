@@ -1,0 +1,22 @@
+/**
+ * Bud file for texture js.
+ */
+"use strict";
+
+var u = require('apeman-util'),
+    path = u.core.path,
+    string = u.string,
+    names = require('./.texture_names');
+
+module.exports = names.map(function (name, i) {
+    var basename = [(22 + i), string.snakeString(name) + '_texture', 'js'].join('.')
+    return {
+        force: false,
+        mode: '644',
+        path: path.join(__dirname, basename),
+        data: {
+            Name:string.pascalString(name),
+            name: string.camelString(name)
+        }
+    }
+});

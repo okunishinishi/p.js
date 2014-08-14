@@ -12,7 +12,8 @@
         get _textureNameMap() {
             return {
 			    resolve: pr.textures.ResolveTexture,
-			    starFlow: pr.textures.StarFlowTexture
+			    starFlow: pr.textures.StarFlowTexture,
+			    rainbowColor: pr.textures.RainbowColorTexture
 			};
         }
     };

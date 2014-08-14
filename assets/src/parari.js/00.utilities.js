@@ -7,6 +7,19 @@
     "use strict";
     var u = {
         /**
+         * Get average value.
+         * @param {...number} values - Values.
+         * @returns {number} - Avarage value.
+         */
+        average: function (/* vlaues */) {
+            var values = u.toArray(arguments),
+                sum = values.reduce(u._averageSumReduce, 0);
+            return sum / values.length;
+        },
+        _averageSumReduce: function (prev, cur) {
+            return prev + cur;
+        },
+        /**
          * Reduce function to concat. Should be passed to Array.prototype.reduce.
          * @param {*} prev - Previous entry.
          * @param {*} cur - Current entry.
@@ -95,6 +108,49 @@
          */
         getComputedStyle: function (elm) {
             return window.getComputedStyle(elm, '');
+        },
+        /**
+         * Convert HSV to rgb.
+         * @param {number} h - Hue , 0 ~ 360
+         * @param {number} s - Stauration, 0 ~ 100.
+         * @param {number} v - Value, 0 ~ 100.
+         * @returns {object} - RGB value object.
+         */
+        hsv2rgb: function (h, s, v) {
+            //r, g, b means  red, blue, green, 0 ~ 255.
+            //a means alpha, 0.0 ~ 1.0
+            //h means hue, 0 ~ 360
+            //s, v means saturation, value of brgitness, 0 ~ 100
+            var rgb = (function (h, s, v) {
+                if (s == 0) return ({r: v, g: v, b: v});//gray
+                h = h % 360;
+                var i = Math.floor(h / 60);
+                var f = h / 60 - i;
+                v = v * 255 / 100;
+                var m = v * (1 - s / 100);
+                var n = v * (1 - s / 100 * f);
+                var k = v * (1 - s / 100 * (1 - f));
+                switch (i) {
+                    case 0:
+                        return {r: v, g: k, b: m};
+                    case 1:
+                        return {r: n, g: v, b: m};
+                    case 2:
+                        return {r: m, g: v, b: k};
+                    case 3:
+                        return {r: m, g: n, b: v};
+                    case 4:
+                        return {r: k, g: m, b: v};
+                    case 5:
+                        return {r: v, g: m, b: n};
+                    default:
+                        return {};
+                }
+            })(h, s, v);
+            rgb.r = parseInt(rgb.r);
+            rgb.g = parseInt(rgb.g);
+            rgb.b = parseInt(rgb.b);
+            return rgb;
         },
         /**
          * Is Internet Explorer or not.
@@ -234,6 +290,18 @@
                 return document.getElementById(elm);
             }
             return elm;
+        },
+        /**
+         * RGBA value to string.
+         * @param {number} r - Red.
+         * @param {number} g - Green.
+         * @param {number} b - Blue.
+         * @param {number} a - Alpha.
+         * @returns {string} - RGBA strring.
+         */
+        rgba2string: function (r, g, b, a) {
+            if (!a) a = 1;
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
         },
         /**
          * Trigger a event.

@@ -34,7 +34,8 @@
                 w = canvasBounds.width,
                 h = canvasBounds.height;
             s.bounds = new pr.Rect(0, 0, w, h);
-        }
+        },
+        z: 0,
     };
 
     u.copy(

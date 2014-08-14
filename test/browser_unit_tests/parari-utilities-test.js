@@ -121,4 +121,9 @@ describe('pr.utilities', function () {
             expect(u.randomInt(10, 20) >= 10).toBe(true);
         }
     });
+
+    it('Average vale.', function () {
+        var ave = u.average(3, 9, 3);
+        expect(ave).toEqual(5);
+    });
 });
