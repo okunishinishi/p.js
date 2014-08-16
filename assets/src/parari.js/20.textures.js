@@ -14,7 +14,8 @@
 			    resolve: pr.textures.ResolveTexture,
 			    starFlow: pr.textures.StarFlowTexture,
 			    rainbowColor: pr.textures.RainbowColorTexture,
-			    circleLight: pr.textures.CircleLightTexture
+			    circleLight: pr.textures.CircleLightTexture,
+			    graphPaper: pr.textures.GraphPaperTexture
 			};
         }
     };

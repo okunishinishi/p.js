@@ -1785,7 +1785,8 @@ window.parari = (function (parari) {
 				    resolve: pr.textures.ResolveTexture,
 				    starFlow: pr.textures.StarFlowTexture,
 				    rainbowColor: pr.textures.RainbowColorTexture,
-				    circleLight: pr.textures.CircleLightTexture
+				    circleLight: pr.textures.CircleLightTexture,
+				    graphPaper: pr.textures.GraphPaperTexture
 				};
 	        }
 	    };
@@ -2182,6 +2183,72 @@ window.parari = (function (parari) {
 	        CircleLightTexture);
 	
 	    pr.textures.CircleLightTexture = CircleLightTexture;
+	
+	})(window.parari = window.parari || {}, document);
+
+    /**
+	 * Parari texture.
+	 * @memberof parari
+	 * @augments Texture
+	 * @constructore GraphPaperTexture
+	 * @param {object} options - Optional settings.
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Texture = pr.textures.Texture;
+	
+	    /** @lends GraphPaperTexture */
+	    function GraphPaperTexture(options) {
+	        var s = this;
+	        u.copy(options || {}, s);
+	    }
+	
+	
+	    GraphPaperTexture.prototype = u.copy(
+	        /** @lends GraphPaperTexture.prototype */
+	        {
+	            /**
+	             * Render texture.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {number} scrollX
+	             * @param {number} scrollY
+	             */
+	            render: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.bounds;
+	                if (!bounds) {
+	                    return;
+	                }
+	                ctx.save();
+	
+	
+	                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+	                for (var i = 0; i < 100; i++) {
+	                    ctx.moveTo(0, i * 20);
+	                    ctx.lineTo(bounds.width, i * 20);
+	                    ctx.moveTo(i * 20, 0);
+	                    ctx.lineTo(i * 20, bounds.height);
+	                }
+	                ctx.stroke();
+	
+	                ctx.restore();
+	            }
+	        },
+	        new Texture({})
+	    );
+	
+	    u.copy(Texture, GraphPaperTexture);
+	    u.copy(
+	        /** @lends GraphPaperTexture */
+	        {
+	
+	        },
+	        GraphPaperTexture);
+	
+	    pr.textures.GraphPaperTexture = GraphPaperTexture;
 	
 	})(window.parari = window.parari || {}, document);
 

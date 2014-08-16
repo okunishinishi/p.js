@@ -24,6 +24,7 @@
     <script src="../../assets/src/parari.js/22.star_flow_texture.js"></script>
     <script src="../../assets/src/parari.js/23.rainbow_color_texture.js"></script>
     <script src="../../assets/src/parari.js/24.circle_light_texture.js"></script>
+    <script src="../../assets/src/parari.js/25.graph_paper_texture.js"></script>
     <script src="../../assets/src/parari.js/99.start.js"></script>
 
 </head>
@@ -66,10 +67,33 @@
     </section>
 
 
+    <section
+
+
+            class="pr-page">
+        <div class="pr-page-background" data-pr-z="-100" data-pr-fragment="true"></div>
+        <h2 id="table-of-contents" data-pr-fragment="true" data-pr-velocity="0.5">Table of Contents</h2>
+        <ul data-pr-fragment="true" data-pr-velocity="0.8">
+            <li><a href="#01-whats-this">What's this?</a></li>
+            <li><a href="#02-why-this">Why this?</a></li>
+            <li><a href="#03-demo">Demo</a></li>
+            <li><a href="#04-requirements">Requirements</a></li>
+            <li><a href="#05-install">Installation</a></li>
+            <li><a href="#06-documents">Documents</a></li>
+            <li><a href="#10-donation">Donation</a></li>
+            <li><a href="#11-license">License</a></li>
+        </ul>
+        <p data-pr-fragment="true" data-pr-velocity="0.8"><a name="01-whats-this"></a></p></section>
+
+
     <script>
         parari.start('parari-demo-root', {
             hLock: true,
             textures: {
+                graphPaper: {
+                    z: 5,
+                    grid: 30
+                },
                 circleLight: {
                     z: 8
                 },
