@@ -15,7 +15,8 @@
 			    starFlow: pr.textures.StarFlowTexture,
 			    rainbowColor: pr.textures.RainbowColorTexture,
 			    circleLight: pr.textures.CircleLightTexture,
-			    graphPaper: pr.textures.GraphPaperTexture
+			    graphPaper: pr.textures.GraphPaperTexture,
+			    rainfall: pr.textures.RainfallTexture
 			};
         }
     };

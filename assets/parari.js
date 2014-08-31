@@ -1786,7 +1786,8 @@ window.parari = (function (parari) {
 				    starFlow: pr.textures.StarFlowTexture,
 				    rainbowColor: pr.textures.RainbowColorTexture,
 				    circleLight: pr.textures.CircleLightTexture,
-				    graphPaper: pr.textures.GraphPaperTexture
+				    graphPaper: pr.textures.GraphPaperTexture,
+				    rainfall: pr.textures.RainfallTexture
 				};
 	        }
 	    };
@@ -2224,18 +2225,39 @@ window.parari = (function (parari) {
 	                }
 	                ctx.save();
 	
+	                ctx.strokeStyle = s.color;
 	
-	                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-	                for (var i = 0; i < 100; i++) {
-	                    ctx.moveTo(0, i * 20);
-	                    ctx.lineTo(bounds.width, i * 20);
-	                    ctx.moveTo(i * 20, 0);
-	                    ctx.lineTo(i * 20, bounds.height);
+	                var grid = s.grid;
+	
+	                var h = bounds.height,
+	                    w = bounds.width;
+	
+	                var v = Number(s.velocity),
+	                    xFactor = (scrollX * v) / w % 1,
+	                    yFactor = (scrollY * v) / h % 1;
+	
+	
+	                var baseX = grid * xFactor,
+	                    baseY = grid * yFactor;
+	                for (var i = 0; i < h / grid; i++) {
+	                    var y = i * grid - baseY;
+	                    ctx.moveTo(0, y);
+	                    ctx.lineTo(w, y);
 	                }
+	
+	                for (var i = 0; i < w / grid; i++) {
+	                    var x = i * grid - baseX;
+	                    ctx.moveTo(x, 0);
+	                    ctx.lineTo(x, h);
+	                }
+	
 	                ctx.stroke();
 	
 	                ctx.restore();
-	            }
+	            },
+	            velocity: 4,
+	            grid: 20,
+	            color: 'rgba(255,255,255,0.1)'
 	        },
 	        new Texture({})
 	    );
@@ -2249,6 +2271,84 @@ window.parari = (function (parari) {
 	        GraphPaperTexture);
 	
 	    pr.textures.GraphPaperTexture = GraphPaperTexture;
+	
+	})(window.parari = window.parari || {}, document);
+
+    /**
+	 * Parari texture.
+	 * @memberof parari
+	 * @augments Texture
+	 * @constructore RainfallTexture
+	 * @param {object} options - Optional settings.
+	 */
+	(function (pr, document) {
+	    "use strict";
+	
+	    var u = pr.utilities,
+	        Texture = pr.textures.Texture;
+	
+	    /** @lends RainfallTexture */
+	    function RainfallTexture(options) {
+	        var s = this;
+	        u.copy(options || {}, s);
+	    }
+	
+	
+	    RainfallTexture.prototype = u.copy(
+	        /** @lends RainfallTexture.prototype */
+	        {
+	            /**
+	             * Render texture.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {CanvasRenderingContext2D} ctx - Canvas 2d context.
+	             * @param {number} scrollX
+	             * @param {number} scrollY
+	             */
+	            render: function (ctx, scrollX, scrollY) {
+	                var s = this,
+	                    bounds = s.bounds;
+	                if (!bounds) {
+	                    return;
+	                }
+	                ctx.save();
+	
+	                ctx.strokeStyle = s.color;
+	                ctx.lineWidth = s.width;
+	                var v = Number(s.velocity),
+	                    xFactor = (scrollX * v) / w % 1,
+	                    yFactor = (scrollY * v) / h % 1;
+	
+	                var margin = 20;
+	
+	
+	                var w = bounds.width,
+	                    h = bounds.height;
+	                for (var i = 0; i < w / margin; i++) {
+	                    var x = i * margin,
+	                        y = 0.5 * h;
+	                    ctx.moveTo(x, y);
+	                    ctx.lineTo(x, y + h * 0.5);
+	                }
+	
+	                ctx.stroke();
+	
+	                ctx.restore();
+	            },
+	            color: '#FFF',
+	            width: 2
+	        },
+	        new Texture({})
+	    );
+	
+	    u.copy(Texture, RainfallTexture);
+	    u.copy(
+	        /** @lends RainfallTexture */
+	        {
+	
+	        },
+	        RainfallTexture);
+	
+	    pr.textures.RainfallTexture = RainfallTexture;
 	
 	})(window.parari = window.parari || {}, document);
 

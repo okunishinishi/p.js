@@ -21,7 +21,6 @@
         "test/.work",
         "test/mocks",
         "test/design_tests",
-        "test/scneaio_tests",
         "test/unit_tests",
         "test/browser_unit_tests",
         "tmpl",
